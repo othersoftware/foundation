@@ -1,0 +1,42 @@
+{
+    "name": "@othersoftware/vite-plugin-vue-autoloader",
+    "description": "This plugin.",
+    "keywords": ["othersoftware", "vite", "vue", "autoloader"],
+    "version": "1.0.0",
+    "license": "MIT",
+    "homepage": "https://github.com/othersofware/foundation",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/othersofware/foundation.git"
+    },
+    "bugs": {
+        "url": "https://github.com/othersofware/foundation/issues",
+        "email": "rafal.krawiec@promoznawcy.pl"
+    },
+    "author": {
+        "name": "Rafał Krawiec",
+        "email": "rafal.krawiec@promoznawcy.pl"
+    },
+    "type": "module",
+    "module": "dist/other-software-autoloader.js",
+    "main": "dist/other-software-autoloader.cjs",
+    "types": "dist/other-software-autoloader.d.ts",
+    "files": ["dist"],
+    "exports": {
+        ".": {
+            "import": "./dist/other-software-autoloader.js",
+            "types": "./dist/other-software-autoloader.d.ts",
+            "require": "./dist/other-software-autoloader.cjs"
+        }
+    },
+    "scripts": {
+        "dev": "vite build -m development --watch",
+        "build": "vite build"
+    },
+    "devDependencies": {
+        "@types/node": "^22.5.2",
+        "typescript": "^5.5.4",
+        "vite": "^5.4.2",
+        "vite-plugin-dts": "^4.1.0"
+    }
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="d"
+                 name="Documentation"
+                 start-page="starter-topic.md">
+
+    <toc-element topic="starter-topic.md"/>
+  <toc-element topic="Features.md">
+    <toc-element topic="Route-Attributes.md"/>
+    <toc-element topic="Nested-Routes.md"/>
+    <toc-element topic="Translated-Routes.md"/>
+    <toc-element topic="View-Stack.md"/>
+  </toc-element>
+</instance-profile>

@@ -1,0 +1,389 @@
+import { ComponentOptionsMixin } from 'vue';
+import { ConcreteComponent } from 'vue';
+import { DefineComponent } from 'vue';
+import { ExtractPropTypes } from 'vue';
+import { InjectionKey } from 'vue';
+import { Plugin as Plugin_2 } from 'vue';
+import { PropType } from 'vue';
+import { PublicProps } from 'vue';
+import { Ref } from 'vue';
+import { RendererElement } from 'vue';
+import { RendererNode } from 'vue';
+import { SlotsType } from 'vue';
+import { VNode } from 'vue';
+
+declare type Body_2 = XMLHttpRequestBodyInit | Object | null | undefined;
+export { Body_2 as Body }
+
+export declare function createFormContext(initial?: Record<string, any>): {
+    data: Ref<Record<string, any>>;
+    errors: Ref<Record<string, string[]>>;
+    touched: Ref<Record<string, boolean>>;
+    processing: Ref<boolean>;
+    touch: (name: string) => void;
+    value: (name: string, value: any) => any;
+    fill: (name: string, value: any) => void;
+};
+
+export declare function createFoundationController({ initial, resolver, setup }: Options): Promise<string>;
+
+export declare function createOtherSoftwareFoundation(): Plugin_2;
+
+export declare const ErrorModal: {
+    modal: HTMLDivElement | undefined;
+    listener: any;
+    show(html: Record<string, unknown> | string): void;
+    hide(): void;
+    hideOnEscape(event: KeyboardEvent): void;
+};
+
+export declare const EventBus: {
+    addEventListener(name: EventName, callback: EventHandler): void;
+    remoteEventListener(name: EventName, callback: EventHandler): void;
+    dispatch<T>(name: EventName, event?: T): T | undefined;
+};
+
+declare type EventHandler = (event?: any) => boolean | undefined | void;
+
+declare type EventName = string;
+
+declare type Factory = (options: FactoryOptions) => any;
+
+declare type FactoryOptions = {
+    router: typeof RouterComponent;
+    props: {
+        resolver: ViewResolver;
+        state: State;
+    };
+};
+
+export declare const FormContextInjectionKey: InjectionKey<FormContextInterface>;
+
+export declare type FormContextInterface = ReturnType<typeof createFormContext>;
+
+export declare const FormControllerComponent: DefineComponent<    {
+action: {
+type: StringConstructor;
+required: false;
+};
+method: {
+type: PropType<Method>;
+required: false;
+default: string;
+};
+data: {
+type: ObjectConstructor;
+required: false;
+default: {};
+};
+onSubmit: {
+type: PropType<FormHandler>;
+required: false;
+};
+}, () => VNode<RendererNode, RendererElement, {
+[key: string]: any;
+}>, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+action: {
+type: StringConstructor;
+required: false;
+};
+method: {
+type: PropType<Method>;
+required: false;
+default: string;
+};
+data: {
+type: ObjectConstructor;
+required: false;
+default: {};
+};
+onSubmit: {
+type: PropType<FormHandler>;
+required: false;
+};
+}>>, {
+data: Record<string, any>;
+method: string;
+}, SlotsType<{
+default: {
+data: any;
+processing: boolean;
+errors: Record<string, string[]>;
+touched: Record<string, boolean>;
+ctx: FormContextInterface;
+};
+}>>;
+
+declare type FormHandler = (data: any, ctx: FormContextInterface) => Promise<any>;
+
+export declare function getModelFromContext(name: string | undefined, ctx: FormContextInterface | undefined, value: any): any;
+
+export declare function hash(length?: number): string;
+
+export declare type HeadMeta = {
+    type: 'title';
+    content: string;
+} | {
+    type: 'meta';
+    name: string;
+    content: string;
+} | {
+    type: 'link';
+    rel: string;
+    href: string;
+} | {
+    type: 'snippet';
+    content: string;
+};
+
+declare interface HttpOptions {
+    data?: Body_2 | undefined;
+    preserveScroll?: boolean;
+    replace?: boolean;
+}
+
+export declare type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | string;
+
+declare type Options = {
+    initial?: State | undefined;
+    resolver: ViewResolver;
+    setup: Factory;
+};
+
+declare type Params = Record<string, any>;
+
+declare class Request_2 {
+    protected method: Method;
+    protected url: string;
+    protected xhr: XMLHttpRequest;
+    protected body: Body_2;
+    protected signature: Signature;
+    static send(method: Method, url: string, body?: Body_2, signature?: Signature): Promise<Response_2>;
+    constructor(method: Method, url: string, body?: Body_2, signature?: Signature);
+    send(): Promise<Response_2>;
+    protected transform(body: any): string | Blob | ArrayBuffer | FormData | URLSearchParams | null;
+    protected readCookie(name: string): string;
+}
+export { Request_2 as Request }
+
+declare class Response_2 {
+    private readonly xhr;
+    readonly status: number;
+    readonly success: boolean;
+    readonly fail: boolean;
+    readonly partial: boolean;
+    readonly raw: boolean;
+    readonly message: string;
+    readonly content: string;
+    readonly location: string;
+    readonly signature: string;
+    readonly redirect: RouterRedirect | undefined;
+    readonly stack: StackedView | undefined;
+    readonly errors: Record<string, string[]>;
+    constructor(xhr: XMLHttpRequest);
+}
+export { Response_2 as Response }
+
+export declare type Route = {
+    uri: string;
+    domain: string;
+    params: string[];
+    binding: Record<string, string>;
+};
+
+export declare function route(name: string, params?: Params, hash?: string): string;
+
+export declare const RouterComponent: DefineComponent<    {
+resolver: {
+type: PropType<ViewResolver>;
+required: true;
+};
+state: {
+type: PropType<State>;
+required: true;
+};
+}, () => VNode<RendererNode, RendererElement, {
+[key: string]: any;
+}>, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+resolver: {
+type: PropType<ViewResolver>;
+required: true;
+};
+state: {
+type: PropType<State>;
+required: true;
+};
+}>>, {}, {}>;
+
+export declare const RouterLinkComponent: DefineComponent<    {
+method: {
+type: PropType<Method>;
+required: false;
+default: string;
+};
+href: {
+type: PropType<string>;
+required: false;
+};
+data: {
+type: PropType<Body_2>;
+required: false;
+};
+preserveScroll: {
+type: BooleanConstructor;
+required: false;
+};
+replace: {
+type: BooleanConstructor;
+required: false;
+};
+target: {
+type: PropType<string>;
+required: false;
+};
+explicit: BooleanConstructor;
+}, () => VNode<RendererNode, RendererElement, {
+[key: string]: any;
+}>, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+method: {
+type: PropType<Method>;
+required: false;
+default: string;
+};
+href: {
+type: PropType<string>;
+required: false;
+};
+data: {
+type: PropType<Body_2>;
+required: false;
+};
+preserveScroll: {
+type: BooleanConstructor;
+required: false;
+};
+replace: {
+type: BooleanConstructor;
+required: false;
+};
+target: {
+type: PropType<string>;
+required: false;
+};
+explicit: BooleanConstructor;
+}>>, {
+preserveScroll: boolean;
+replace: boolean;
+method: string;
+explicit: boolean;
+}, {}>;
+
+export declare interface RouterRedirect {
+    target: string;
+    reload: boolean;
+}
+
+export declare const RouterViewComponent: DefineComponent<    {
+allowLayouts: {
+type: PropType<boolean>;
+required: false;
+default: boolean;
+};
+}, () => VNode<RendererNode, RendererElement, {
+[key: string]: any;
+}> | undefined, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+allowLayouts: {
+type: PropType<boolean>;
+required: false;
+default: boolean;
+};
+}>>, {
+allowLayouts: boolean;
+}, {}>;
+
+export declare function setModelWithContext(name: string | undefined, ctx: FormContextInterface | undefined, value: any): any;
+
+export declare type Signature = string | undefined;
+
+export declare type StackedView = StackedViewFull | StackedViewKept;
+
+export declare type StackedViewComponent = ConcreteComponent & {
+    layout?: undefined | string | ConcreteComponent;
+};
+
+declare interface StackedViewFull {
+    component: string;
+    props: any;
+    child?: StackedView | undefined;
+}
+
+export declare const StackedViewInjectionKey: InjectionKey<Ref<StackedView | undefined>>;
+
+declare interface StackedViewKept {
+    keep: boolean;
+    child?: StackedView | undefined;
+}
+
+export declare const StackedViewResolverInjectionKey: InjectionKey<ViewResolver>;
+
+export declare interface State {
+    location: string;
+    signature: string;
+    stack: StackedView;
+}
+
+export declare const StateLocationInjectionKey: InjectionKey<Ref<string>>;
+
+export declare type StateManager = (fresh: Response_2) => Promise<State>;
+
+export declare const StateManagerInjectionKey: InjectionKey<StateManager>;
+
+export declare const StateStackSignatureInjectionKey: InjectionKey<Ref<string>>;
+
+export declare function updateStack(current: StackedView, fresh: StackedView): {
+    keep: boolean;
+    child?: StackedView | undefined;
+} | {
+    component: string;
+    props: any;
+    child?: StackedView | undefined;
+};
+
+export declare function url(uri: string, params?: Record<string, any>, hash?: string, base?: string | null): string;
+
+export declare function useFromContext(): {
+    data: Ref<Record<string, any>>;
+    errors: Ref<Record<string, string[]>>;
+    touched: Ref<Record<string, boolean>>;
+    processing: Ref<boolean>;
+    touch: (name: string) => void;
+    value: (name: string, value: any) => any;
+    fill: (name: string, value: any) => void;
+};
+
+export declare function useHttpClient(): {
+    dispatch: (method: Method, url: string, { data, preserveScroll, replace }?: HttpOptions) => any;
+    get: (url: string) => Promise<any>;
+    post: (url: string, data?: Body_2 | undefined) => Promise<any>;
+    patch: (url: string, data?: Body_2 | undefined) => Promise<any>;
+    put: (url: string, data?: Body_2 | undefined) => Promise<any>;
+    delete: (url: string, data?: Body_2 | undefined) => Promise<any>;
+};
+
+export declare function useLocation(): Ref<string>;
+
+export declare function useStackSignature(): Ref<string>;
+
+export declare function useStateManager(): {
+    update: StateManager;
+};
+
+export declare function useViewResolver(): ViewResolver;
+
+export declare function useViewStack(): Ref<StackedView | undefined>;
+
+export declare type ViewResolver = (name: string) => StackedViewComponent;
+
+export declare function wrap<T>(item: T): T[] & any[];
+
+export { }

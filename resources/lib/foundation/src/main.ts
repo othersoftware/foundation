@@ -1,0 +1,48 @@
+import type { App, Plugin } from 'vue';
+import { FormControllerComponent } from './Components/Controllers/FormControllerComponent';
+import { RouterViewComponent } from './Components/Routing/RouterViewComponent';
+import { RouterLinkComponent } from './Components/Routing/RouterLinkComponent';
+
+export * from './Application/Factory';
+
+export * from './Components/Controllers/FormControllerComponent';
+
+export * from './Components/Routing/RouterComponent';
+export * from './Components/Routing/RouterLinkComponent';
+export * from './Components/Routing/RouterViewComponent';
+
+export * from './Composables/UseFromContext';
+export * from './Composables/UseHttpClient';
+export * from './Composables/UseViewResolver';
+export * from './Composables/UseViewStack';
+
+export * from './Events/EventBus';
+
+export * from './Http/Client/Request';
+export * from './Http/Client/Response';
+
+export * from './Services/FormContext';
+export * from './Services/StateManager';
+export * from './Services/StackedView';
+
+export * from './Support/ErrorModal';
+export * from './Support/Hash';
+export * from './Support/Route';
+export * from './Support/Url';
+export * from './Support/Wrap';
+
+export * from './Types/HeadMeta';
+export * from './Types/RouterRedirect';
+export * from './Types/StackedView';
+export * from './Types/State';
+export * from './Types/ViewResolver';
+
+export function createOtherSoftwareFoundation(): Plugin {
+  return {
+    install(app: App) {
+      app.component('RouterView', RouterViewComponent);
+      app.component('RouterLink', RouterLinkComponent);
+      app.component('FormController', FormControllerComponent);
+    },
+  };
+}

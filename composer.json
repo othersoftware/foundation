@@ -1,0 +1,40 @@
+{
+    "name": "othersoftware/foundation",
+    "type": "library",
+    "version": "1.0.0",
+    "description": "This library creates a bridge between Vue frontends and Laravel backends.",
+    "keywords": ["othersoftware", "laravel", "php", "vue", "vite"],
+    "license": "MIT",
+    "homepage": "https://github.com/othersoftware/foundation",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "authors": [
+        {
+            "name": "Rafał Krawiec",
+            "email": "rafal.krawiec@promoznawcy.pl",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/othersoftware/foundation/issues",
+        "docs": "https://othersoftware.github.io/foundation"
+    },
+    "require": {
+        "php": "^8.3.0",
+        "composer/class-map-generator": "^1.0",
+        "laravel/framework": "^11.0"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "OtherSoftware\\Foundation\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    }
+}
