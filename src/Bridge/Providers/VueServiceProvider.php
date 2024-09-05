@@ -1,6 +1,6 @@
 <?php
 
-namespace OtherSoftware\Foundation\Providers;
+namespace OtherSoftware\Bridge\Providers;
 
 
 use Illuminate\Foundation\Exceptions\Handler;
@@ -11,7 +11,7 @@ use OtherSoftware\Bridge\ResponseFactory;
 use OtherSoftware\Support\Facades\Vue;
 
 
-class FrontendServiceProvider extends ServiceProvider
+class VueServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {

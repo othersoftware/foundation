@@ -1,6 +1,6 @@
 <?php
 
-namespace OtherSoftware\Foundation\Events;
+namespace OtherSoftware\Events;
 
 
 use Illuminate\Events\Dispatcher;

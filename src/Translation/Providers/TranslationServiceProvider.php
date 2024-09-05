@@ -1,6 +1,6 @@
 <?php
 
-namespace OtherSoftware\Foundation\Providers;
+namespace OtherSoftware\Translation\Providers;
 
 
 use Illuminate\Support\ServiceProvider;
@@ -12,7 +12,7 @@ class TranslationServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->publishes([
-                __DIR__ . '/../../config/translation.php' => config_path('translations.php'),
+                __DIR__ . '/../../../config/translations.php' => config_path('translations.php'),
             ], 'config');
         }
     }
@@ -20,6 +20,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../config/translation.php', 'translation');
+        $this->mergeConfigFrom(__DIR__ . '/../../../config/translations.php', 'translation');
     }
 }

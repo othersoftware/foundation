@@ -35,7 +35,18 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "OtherSoftware\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "OtherSoftware\\Translation\\Providers\\TranslationServiceProvider",
+                "OtherSoftware\\Bridge\\Providers\\VueServiceProvider"
+            ],
+            "aliases": {
+                "Vue": "OtherSoftware\\Support\\Facades\\Vue"
+            }
         }
     }
 }
