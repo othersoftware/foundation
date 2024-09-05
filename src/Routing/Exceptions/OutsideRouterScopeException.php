@@ -1,6 +1,6 @@
 <?php
 
-namespace OtherSoftware\Foundation\Exceptions\Routing;
+namespace OtherSoftware\Routing\Exceptions;
 
 
 use Exception;

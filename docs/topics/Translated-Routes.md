@@ -74,9 +74,9 @@ translated.
 <?php
 
 use Illuminate\Routing\Controller;
-use OtherSoftware\Foundation\Routing\Attributes\Name;
-use OtherSoftware\Foundation\Routing\Attributes\Route;
-use OtherSoftware\Foundation\Routing\Attributes\TranslatedRoute;
+use OtherSoftware\Routing\Attributes\Name;
+use OtherSoftware\Routing\Attributes\Route;
+use OtherSoftware\Routing\Attributes\TranslatedRoute;
 
 class ProductController extends Controller {
     
@@ -104,9 +104,9 @@ translated, you can apply `TranslatedRoute` attribute to the controller class.
 > <?php
 > 
 > use Illuminate\Routing\Controller;
-> use OtherSoftware\Foundation\Routing\Attributes\Name;
-> use OtherSoftware\Foundation\Routing\Attributes\Route;
-> use OtherSoftware\Foundation\Routing\Attributes\TranslatedRoute;
+> use OtherSoftware\Routing\Attributes\Name;
+> use OtherSoftware\Routing\Attributes\Route;
+> use OtherSoftware\Routing\Attributes\TranslatedRoute;
 > 
 > class ProductController extends Controller {
 > 

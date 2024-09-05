@@ -7,8 +7,8 @@ use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\ValidationException;
-use OtherSoftware\Foundation\Facades\Frontend;
-use OtherSoftware\Foundation\Frontend\Factory;
+use OtherSoftware\Bridge\ResponseFactory;
+use OtherSoftware\Support\Facades\Vue;
 
 
 class FrontendServiceProvider extends ServiceProvider
@@ -24,16 +24,16 @@ class FrontendServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton('frontend', function () {
-            return new Factory();
+            return new ResponseFactory();
         });
     }
 
 
     private function bootVisitorValidationRenderable(Handler $instance): void
     {
-        $instance->renderable(function (ValidationException $e, Request $request) {
+        $instance->renderable(function (ValidationException $exception, Request $request) {
             if ($request->header('X-Stack-Router')) {
-                return Frontend::setErrors($e->errors())->toResponse($request)->setStatusCode($e->status, $e->getMessage());
+                return Vue::setErrors($exception->errors())->toResponse($request)->setStatusCode($exception->status);
             }
 
             return null;

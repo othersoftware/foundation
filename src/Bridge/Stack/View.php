@@ -1,6 +1,6 @@
 <?php
 
-namespace OtherSoftware\Foundation\Routing\Stack;
+namespace OtherSoftware\Bridge\Stack;
 
 
 use Illuminate\Contracts\Support\Arrayable;
@@ -8,7 +8,7 @@ use Illuminate\Contracts\Support\Jsonable;
 use InvalidArgumentException;
 
 
-final class StackedView implements Arrayable, Jsonable
+final class View implements Arrayable, Jsonable
 {
     protected string $component;
 
@@ -19,7 +19,7 @@ final class StackedView implements Arrayable, Jsonable
     protected array $props;
 
 
-    private ?StackedView $child = null;
+    private ?View $child = null;
 
 
     public function __construct(string $component = null, array $props = [], true $keep = null)
@@ -39,7 +39,7 @@ final class StackedView implements Arrayable, Jsonable
     }
 
 
-    public function nested(StackedView $nested): StackedView
+    public function nested(View $nested): View
     {
         $this->child = $nested;
 

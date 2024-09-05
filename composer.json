@@ -22,14 +22,15 @@
     "require": {
         "php": "^8.3.0",
         "composer/class-map-generator": "^1.0",
-        "laravel/framework": "^11.0"
+        "laravel/framework": "^11.0",
+        "propaganistas/laravel-phone": "^5.0"
     },
     "config": {
         "sort-packages": true
     },
     "autoload": {
         "psr-4": {
-            "OtherSoftware\\Foundation\\": "src/"
+            "OtherSoftware\\": "src/"
         }
     },
     "autoload-dev": {

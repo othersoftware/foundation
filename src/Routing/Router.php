@@ -1,6 +1,6 @@
 <?php
 
-namespace OtherSoftware\Foundation\Routing;
+namespace OtherSoftware\Routing;
 
 
 use Illuminate\Http\Request;
@@ -8,13 +8,12 @@ use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Route as BaseRoute;
 use Illuminate\Routing\Router as BaseRouter;
 use Illuminate\Support\Arr;
-use OtherSoftware\Foundation\Exceptions\Routing\MissingParentRouteException;
-use OtherSoftware\Foundation\Exceptions\Routing\OutsideRouterScopeException;
-use OtherSoftware\Foundation\Frontend\Factory;
-use OtherSoftware\Foundation\Routing\Routes\Route;
-use OtherSoftware\Foundation\Routing\Stack\StackedView;
-use OtherSoftware\Foundation\Routing\Stack\StackedViewMap;
-use OtherSoftware\Foundation\Routing\Stack\StackedViewMeta;
+use OtherSoftware\Bridge\Stack\StackMeta;
+use OtherSoftware\Bridge\Stack\View;
+use OtherSoftware\Bridge\Stack\Meta;
+use OtherSoftware\Routing\Exceptions\MissingParentRouteException;
+use OtherSoftware\Routing\Exceptions\OutsideRouterScopeException;
+use OtherSoftware\Support\Facades\Vue;
 use Override;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -24,7 +23,7 @@ final class Router extends BaseRouter
     protected Route $running;
 
 
-    protected StackedViewMap $stack;
+    protected StackMeta $stack;
 
 
     private string $initialView;
@@ -72,7 +71,7 @@ final class Router extends BaseRouter
     }
 
 
-    public function setInitialView(string $view): static
+    public function setInitialView(string $view): Router
     {
         $this->initialView = $view;
 
@@ -96,14 +95,14 @@ final class Router extends BaseRouter
     }
 
 
-    private function buildViewStack(Route $route, Request $request): StackedViewMap
+    private function buildViewStack(Route $route, Request $request): StackMeta
     {
         $previous = $this->buildViewStackFromRequest($request);
         $next = $this->buildViewStackFromRoute($route);
         $total = count($next) - 1;
 
         $changed = false;
-        $stack = new StackedViewMap();
+        $stack = new StackMeta();
 
         for ($i = 0; $i <= $total; $i++) {
             $isLast = ($i === $total);
@@ -111,7 +110,7 @@ final class Router extends BaseRouter
             $a = $next[$i];
             $b = $previous[$i] ?? null;
 
-            $stack->push($view = new StackedViewMeta($a));
+            $stack->push($view = new Meta($a));
 
             if ($changed || $isLast) {
                 $view->forceRun();
@@ -177,12 +176,12 @@ final class Router extends BaseRouter
     }
 
 
-    private function runRouteUp(Route $route, Request $request, StackedView $nested = null)
+    private function runRouteUp(Route $route, Request $request, View $nested = null)
     {
         $this->running = $route;
 
         if ($this->stack->findByRoute($route)->shouldKeep()) {
-            $response = new StackedView(keep: true);
+            $response = new View(keep: true);
         } else {
             $response = $route->run();
         }
@@ -191,7 +190,7 @@ final class Router extends BaseRouter
 
         // When route returns other kind of response, rather than ViewLayer,
         // skip nested route resolving as it has no point.
-        if ($response instanceof StackedView) {
+        if ($response instanceof View) {
             if (! is_null($nested)) {
                 $response->nested($nested);
             }
@@ -207,8 +206,8 @@ final class Router extends BaseRouter
 
     private function wrapStack(mixed $response): mixed
     {
-        if ($response instanceof StackedView) {
-            $instance = new Factory();
+        if ($response instanceof View) {
+            $instance = Vue::getFacadeRoot();
 
             $instance->setStackMeta($this->stack);
             $instance->setStack($response);

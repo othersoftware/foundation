@@ -26,11 +26,11 @@ for route attributes:
 <?php
 
 use Illuminate\Support\Facades\Route;
-use OtherSoftware\Foundation\Routing\Router;
-use OtherSoftware\Foundation\Routing\Routes\RouteRegistrar;
+use OtherSoftware\Routing\Router;
+use OtherSoftware\Routing\Registrar;
 
 Route::middleware('web')->group(function (Router $router) {
-    RouteRegistrar::register($router, app_path('Http/Controllers'));
+    Registrar::register($router, app_path('Http/Controllers'));
 });
 ```
 
@@ -60,8 +60,8 @@ routes attributes configured:
 
 use App\Models\Product;
 use Illuminate\Routing\Controller;
-use OtherSoftware\Foundation\Routing\Attributes\Method;
-use OtherSoftware\Foundation\Routing\Attributes\Route;
+use OtherSoftware\Routing\Attributes\Method;
+use OtherSoftware\Routing\Attributes\Route;
 
 class ProductController extends Controller {
     
@@ -130,9 +130,9 @@ nested routes, you can use `Name` attribute.
 <?php
 
 use Illuminate\Routing\Controller;
-use OtherSoftware\Foundation\Routing\Attributes\Method;
-use OtherSoftware\Foundation\Routing\Attributes\Name;
-use OtherSoftware\Foundation\Routing\Attributes\Route;
+use OtherSoftware\Routing\Attributes\Method;
+use OtherSoftware\Routing\Attributes\Name;
+use OtherSoftware\Routing\Attributes\Route;
 
 class ProductController extends Controller {
     
@@ -154,9 +154,9 @@ it will apply for all actions defined within it.
 <?php
 
 use Illuminate\Routing\Controller;
-use OtherSoftware\Foundation\Routing\Attributes\Middleware;
-use OtherSoftware\Foundation\Routing\Attributes\Name;
-use OtherSoftware\Foundation\Routing\Attributes\Route;
+use OtherSoftware\Routing\Attributes\Middleware;
+use OtherSoftware\Routing\Attributes\Name;
+use OtherSoftware\Routing\Attributes\Route;
 
 #[Middleware('auth')]
 class ProductController extends Controller {

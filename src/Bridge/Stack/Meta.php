@@ -1,9 +1,12 @@
 <?php
 
-namespace OtherSoftware\Foundation\Routing\Stack;
+namespace OtherSoftware\Bridge\Stack;
 
 
-final class StackedViewMeta implements \Serializable
+use Serializable;
+
+
+final class Meta implements Serializable
 {
     public readonly string $hash;
 

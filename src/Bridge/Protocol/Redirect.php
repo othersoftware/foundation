@@ -1,13 +1,13 @@
 <?php
 
-namespace OtherSoftware\Foundation\Routing\Support;
+namespace OtherSoftware\Bridge\Protocol;
 
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 
 
-readonly final class RouterRedirect implements Arrayable, Jsonable
+final class Redirect implements Arrayable, Jsonable
 {
     public bool $reload;
 

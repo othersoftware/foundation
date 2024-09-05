@@ -1,14 +1,14 @@
 <?php
 
-namespace OtherSoftware\Foundation\Routing\Stack;
+namespace OtherSoftware\Bridge\Stack;
 
 
 use Illuminate\Contracts\Support\Arrayable;
-use OtherSoftware\Foundation\Routing\Routes\Route;
+use OtherSoftware\Routing\Route;
 use Serializable;
 
 
-final class StackedViewMap implements Arrayable, Serializable
+final class StackMeta implements Arrayable, Serializable
 {
     private array $map = [];
 
@@ -32,13 +32,13 @@ final class StackedViewMap implements Arrayable, Serializable
     }
 
 
-    public function findByHash(string $hash): StackedViewMeta
+    public function findByHash(string $hash): Meta
     {
         return $this->map[$hash];
     }
 
 
-    public function findByRoute(Route $route): StackedViewMeta
+    public function findByRoute(Route $route): Meta
     {
         return $this->findByHash($route->hash());
     }
@@ -50,7 +50,7 @@ final class StackedViewMap implements Arrayable, Serializable
     }
 
 
-    public function push(StackedViewMeta $view): StackedViewMap
+    public function push(Meta $view): StackMeta
     {
         $this->views[] = $view;
         $this->map[$view->hash] = $view;

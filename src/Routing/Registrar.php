@@ -1,23 +1,22 @@
 <?php
 
-namespace OtherSoftware\Foundation\Routing\Routes;
+namespace OtherSoftware\Routing;
 
 
 use Composer\ClassMapGenerator\ClassMapGenerator;
 use Illuminate\Support\Arr;
-use OtherSoftware\Foundation\Routing\Attributes\Method;
-use OtherSoftware\Foundation\Routing\Attributes\Middleware;
-use OtherSoftware\Foundation\Routing\Attributes\Name;
-use OtherSoftware\Foundation\Routing\Attributes\Nested;
-use OtherSoftware\Foundation\Routing\Attributes\Route;
-use OtherSoftware\Foundation\Routing\Attributes\TranslatedRoute;
-use OtherSoftware\Foundation\Routing\Router;
+use OtherSoftware\Routing\Attributes\Method;
+use OtherSoftware\Routing\Attributes\Middleware;
+use OtherSoftware\Routing\Attributes\Name;
+use OtherSoftware\Routing\Attributes\Nested;
+use OtherSoftware\Routing\Attributes\Route;
+use OtherSoftware\Routing\Attributes\TranslatedRoute;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
 
 
-final class RouteRegistrar
+final class Registrar
 {
     protected string $path;
 
@@ -28,7 +27,7 @@ final class RouteRegistrar
     /**
      * @throws ReflectionException
      */
-    public static function register(Router $router, string $path): RouteRegistrar
+    public static function register(Router $router, string $path): Registrar
     {
         return new self($router, $path);
     }
@@ -135,7 +134,7 @@ final class RouteRegistrar
             $uri = trim($prefix, '/') . $uri;
         }
 
-        /** @var \OtherSoftware\Foundation\Routing\Routes\Route $route */
+        /** @var \OtherSoftware\Routing\Route $route */
         $route = $router->match($methods, $uri, $action);
 
         if ($name = $this->getNameAttribute($reflection)) {
@@ -187,7 +186,7 @@ final class RouteRegistrar
             }
 
             // When PATCH method is defined make sure it also allows PUT methods
-            // and vice-versa as in PHP it doesn't really matter.
+            // and vice versa as in PHP it doesn't really matter.
             if (in_array('PATCH', $methods) && ! in_array('PUT', $methods)) {
                 $methods[] = 'PUT';
             }
@@ -241,7 +240,7 @@ final class RouteRegistrar
     /**
      * @param ReflectionMethod $reflection
      *
-     * @return \OtherSoftware\Foundation\Routing\Routes\Route[]
+     * @return \OtherSoftware\Routing\Route[]
      */
     private function getRouteAttributes(ReflectionMethod $reflection): array
     {

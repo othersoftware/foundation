@@ -1,6 +1,6 @@
 <?php
 
-namespace OtherSoftware\Foundation\Routing\Attributes;
+namespace OtherSoftware\Routing\Attributes;
 
 
 use Attribute;

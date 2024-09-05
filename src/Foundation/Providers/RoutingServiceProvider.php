@@ -4,7 +4,7 @@ namespace OtherSoftware\Foundation\Providers;
 
 
 use Illuminate\Routing\RoutingServiceProvider as BaseRoutingServiceProvider;
-use OtherSoftware\Foundation\Routing\Router;
+use OtherSoftware\Routing\Router;
 
 
 class RoutingServiceProvider extends BaseRoutingServiceProvider

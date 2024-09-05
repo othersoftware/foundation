@@ -1,19 +1,19 @@
 <?php
 
-namespace OtherSoftware\Foundation\Http\Middleware;
+namespace OtherSoftware\Bridge\Middleware;
 
 
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
-use OtherSoftware\Foundation\Facades\Frontend;
+use OtherSoftware\Support\Facades\Vue;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
 class Context
 {
     /**
-     * @var \OtherSoftware\Foundation\Routing\Router
+     * @var \OtherSoftware\Routing\Router
      */
     private Router $router;
 
@@ -38,7 +38,7 @@ class Context
 
         if ($request->header('X-Stack-Router')) {
             if ($response instanceof RedirectResponse) {
-                return Frontend::setRedirect($response->getTargetUrl());
+                return Vue::setRedirect($response->getTargetUrl());
             }
         }
 

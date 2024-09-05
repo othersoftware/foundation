@@ -1,38 +1,38 @@
 <?php
 
-namespace OtherSoftware\Foundation\Frontend;
+namespace OtherSoftware\Bridge;
 
 
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
-use Illuminate\View\View;
-use OtherSoftware\Foundation\Routing\Stack\StackedView;
-use OtherSoftware\Foundation\Routing\Stack\StackedViewMap;
-use OtherSoftware\Foundation\Routing\Support\RouterRedirect;
+use Illuminate\View\View as IlluminateView;
+use OtherSoftware\Bridge\Protocol\Redirect;
+use OtherSoftware\Bridge\Stack\StackMeta;
+use OtherSoftware\Bridge\Stack\View;
 use Symfony\Component\HttpFoundation\Response;
 
 
-class Factory implements Responsable
+final class ResponseFactory implements Responsable
 {
     private array $errors = [];
 
 
-    private StackedViewMap $meta;
+    private StackMeta $meta;
 
 
     private mixed $raw;
 
 
-    private RouterRedirect $redirect;
+    private Redirect $redirect;
 
 
-    private StackedView $stack;
+    private View $stack;
 
 
     private string $view;
 
 
-    public function setErrors(array $errors): Factory
+    public function setErrors(array $errors): ResponseFactory
     {
         $this->errors = $errors;
 
@@ -40,7 +40,7 @@ class Factory implements Responsable
     }
 
 
-    public function setRaw(mixed $raw): Factory
+    public function setRaw(mixed $raw): ResponseFactory
     {
         $this->raw = $raw;
 
@@ -50,13 +50,13 @@ class Factory implements Responsable
 
     public function setRedirect(string $target, bool $reload = false): static
     {
-        $this->redirect = new RouterRedirect($target, $reload);
+        $this->redirect = new Redirect($target, $reload);
 
         return $this;
     }
 
 
-    public function setStack(StackedView $stack): Factory
+    public function setStack(View $stack): ResponseFactory
     {
         $this->stack = $stack;
 
@@ -64,7 +64,7 @@ class Factory implements Responsable
     }
 
 
-    public function setStackMeta(StackedViewMap $meta): Factory
+    public function setStackMeta(StackMeta $meta): ResponseFactory
     {
         $this->meta = $meta;
 
@@ -72,7 +72,7 @@ class Factory implements Responsable
     }
 
 
-    public function setView(string $view): Factory
+    public function setView(string $view): ResponseFactory
     {
         $this->view = $view;
 
@@ -120,7 +120,7 @@ class Factory implements Responsable
 
     public function view(string $view, array $props = []): static
     {
-        return $this->setStack(new StackedView($view, $props));
+        return $this->setStack(new View($view, $props));
     }
 
 
@@ -145,7 +145,7 @@ class Factory implements Responsable
     }
 
 
-    private function renderInitialView(array $data): View
+    private function renderInitialView(array $data): IlluminateView
     {
         return view($this->view, ['initial' => $this->encodeJsonState($data)]);
     }

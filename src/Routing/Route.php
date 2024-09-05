@@ -1,6 +1,6 @@
 <?php
 
-namespace OtherSoftware\Foundation\Routing\Routes;
+namespace OtherSoftware\Routing;
 
 
 use Illuminate\Routing\Route as BaseRoute;

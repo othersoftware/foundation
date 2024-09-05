@@ -8,10 +8,10 @@ a `create` action nested under `index` action using `Nested` attribute.
 <?php
 
 use Illuminate\Routing\Controller;
-use OtherSoftware\Foundation\Routing\Attributes\Method;
-use OtherSoftware\Foundation\Routing\Attributes\Name;
-use OtherSoftware\Foundation\Routing\Attributes\Nested;
-use OtherSoftware\Foundation\Routing\Attributes\Route;
+use OtherSoftware\Routing\Attributes\Method;
+use OtherSoftware\Routing\Attributes\Name;
+use OtherSoftware\Routing\Attributes\Nested;
+use OtherSoftware\Routing\Attributes\Route;
 
 class ProductController extends Controller {
     
