@@ -4,7 +4,7 @@ return [
 
     'default' => env('APP_FALLBACK_LOCALE', 'en'),
 
-    'locales' => env('APP_AVAILABLE_LOCALES', ['en']),
+    'locales' => explode(',', env('APP_AVAILABLE_LOCALES', 'en')),
 
     'routing' => [
         'en' => [

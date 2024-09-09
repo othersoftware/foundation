@@ -7,6 +7,7 @@ export function compileViewsModule(views: ComponentsMap) {
   let lines: string[] = [];
 
   views.forEach((resolved) => lines.push(`import ${resolved.name} from '${resolved.path}';`));
+  lines.push(``);
   lines.push(`const ViewsRepository = {`);
   views.forEach((resolved) => lines.push(`  '${resolved.laravel}': ${resolved.name},`));
   lines.push(`};`);
@@ -55,8 +56,8 @@ export function writePhpstormMeta(config: ResolvedConfig, target: string, views:
   lines.push(`namespace PHPSTORM_META {`);
   lines.push(`  registerArgumentsSet('vueApplicationViews', ${compiled.join(', ')});`);
   lines.push(``);
-  lines.push(`  expectedArguments(\\OtherSoftware\\Foundation\\Frontend\\Factory::view(), 0, argumentsSet('vueApplicationViews'));`);
-  lines.push(`  expectedArguments(\\OtherSoftware\\Foundation\\Facades\\Frontend::view(), 0, argumentsSet('vueApplicationViews'));`);
+  lines.push(`  expectedArguments(\\OtherSoftware\\Bridge\\ResponseFactory::view(), 0, argumentsSet('vueApplicationViews'));`);
+  lines.push(`  expectedArguments(\\OtherSoftware\\Support\\Facades\\Vue::view(), 0, argumentsSet('vueApplicationViews'));`);
   lines.push(`}`);
   lines.push(``);
 

@@ -20,6 +20,6 @@ class TranslationServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        $this->mergeConfigFrom(__DIR__ . '/../../../config/translations.php', 'translation');
+        $this->mergeConfigFrom(__DIR__ . '/../../../config/translations.php', 'translations');
     }
 }

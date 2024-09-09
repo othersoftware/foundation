@@ -1,8 +1,8 @@
-import { defineComponent, type PropType, provide, h, ref, nextTick, toValue, toRaw, onMounted, onBeforeUnmount } from 'vue';
+import { defineComponent, type PropType, provide, h, ref, nextTick, toValue, toRaw, onMounted, onBeforeUnmount, computed } from 'vue';
 import { type ViewResolver } from '../../Types/ViewResolver';
 import { type State } from '../../Types/State';
 import type { Response } from '../../Http/Client/Response';
-import { StackedViewResolverInjectionKey, StackedViewInjectionKey } from '../../Services/StackedView';
+import { StackedViewResolverInjectionKey, StackedViewInjectionKey, StackedViewDepthInjectionKey } from '../../Services/StackedView';
 import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack } from '../../Services/StateManager';
 import { RouterViewComponent } from './RouterViewComponent';
 
@@ -48,6 +48,7 @@ export const RouterComponent = defineComponent({
     provide(StateStackSignatureInjectionKey, signature);
     provide(StateManagerInjectionKey, update);
     provide(StackedViewResolverInjectionKey, props.resolver);
+    provide(StackedViewDepthInjectionKey, computed(() => 0));
     provide(StackedViewInjectionKey, stack);
 
     function handlePopStateEvent(event: PopStateEvent) {

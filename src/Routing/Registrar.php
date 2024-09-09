@@ -107,6 +107,10 @@ final class Registrar
                     });
                 }
 
+                if (is_null($attribute)) {
+                    continue;
+                }
+
                 $this->compileSingleRoute($method, $attribute, $router, $locale);
             }
         }
@@ -117,6 +121,10 @@ final class Registrar
             $attribute = $attributes->firstWhere(function (Route $attr) use ($default) {
                 return is_null($attr->locale) || $attr->locale === $default;
             });
+        }
+
+        if (is_null($attribute)) {
+            return;
         }
 
         $this->compileSingleRoute($method, $attribute, $router, $default);

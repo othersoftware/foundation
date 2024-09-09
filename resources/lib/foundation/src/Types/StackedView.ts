@@ -3,10 +3,13 @@ interface StackedViewKept {
   child?: StackedView | undefined,
 }
 
-interface StackedViewFull {
+export interface StackedViewResolved {
   component: string,
   props: any,
-  child?: StackedView | undefined,
+  parent?: StackedViewResolved | undefined,
+  child?: StackedViewResolved | undefined,
+  location?: string | undefined,
+  query: Record<string, any>,
 }
 
-export type StackedView = StackedViewFull | StackedViewKept;
+export type StackedView = StackedViewResolved | StackedViewKept;

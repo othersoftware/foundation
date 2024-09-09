@@ -45,7 +45,9 @@ export function useHttpClient() {
         });
       }
 
-      if (APP_DEBUG) {
+      console.error(error);
+
+      if (APP_DEBUG && error.content) {
         ErrorModal.show(error.content);
       }
 

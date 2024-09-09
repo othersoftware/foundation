@@ -11,7 +11,7 @@ export function compileComponentsModule(components: ComponentsMap) {
   components.forEach((resolved) => lines.push(`  ${resolved.global},`));
   lines.push(`};`);
   lines.push(``);
-  lines.push(`export function createOtherSoftwareAutoLoader() {`);
+  lines.push(`export function createOtherSoftwareAutoloader() {`);
   lines.push(`  return {`);
   lines.push(`    install(app) {`);
   components.forEach((resolved) => lines.push(`      app.component('${resolved.global}', ${resolved.global});`));
@@ -33,7 +33,7 @@ export function writeComponentsDeclarations(config: ResolvedConfig, target: stri
   lines.push(``);
   lines.push(`declare module '@app/components' {`);
   lines.push(`  import { Plugin } from 'vue';`);
-  lines.push(`  export function createAutoLoader(): Plugin;`);
+  lines.push(`  export function createOtherSoftwareAutoloader(): Plugin;`);
   lines.push(``);
   components.forEach((resolved) => lines.push(`  export { default as ${resolved.global} } from '${normalizePath(path.relative(directory, resolved.path))}';`));
   lines.push(`}`);
@@ -52,7 +52,7 @@ export function writeVueDeclarations(config: ResolvedConfig, target: string, com
   lines.push(``);
   lines.push(`declare module '@vue/runtime-core' {`);
   lines.push(`  export interface GlobalComponents {`);
-  components.forEach((resolved) => lines.push(`    ${resolved.name}: typeof import('${normalizePath(path.relative(directory, resolved.path))}')['default'],`));
+  components.forEach((resolved) => lines.push(`    ${resolved.global}: typeof import('${normalizePath(path.relative(directory, resolved.path))}')['default'],`));
   lines.push(`  }`);
   lines.push(`}`);
   lines.push(``);

@@ -31,9 +31,9 @@ function scanComponents(source: string, components: ComponentsMap, vendors: Comp
     path = normalizePath(path);
 
     if (vendors) {
-      vendors.set(global, { global, name, laravel, path });
+      vendors.set(name, { global, name, laravel, path });
     }
 
-    components.set(global, { global, name, laravel, path });
+    components.set(name, { global, name, laravel, path });
   });
 }

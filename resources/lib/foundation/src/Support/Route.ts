@@ -20,7 +20,7 @@ function localizeName(name: string) {
     return name.replace(`${APP_FALLBACK_LOCALE}.`, '');
   }
 
-  if (APP_LOCALES.findIndex(lang => name.startsWith(lang)) >= 0) {
+  if (APP_AVAILABLE_LOCALES.findIndex(lang => name.startsWith(lang)) >= 0) {
     return name;
   }
 
@@ -37,7 +37,7 @@ function localizeName(name: string) {
 
 
 function build(name: string, params: Params, hash?: string) {
-  const route = ROUTES[name];
+  const route = APP_ROUTES[name];
 
   if (!route) {
     throw new Error(`Undefined route: ${name}`);

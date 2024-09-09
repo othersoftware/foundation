@@ -1,4 +1,5 @@
 import { ComponentOptionsMixin } from 'vue';
+import { ComputedRef } from 'vue';
 import { ConcreteComponent } from 'vue';
 import { DefineComponent } from 'vue';
 import { ExtractPropTypes } from 'vue';
@@ -141,6 +142,11 @@ declare interface HttpOptions {
     preserveScroll?: boolean;
     replace?: boolean;
 }
+
+export declare type Locale = {
+    name: string;
+    code: string;
+};
 
 export declare type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | string;
 
@@ -305,23 +311,34 @@ export declare function setModelWithContext(name: string | undefined, ctx: FormC
 
 export declare type Signature = string | undefined;
 
-export declare type StackedView = StackedViewFull | StackedViewKept;
+export declare type StackedView = StackedViewResolved | StackedViewKept;
 
 export declare type StackedViewComponent = ConcreteComponent & {
     layout?: undefined | string | ConcreteComponent;
 };
 
-declare interface StackedViewFull {
-    component: string;
-    props: any;
-    child?: StackedView | undefined;
-}
+export declare const StackedViewDepthInjectionKey: InjectionKey<Ref<number>>;
 
-export declare const StackedViewInjectionKey: InjectionKey<Ref<StackedView | undefined>>;
+export declare const StackedViewInjectionKey: InjectionKey<Ref<StackedViewResolved | undefined>>;
 
 declare interface StackedViewKept {
     keep: boolean;
     child?: StackedView | undefined;
+}
+
+export declare const StackedViewLocationInjectionKey: InjectionKey<Ref<string | undefined>>;
+
+export declare const StackedViewParentInjectionKey: InjectionKey<Ref<StackedViewResolved | undefined>>;
+
+export declare const StackedViewQueryInjectionKey: InjectionKey<Ref<Record<string, any> | undefined>>;
+
+export declare interface StackedViewResolved {
+    component: string;
+    props: any;
+    parent?: StackedViewResolved | undefined;
+    child?: StackedViewResolved | undefined;
+    location?: string | undefined;
+    query: Record<string, any>;
 }
 
 export declare const StackedViewResolverInjectionKey: InjectionKey<ViewResolver>;
@@ -329,7 +346,7 @@ export declare const StackedViewResolverInjectionKey: InjectionKey<ViewResolver>
 export declare interface State {
     location: string;
     signature: string;
-    stack: StackedView;
+    stack: StackedViewResolved;
 }
 
 export declare const StateLocationInjectionKey: InjectionKey<Ref<string>>;
@@ -340,14 +357,11 @@ export declare const StateManagerInjectionKey: InjectionKey<StateManager>;
 
 export declare const StateStackSignatureInjectionKey: InjectionKey<Ref<string>>;
 
-export declare function updateStack(current: StackedView, fresh: StackedView): {
-    keep: boolean;
-    child?: StackedView | undefined;
-} | {
-    component: string;
-    props: any;
-    child?: StackedView | undefined;
-};
+export declare function trans(key: string, replace?: Record<string, string | number | boolean>): string;
+
+export declare function transChoice(key: string, number: number, replace?: Record<string, string | number | boolean>): string;
+
+export declare function updateStack(current: StackedViewResolved, fresh: StackedView): StackedViewResolved;
 
 export declare function url(uri: string, params?: Record<string, any>, hash?: string, base?: string | null): string;
 
@@ -378,12 +392,51 @@ export declare function useStateManager(): {
     update: StateManager;
 };
 
+export declare function useViewDepth(): Ref<number>;
+
+export declare function useViewLocation(): Ref<string | undefined>;
+
+export declare function useViewParent(): Ref<StackedViewResolved | undefined>;
+
+export declare function useViewParentLocation(): ComputedRef<string | undefined>;
+
+export declare function useViewQuery(): Ref<Record<string, any> | undefined>;
+
 export declare function useViewResolver(): ViewResolver;
 
-export declare function useViewStack(): Ref<StackedView | undefined>;
+export declare function useViewStack(): Ref<StackedViewResolved | undefined>;
 
 export declare type ViewResolver = (name: string) => StackedViewComponent;
 
 export declare function wrap<T>(item: T): T[] & any[];
 
 export { }
+
+declare global {
+  declare const APP_NAME: string;
+  declare const APP_ENV: string;
+  declare const APP_DEBUG: boolean;
+  declare const APP_TIMEZONE: string;
+  declare const APP_URL: string;
+  declare const APP_LOCALE: string;
+  declare const APP_AVAILABLE_LOCALES: string[];
+  declare const APP_FALLBACK_LOCALE: string;
+  declare const APP_COUNTRY: string;
+  declare const APP_CURRENCY: string;
+  declare const APP_ROUTES: Record<string, any>;
+  declare const APP_TRANSLATIONS: Record<string, any>;
+}
+
+declare module '@vue/runtime-core' {
+  export interface GlobalComponents {
+    RouterView: typeof RouterViewComponent,
+    RouterLink: typeof RouterLinkComponent,
+    FormController: typeof FormControllerComponent,
+  }
+
+  export interface ComponentCustomProperties {
+    $t: typeof trans,
+    $tc: typeof transChoice,
+    $route: typeof route,
+  }
+}

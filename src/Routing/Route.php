@@ -3,11 +3,12 @@
 namespace OtherSoftware\Routing;
 
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Routing\Route as BaseRoute;
 use Illuminate\Support\Facades\URL;
 
 
-final class Route extends BaseRoute
+final class Route extends BaseRoute implements Arrayable
 {
     private string $hash;
 
@@ -62,5 +63,16 @@ final class Route extends BaseRoute
         $this->action['parent'] = $parent;
 
         return $this;
+    }
+
+
+    public function toArray(): array
+    {
+        return [
+            'uri' => $this->uri(),
+            'domain' => $this->domain(),
+            'params' => $this->parameterNames(),
+            'binding' => (object) $this->bindingFields(),
+        ];
     }
 }

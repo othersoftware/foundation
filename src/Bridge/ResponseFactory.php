@@ -118,9 +118,11 @@ final class ResponseFactory implements Responsable
     }
 
 
-    public function view(string $view, array $props = []): static
+    public function view(string $view, array $props = []): View
     {
-        return $this->setStack(new View($view, $props));
+        $this->setStack($instance = new View($view, $props));
+
+        return $instance;
     }
 
 
@@ -147,6 +149,8 @@ final class ResponseFactory implements Responsable
 
     private function renderInitialView(array $data): IlluminateView
     {
+        assert(isset($this->view), 'Cannot find initial Blade view to render. Make sure you have wrapped your routes within Context middleware.');
+
         return view($this->view, ['initial' => $this->encodeJsonState($data)]);
     }
 }

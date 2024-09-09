@@ -1,6 +1,6 @@
 import { type InjectionKey, inject, type Ref } from 'vue';
 import type { StateManager } from '../Types/State';
-import type { StackedView } from '../Types/StackedView';
+import type { StackedView, StackedViewResolved } from '../Types/StackedView';
 
 export const StateLocationInjectionKey = Symbol('StateLocation') as InjectionKey<Ref<string>>;
 export const StateStackSignatureInjectionKey = Symbol('StateStackSignature') as InjectionKey<Ref<string>>;
@@ -36,13 +36,13 @@ export function useStateManager() {
   return { update: manager };
 }
 
-export function updateStack(current: StackedView, fresh: StackedView) {
+export function updateStack(current: StackedViewResolved, fresh: StackedView): StackedViewResolved {
   if ('keep' in fresh) {
     if (fresh.child) {
       if (current.child) {
         current.child = updateStack(current.child, fresh.child);
       } else {
-        current.child = fresh.child;
+        current.child = fresh.child as StackedViewResolved;
       }
 
       return { ...current };

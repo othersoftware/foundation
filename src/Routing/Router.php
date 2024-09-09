@@ -3,14 +3,16 @@
 namespace OtherSoftware\Routing;
 
 
+use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Route as BaseRoute;
 use Illuminate\Routing\Router as BaseRouter;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
+use OtherSoftware\Bridge\Stack\Meta;
 use OtherSoftware\Bridge\Stack\StackMeta;
 use OtherSoftware\Bridge\Stack\View;
-use OtherSoftware\Bridge\Stack\Meta;
 use OtherSoftware\Routing\Exceptions\MissingParentRouteException;
 use OtherSoftware\Routing\Exceptions\OutsideRouterScopeException;
 use OtherSoftware\Support\Facades\Vue;
@@ -26,7 +28,13 @@ final class Router extends BaseRouter
     protected StackMeta $stack;
 
 
-    private string $initialView;
+    protected UrlGenerator $url;
+
+
+    public function exportForVue(): Collection
+    {
+        return collect($this->getRoutes()->getRoutesByName())->map(fn(Route $route) => $route->toArray());
+    }
 
 
     #[Override]
@@ -71,14 +79,6 @@ final class Router extends BaseRouter
     }
 
 
-    public function setInitialView(string $view): Router
-    {
-        $this->initialView = $view;
-
-        return $this;
-    }
-
-
     #[Override]
     protected function runRouteWithinStack(BaseRoute $route, Request $request): Response
     {
@@ -88,6 +88,7 @@ final class Router extends BaseRouter
         $middleware = $shouldSkipMiddleware ? [] : $this->gatherRouteMiddleware($route);
 
         $this->stack = $this->buildViewStack($route, $request);
+        $this->url = url();
 
         return (new Pipeline($this->container))->send($request)->through($middleware)->then(function ($request) use ($route) {
             return $this->prepareResponse($request, $this->wrapStack($this->runRouteUp($route, $request)));
@@ -188,9 +189,11 @@ final class Router extends BaseRouter
 
         unset($this->running);
 
-        // When route returns other kind of response, rather than ViewLayer,
+        // When route returns other kind of response, rather than View,
         // skip nested route resolving as it has no point.
         if ($response instanceof View) {
+            $response->setLocation($this->url->toRoute($route, $route->parameters, true));
+
             if (! is_null($nested)) {
                 $response->nested($nested);
             }
@@ -211,7 +214,6 @@ final class Router extends BaseRouter
 
             $instance->setStackMeta($this->stack);
             $instance->setStack($response);
-            $instance->setView($this->initialView);
 
             return $instance;
         }

@@ -16,7 +16,13 @@ final class View implements Arrayable, Jsonable
     protected bool $keep = false;
 
 
+    protected string $location;
+
+
     protected array $props;
+
+
+    protected array $query;
 
 
     private ?View $child = null;
@@ -36,12 +42,21 @@ final class View implements Arrayable, Jsonable
 
         $this->component = $component;
         $this->props = $props;
+        $this->query = request()->query();
     }
 
 
     public function nested(View $nested): View
     {
         $this->child = $nested;
+
+        return $this;
+    }
+
+
+    public function setLocation(string $location): View
+    {
+        $this->location = $location;
 
         return $this;
     }
@@ -56,6 +71,12 @@ final class View implements Arrayable, Jsonable
         } else {
             $data['component'] = $this->component;
             $data['props'] = count($this->props) > 0 ? $this->props : null;
+
+            if (isset($this->location)) {
+                $data['location'] = $this->location;
+            }
+
+            $data['query'] = $this->query;
         }
 
         if ($this->child) {
