@@ -11,6 +11,13 @@ use Override;
 abstract class Model extends EloquentModel
 {
     #[Override]
+    public function fill(array $attributes)
+    {
+        return parent::fill($this->convertAttributeKeysToSnakeKeys($attributes));
+    }
+
+
+    #[Override]
     public function getAttribute($key)
     {
         if (! $key) {
@@ -28,6 +35,20 @@ abstract class Model extends EloquentModel
 
 
     #[Override]
+    public function isFillable($key): bool
+    {
+        return parent::isFillable(Str::snake($key));
+    }
+
+
+    #[Override]
+    public function isGuarded($key): bool
+    {
+        return parent::isGuarded(Str::snake($key));
+    }
+
+
+    #[Override]
     public function setAttribute($key, $value)
     {
         if (str_contains($key, '->')) {
@@ -37,5 +58,17 @@ abstract class Model extends EloquentModel
         }
 
         return parent::setAttribute($key, $value);
+    }
+
+
+    private function convertAttributeKeysToSnakeKeys(array $attributes): array
+    {
+        return array_reduce(array_keys($attributes), function ($carry, $item) use ($attributes) {
+            $key = Str::snake($item);
+
+            $carry[$key] = $attributes[$item];
+
+            return $carry;
+        }, []);
     }
 }
