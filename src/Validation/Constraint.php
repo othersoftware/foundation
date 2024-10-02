@@ -22,6 +22,10 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rules\RequiredIf;
 use Illuminate\Validation\Rules\Unique;
 use Illuminate\Validation\Validator;
+use OtherSoftware\Validation\Rules\Country;
+use OtherSoftware\Validation\Rules\MaxUploadSize;
+use OtherSoftware\Validation\Rules\RequiredWithExplicitAddress;
+use OtherSoftware\Validation\Rules\RequiredWithImplicitAddress;
 use UnitEnum;
 
 
@@ -144,6 +148,18 @@ final readonly class Constraint
     public static function confirmed(): string
     {
         return 'confirmed';
+    }
+
+
+    /**
+     * The field under validation must be a valid country code following
+     * the ISO 3166-1 Alpha 2 specification.
+     *
+     * @return Country
+     */
+    public static function country(): Country
+    {
+        return new Country();
     }
 
 
@@ -295,6 +311,40 @@ final readonly class Constraint
 
 
     /**
+     * The field under validation will be excluded from the request data
+     * returned by the `validate` and `validated` methods if the *anotherfield*
+     * field is present.
+     *
+     * @see https://laravel.com/docs/11.x/validation#rule-exclude-with
+     *
+     * @param string $anotherfield
+     *
+     * @return string
+     */
+    public static function excludeWith(string $anotherfield): string
+    {
+        return sprintf('exclude_with:%s', $anotherfield);
+    }
+
+
+    /**
+     * The field under validation will be excluded from the request data
+     * returned by the `validate` and `validated` methods if the *anotherfield*
+     * field is not present.
+     *
+     * @see https://laravel.com/docs/11.x/validation#rule-exclude-without
+     *
+     * @param string $anotherfield
+     *
+     * @return string
+     */
+    public static function excludeWithout(string $anotherfield): string
+    {
+        return sprintf('exclude_without:%s', $anotherfield);
+    }
+
+
+    /**
      * The field under validation must exist in a given database table.
      *
      * @see https://laravel.com/docs/11.x/validation#rule-exists
@@ -321,6 +371,12 @@ final readonly class Constraint
         $callback($rule);
 
         return $rule;
+    }
+
+
+    public static function file(): string
+    {
+        return 'file';
     }
 
 
@@ -445,6 +501,12 @@ final readonly class Constraint
     }
 
 
+    public static function maxUploadSize(): string
+    {
+        return (string) (new MaxUploadSize());
+    }
+
+
     public static function mimes(string|array $allowed): string
     {
         $allowed = is_array($allowed) ? implode(',', $allowed) : $allowed;
@@ -521,7 +583,7 @@ final readonly class Constraint
     }
 
 
-    public static function phone(?string $country = null): string
+    public static function phone(string $country = null): string
     {
         return sprintf('phone:%s', $country ?: config('app.country'));
     }
@@ -596,6 +658,54 @@ final readonly class Constraint
     }
 
 
+    /**
+     * The field under validation must be present and not empty only if
+     * the *countryfield* is one of countries with explicit addresses.
+     *
+     * @param string $countryField
+     *
+     * @return RequiredWithExplicitAddress
+     */
+    public static function requiredWithExplicitAddress(string $countryField): RequiredWithExplicitAddress
+    {
+        return new RequiredWithExplicitAddress($countryField);
+    }
+
+
+    /**
+     * The field under validation must be present and not empty only if
+     * the *countryField* is one of countries with implicit addresses.
+     *
+     * @param string $countryField
+     *
+     * @return RequiredWithImplicitAddress
+     */
+    public static function requiredWithImplicitAddress(string $countryField): RequiredWithImplicitAddress
+    {
+        return new RequiredWithImplicitAddress($countryField);
+    }
+
+
+    /**
+     * The field under validation must be present and not empty only if
+     * any of the other specified fields are not present or empty.
+     *
+     * @param string|string[] ...$parameters
+     *
+     * @return string
+     */
+    public static function requiredWithout(array|string $parameters): string
+    {
+        return sprintf('required_without:%s', implode(',', is_array($parameters) ? $parameters : func_get_args()));
+    }
+
+
+    public static function size(mixed $value): string
+    {
+        return sprintf('size:%s', $value);
+    }
+
+
     public static function string(): string
     {
         return 'string';
@@ -622,6 +732,28 @@ final readonly class Constraint
 
 
     /**
+     * The field under validation must be a valid URL.
+     *
+     * If you would like to specify the URL protocols that should be considered
+     * valid, you may pass the protocols as validation rule parameters.
+     *
+     * @see https://laravel.com/docs/11.x/validation#rule-url
+     *
+     * @param array $protocols
+     *
+     * @return string
+     */
+    public static function url(array $protocols = []): string
+    {
+        if (count($protocols) > 0) {
+            return sprintf('url:%s', join(',', $protocols));
+        }
+
+        return 'url';
+    }
+
+
+    /**
      * Apply the given rules if the given condition is truthy.
      *
      * @param Closure(Fluent $data): bool|bool $condition
@@ -630,7 +762,7 @@ final readonly class Constraint
      *
      * @return ConditionalRules
      */
-    public static function when(Closure|bool $condition, mixed $rules, mixed $defaultRules = []): ConditionalRules
+    public static function when($condition, $rules, $defaultRules = []): ConditionalRules
     {
         return Rule::when($condition, $rules, $defaultRules);
     }

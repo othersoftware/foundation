@@ -21,6 +21,8 @@
     },
     "require": {
         "php": "^8.3.0",
+        "ext-iconv": "*",
+        "ext-intl": "*",
         "composer/class-map-generator": "^1.0",
         "laravel/framework": "^11.0",
         "propaganistas/laravel-phone": "^5.0"
@@ -31,7 +33,11 @@
     "autoload": {
         "psr-4": {
             "OtherSoftware\\": "src/"
-        }
+        },
+        "files": [
+            "helpers/countries.php",
+            "helpers/filesystem.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
