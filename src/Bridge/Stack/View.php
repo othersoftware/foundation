@@ -6,9 +6,10 @@ namespace OtherSoftware\Bridge\Stack;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use InvalidArgumentException;
+use JsonSerializable;
 
 
-final class View implements Arrayable, Jsonable
+final class View implements Arrayable, Jsonable, JsonSerializable
 {
     protected string $component;
 
@@ -43,6 +44,12 @@ final class View implements Arrayable, Jsonable
         $this->component = $component;
         $this->props = $props;
         $this->query = request()->query();
+    }
+
+
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 
 
