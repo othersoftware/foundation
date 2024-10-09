@@ -31,7 +31,7 @@ export async function createFoundationController({ initial, resolver, setup }: O
 
 
 function readInitialState(): State {
-  let element = document.getElementById('os-foundation-state');
+  let element = document.getElementById('ias');
 
   if (!element || !element.textContent) {
     throw new Error('Cannot find initial script element with MVC state.');
