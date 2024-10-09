@@ -7,9 +7,21 @@ export type ResolvedComponent = { global: string, name: string, laravel: string,
 export type ComponentsMap = Map<string, ResolvedComponent>
 export type ViewsCollection = { components: ComponentsMap, vendors: ComponentsMap }
 
-export function collect(config: ResolvedConfig, sources: Record<string, string | null | undefined>): ViewsCollection {
+type Local = string;
+type Vendor = string | null | undefined;
+type Sources = Record<Local, Vendor> | Local[] | Local;
+
+export function collect(config: ResolvedConfig, sources: Sources): ViewsCollection {
   const vendors: ComponentsMap = new Map();
   const components: ComponentsMap = new Map();
+
+  if (Array.isArray(sources)) {
+    sources = Object.fromEntries(sources.map((s) => [s, undefined]));
+  }
+
+  if (typeof sources === 'string') {
+    sources = { [sources]: undefined };
+  }
 
   Object.entries(sources).forEach(([local, vendor]) => {
     if (vendor) {

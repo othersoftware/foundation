@@ -2,9 +2,10 @@ import { ResolvedConfig } from 'vite';
 import { writeComponentsDeclarations, writeVueDeclarations, compileComponentsModule } from './Compiler';
 import { collect } from '../../Services/Collector';
 import { Options } from '../../Types/Options';
+import { resolveTargetDirectory } from '../../Utils/Target.ts';
 
 export function provideVirtualComponentsModule(config: ResolvedConfig, options: Options, compile: boolean = true) {
-  const target = Object.entries(options.target).at(0);
+  const target = resolveTargetDirectory(options.target);
 
   if (!target) {
     throw new Error('Unknown target for output files!');
