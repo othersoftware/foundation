@@ -35,7 +35,7 @@ export function createFormContext(initial: Record<string, any> = {}) {
 
 export type FormContextInterface = ReturnType<typeof createFormContext>;
 
-export function setModelWithContext(name: string | undefined, ctx: FormContextInterface | undefined, value: any) {
+export function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any) {
   if (name && ctx) {
     ctx.touch(name);
     ctx.fill(name, value);
@@ -44,7 +44,7 @@ export function setModelWithContext(name: string | undefined, ctx: FormContextIn
   return value;
 }
 
-export function getModelFromContext(name: string | undefined, ctx: FormContextInterface | undefined, value: any) {
+export function getModelFromContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any) {
   if (name && ctx) {
     return ctx.value(name, value);
   }

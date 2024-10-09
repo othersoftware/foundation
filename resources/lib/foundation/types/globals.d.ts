@@ -19,6 +19,10 @@ declare global {
   declare const APP_TRANSLATIONS: Record<string, any>;
 }
 
+declare global {
+  type Nullable<T> = T | null | undefined;
+}
+
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     RouterView: typeof RouterViewComponent,
