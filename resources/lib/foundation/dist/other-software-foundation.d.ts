@@ -117,7 +117,7 @@ ctx: FormContextInterface;
 
 declare type FormHandler = (data: any, ctx: FormContextInterface) => Promise<any>;
 
-export declare function getModelFromContext(name: string | undefined, ctx: FormContextInterface | undefined, value: any): any;
+export declare function getModelFromContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any): any;
 
 export declare function hash(length?: number): string;
 
@@ -228,7 +228,7 @@ required: false;
 default: string;
 };
 href: {
-type: PropType<string>;
+type: PropType<string | null | undefined>;
 required: false;
 };
 data: {
@@ -247,7 +247,14 @@ target: {
 type: PropType<string>;
 required: false;
 };
-explicit: BooleanConstructor;
+disabled: {
+type: BooleanConstructor;
+required: false;
+};
+explicit: {
+type: BooleanConstructor;
+required: false;
+};
 }, () => VNode<RendererNode, RendererElement, {
 [key: string]: any;
 }>, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
@@ -257,7 +264,7 @@ required: false;
 default: string;
 };
 href: {
-type: PropType<string>;
+type: PropType<string | null | undefined>;
 required: false;
 };
 data: {
@@ -276,11 +283,19 @@ target: {
 type: PropType<string>;
 required: false;
 };
-explicit: BooleanConstructor;
+disabled: {
+type: BooleanConstructor;
+required: false;
+};
+explicit: {
+type: BooleanConstructor;
+required: false;
+};
 }>>, {
 preserveScroll: boolean;
 replace: boolean;
 method: string;
+disabled: boolean;
 explicit: boolean;
 }, {}>;
 
@@ -307,7 +322,7 @@ default: boolean;
 allowLayouts: boolean;
 }, {}>;
 
-export declare function setModelWithContext(name: string | undefined, ctx: FormContextInterface | undefined, value: any): any;
+export declare function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any): any;
 
 export declare type Signature = string | undefined;
 
@@ -373,7 +388,7 @@ export declare function useFromContext(): {
     touch: (name: string) => void;
     value: (name: string, value: any) => any;
     fill: (name: string, value: any) => void;
-};
+} | null;
 
 export declare function useHttpClient(): {
     dispatch: (method: Method, url: string, { data, preserveScroll, replace }?: HttpOptions) => any;
@@ -425,6 +440,10 @@ declare global {
   declare const APP_CURRENCY: string;
   declare const APP_ROUTES: Record<string, any>;
   declare const APP_TRANSLATIONS: Record<string, any>;
+}
+
+declare global {
+  type Nullable<T> = T | null | undefined;
 }
 
 declare module '@vue/runtime-core' {
