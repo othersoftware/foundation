@@ -7,12 +7,13 @@ export const RouterLinkComponent = defineComponent({
   name: 'RouterLink',
   props: {
     method: { type: String as PropType<Method>, required: false, default: 'GET' },
-    href: { type: String as PropType<string>, required: false },
+    href: { type: String as PropType<string | null | undefined>, required: false },
     data: { type: [] as PropType<Body>, required: false },
     preserveScroll: { type: Boolean, required: false },
     replace: { type: Boolean, required: false },
     target: { type: String as PropType<string>, required: false },
-    explicit: Boolean,
+    disabled: { type: Boolean, required: false },
+    explicit: { type: Boolean, required: false },
   },
   setup(props, { attrs, slots }) {
     const location = useLocation();
@@ -29,7 +30,7 @@ export const RouterLinkComponent = defineComponent({
     });
 
     const as = computed(() => props.href ? 'a' : 'button');
-    const specific = computed(() => props.href ? { target: props.target } : {});
+    const specific = computed(() => props.href ? { target: props.target } : { disabled: props.disabled });
 
     function onClick(event: MouseEvent) {
       if (!props.href || !shouldInterceptEvent(event, props.href, props.target)) {
@@ -37,6 +38,10 @@ export const RouterLinkComponent = defineComponent({
       }
 
       event.preventDefault();
+
+      if (props.disabled) {
+        return;
+      }
 
       let { method, href, data, preserveScroll, replace } = props;
 
@@ -59,7 +64,7 @@ export const RouterLinkComponent = defineComponent({
         onClick,
         ...specific.value,
         ...attrs,
-        class: [{ active: active.value, pending: pending.value }],
+        class: [{ active: active.value, pending: pending.value, disabled: props.disabled }],
       },
       // @ts-ignore
       slots.default({ active, pending }),
