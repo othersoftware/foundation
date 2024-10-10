@@ -380,15 +380,7 @@ export declare function updateStack(current: StackedViewResolved, fresh: Stacked
 
 export declare function url(uri: string, params?: Record<string, any>, hash?: string, base?: string | null): string;
 
-export declare function useFromContext(): {
-    data: Ref<Record<string, any>>;
-    errors: Ref<Record<string, string[]>>;
-    touched: Ref<Record<string, boolean>>;
-    processing: Ref<boolean>;
-    touch: (name: string) => void;
-    value: (name: string, value: any) => any;
-    fill: (name: string, value: any) => void;
-} | null;
+export declare function useFromContext(): FormContextInterface | null;
 
 export declare function useHttpClient(): {
     dispatch: (method: Method, url: string, { data, preserveScroll, replace }?: HttpOptions) => any;
@@ -400,6 +392,8 @@ export declare function useHttpClient(): {
 };
 
 export declare function useLocation(): Ref<string>;
+
+export declare function usePersistentFormContext(): FormContextInterface;
 
 export declare function useStackSignature(): Ref<string>;
 
