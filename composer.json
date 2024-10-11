@@ -38,7 +38,8 @@
             "helpers/array.php",
             "helpers/countries.php",
             "helpers/filesystem.php",
-            "helpers/string.php"
+            "helpers/string.php",
+            "helpers/translation.php"
         ]
     },
     "autoload-dev": {
