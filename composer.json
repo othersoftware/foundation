@@ -37,7 +37,8 @@
         "files": [
             "helpers/array.php",
             "helpers/countries.php",
-            "helpers/filesystem.php"
+            "helpers/filesystem.php",
+            "helpers/string.php"
         ]
     },
     "autoload-dev": {
