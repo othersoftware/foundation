@@ -43,8 +43,8 @@ if (! function_exists('server_max_size')) {
     }
 }
 
-if (! function_exists('rrmdir')) {
-    function rrmdir($dir): bool
+if (! function_exists('rmdir_recursive')) {
+    function rmdir_recursive($dir): bool
     {
         if (! is_dir($dir)) {
             return false;
@@ -54,7 +54,7 @@ if (! function_exists('rrmdir')) {
 
         foreach ($files as $file) {
             if (is_dir($path = join_paths($dir, $file))) {
-                @rrmdir($dir);
+                @rmdir_recursive($dir);
             } else {
                 @unlink($path);
             }
