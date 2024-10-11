@@ -11,21 +11,21 @@ export const ErrorModal = {
     page.innerHTML = html;
     page.querySelectorAll('a').forEach((a) => a.setAttribute('target', '_top'));
 
-    this.modal = document.createElement('div');
+    this.modal = document.createElement('dialog');
     this.modal.style.position = 'fixed';
     this.modal.style.inset = '0';
     this.modal.style.width = '100vw';
     this.modal.style.height = '100vh';
     this.modal.style.padding = '2rem';
     this.modal.style.boxSizing = 'border-box';
-    this.modal.style.backgroundColor = 'rgba(0, 0, 0, .6)';
+    this.modal.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
     this.modal.style.backdropFilter = 'blur(0.125rem)';
     this.modal.style.zIndex = '200000';
     this.modal.addEventListener('click', () => this.hide());
 
     const iframe = document.createElement('iframe');
     iframe.style.backgroundColor = 'white';
-    iframe.style.borderRadius = '0.25rem';
+    iframe.style.borderRadius = '0.5rem';
     iframe.style.border = 'none';
     iframe.style.width = '100%';
     iframe.style.height = '100%';
@@ -43,6 +43,8 @@ export const ErrorModal = {
     iframe.contentWindow.document.close();
 
     this.listener = this.hideOnEscape.bind(this);
+
+    this.modal.showModal();
 
     document.addEventListener('keydown', this.listener);
   },
