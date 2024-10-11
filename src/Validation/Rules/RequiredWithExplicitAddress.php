@@ -34,7 +34,7 @@ class RequiredWithExplicitAddress implements ValidationRule, ValidatorAwareRule
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! in_array($this->getCountry(), countries_with_implicit_address())) {
+        if (! in_array($this->getCountry(), countries_implicitly_addressed())) {
             if (! $this->validator->validateRequired($attribute, $value)) {
                 $fail(trans('To pole jest wymagane dla wybranego kraju.'));
             }
