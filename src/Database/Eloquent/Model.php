@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpMissingReturnTypeInspection */
+
 namespace OtherSoftware\Database\Eloquent;
 
 
@@ -13,7 +15,7 @@ abstract class Model extends EloquentModel
     #[Override]
     public function fill(array $attributes)
     {
-        return parent::fill($this->convertAttributeKeysToSnakeKeys($attributes));
+        return parent::fill(array_camel_keys($attributes));
     }
 
 
@@ -61,14 +63,9 @@ abstract class Model extends EloquentModel
     }
 
 
-    private function convertAttributeKeysToSnakeKeys(array $attributes): array
+    #[Override]
+    public function toArray()
     {
-        return array_reduce(array_keys($attributes), function ($carry, $item) use ($attributes) {
-            $key = Str::snake($item);
-
-            $carry[$key] = $attributes[$item];
-
-            return $carry;
-        }, []);
+        return array_camel_keys(parent::toArray());
     }
 }
