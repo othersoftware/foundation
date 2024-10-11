@@ -34,12 +34,14 @@ export class Response {
     this.partial = !!this.xhr.getResponseHeader('x-partial');
     this.raw = !!this.xhr.getResponseHeader('x-raw');
 
-    let data = JSON.parse(this.xhr.response);
+    if (this.success || this.status === 422) {
+      let data = JSON.parse(this.xhr.response);
 
-    this.location = data.location;
-    this.signature = data.signature;
-    this.redirect = data.redirect;
-    this.stack = data.stack;
-    this.errors = data.errors;
+      this.location = data.location;
+      this.signature = data.signature;
+      this.redirect = data.redirect;
+      this.stack = data.stack;
+      this.errors = data.errors;
+    }
   }
 }
