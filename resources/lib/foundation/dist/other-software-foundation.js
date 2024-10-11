@@ -41,9 +41,10 @@ class Ee {
     h(this, "errors");
     if (this.xhr = t, this.xhr.getResponseHeader("x-stack-router"))
       throw new Error("Invalid response for MVC HTTP client.");
-    this.status = this.xhr.status, this.success = this.xhr.status >= 200 && this.xhr.status < 300, this.fail = !this.success, this.content = this.xhr.response, this.message = this.xhr.statusText, this.partial = !!this.xhr.getResponseHeader("x-partial"), this.raw = !!this.xhr.getResponseHeader("x-raw");
-    let r = JSON.parse(this.xhr.response);
-    this.location = r.location, this.signature = r.signature, this.redirect = r.redirect, this.stack = r.stack, this.errors = r.errors;
+    if (this.status = this.xhr.status, this.success = this.xhr.status >= 200 && this.xhr.status < 300, this.fail = !this.success, this.content = this.xhr.response, this.message = this.xhr.statusText, this.partial = !!this.xhr.getResponseHeader("x-partial"), this.raw = !!this.xhr.getResponseHeader("x-raw"), this.success) {
+      let r = JSON.parse(this.xhr.response);
+      this.location = r.location, this.signature = r.signature, this.redirect = r.redirect, this.stack = r.stack, this.errors = r.errors;
+    }
   }
 }
 class ie {
@@ -88,11 +89,11 @@ const Wt = {
   show(e) {
     typeof e == "object" && (e = `All requests must receive a valid MVC response, however a plain JSON response was received.<hr>${JSON.stringify(e)}`);
     const t = document.createElement("html");
-    t.innerHTML = e, t.querySelectorAll("a").forEach((n) => n.setAttribute("target", "_top")), this.modal = document.createElement("div"), this.modal.style.position = "fixed", this.modal.style.inset = "0", this.modal.style.width = "100vw", this.modal.style.height = "100vh", this.modal.style.padding = "2rem", this.modal.style.boxSizing = "border-box", this.modal.style.backgroundColor = "rgba(0, 0, 0, .6)", this.modal.style.backdropFilter = "blur(0.125rem)", this.modal.style.zIndex = "200000", this.modal.addEventListener("click", () => this.hide());
+    t.innerHTML = e, t.querySelectorAll("a").forEach((n) => n.setAttribute("target", "_top")), this.modal = document.createElement("dialog"), this.modal.style.position = "fixed", this.modal.style.inset = "0", this.modal.style.width = "100vw", this.modal.style.height = "100vh", this.modal.style.padding = "2rem", this.modal.style.boxSizing = "border-box", this.modal.style.backgroundColor = "rgba(0, 0, 0, 0.6)", this.modal.style.backdropFilter = "blur(0.125rem)", this.modal.style.zIndex = "200000", this.modal.addEventListener("click", () => this.hide());
     const r = document.createElement("iframe");
-    if (r.style.backgroundColor = "white", r.style.borderRadius = "0.25rem", r.style.border = "none", r.style.width = "100%", r.style.height = "100%", this.modal.appendChild(r), document.body.prepend(this.modal), document.body.style.overflow = "hidden", !r.contentWindow)
+    if (r.style.backgroundColor = "white", r.style.borderRadius = "0.5rem", r.style.border = "none", r.style.width = "100%", r.style.height = "100%", this.modal.appendChild(r), document.body.prepend(this.modal), document.body.style.overflow = "hidden", !r.contentWindow)
       throw new Error("iframe not yet ready.");
-    r.contentWindow.document.open(), r.contentWindow.document.write(t.outerHTML), r.contentWindow.document.close(), this.listener = this.hideOnEscape.bind(this), document.addEventListener("keydown", this.listener);
+    r.contentWindow.document.open(), r.contentWindow.document.write(t.outerHTML), r.contentWindow.document.close(), this.listener = this.hideOnEscape.bind(this), this.modal.showModal(), document.addEventListener("keydown", this.listener);
   },
   hide() {
     this.modal.outerHTML = "", this.modal = void 0, document.body.style.overflow = "visible", document.removeEventListener("keydown", this.listener);
