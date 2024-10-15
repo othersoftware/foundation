@@ -43,7 +43,7 @@ if (! function_exists('array_merge_deep')) {
                 if (is_integer($key)) {
                     $result[] = $value;
                 } elseif (isset($result[$key]) && is_array($result[$key]) && is_array($value)) {
-                    $result[$key] = array_merge_deep([$result[$key], $value]);
+                    $result[$key] = array_merge_deep($result[$key], $value);
                 } else {
                     $result[$key] = $value;
                 }
