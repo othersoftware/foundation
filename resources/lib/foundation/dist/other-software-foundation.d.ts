@@ -13,8 +13,19 @@ import { RendererNode } from 'vue';
 import { SlotsType } from 'vue';
 import { VNode } from 'vue';
 
+export declare function blank(value: any): boolean;
+
 declare type Body_2 = XMLHttpRequestBodyInit | Object | null | undefined;
 export { Body_2 as Body }
+
+export declare class CompleteResponse extends Response_2 {
+    readonly location: string;
+    readonly signature: string;
+    readonly redirect: RouterRedirect;
+    readonly stack: StackedView;
+    readonly errors: Record<string, string[]>;
+    constructor(xhr: XMLHttpRequest);
+}
 
 export declare function createFormContext(initial?: Record<string, any>): {
     data: Ref<Record<string, any>>;
@@ -31,7 +42,7 @@ export declare function createFoundationController({ initial, resolver, setup }:
 export declare function createOtherSoftwareFoundation(): Plugin_2;
 
 export declare const ErrorModal: {
-    modal: HTMLDivElement | undefined;
+    modal: HTMLDialogElement | undefined;
     listener: any;
     show(html: Record<string, unknown> | string): void;
     hide(): void;
@@ -57,6 +68,8 @@ declare type FactoryOptions = {
         state: State;
     };
 };
+
+export declare function filled(value: any): boolean;
 
 export declare const FormContextInjectionKey: InjectionKey<FormContextInterface>;
 
@@ -112,6 +125,7 @@ processing: boolean;
 errors: Record<string, string[]>;
 touched: Record<string, boolean>;
 ctx: FormContextInterface;
+submit: () => void;
 };
 }>>;
 
@@ -164,16 +178,16 @@ declare class Request_2 {
     protected xhr: XMLHttpRequest;
     protected body: Body_2;
     protected signature: Signature;
-    static send(method: Method, url: string, body?: Body_2, signature?: Signature): Promise<Response_2>;
+    static send(method: Method, url: string, body?: Body_2, signature?: Signature): Promise<CompleteResponse>;
     constructor(method: Method, url: string, body?: Body_2, signature?: Signature);
-    send(): Promise<Response_2>;
+    send(): Promise<CompleteResponse>;
     protected transform(body: any): string | Blob | ArrayBuffer | FormData | URLSearchParams | null;
     protected readCookie(name: string): string;
 }
 export { Request_2 as Request }
 
 declare class Response_2 {
-    private readonly xhr;
+    protected readonly xhr: XMLHttpRequest;
     readonly status: number;
     readonly success: boolean;
     readonly fail: boolean;
@@ -181,11 +195,6 @@ declare class Response_2 {
     readonly raw: boolean;
     readonly message: string;
     readonly content: string;
-    readonly location: string;
-    readonly signature: string;
-    readonly redirect: RouterRedirect | undefined;
-    readonly stack: StackedView | undefined;
-    readonly errors: Record<string, string[]>;
     constructor(xhr: XMLHttpRequest);
 }
 export { Response_2 as Response }
@@ -366,7 +375,7 @@ export declare interface State {
 
 export declare const StateLocationInjectionKey: InjectionKey<Ref<string>>;
 
-export declare type StateManager = (fresh: Response_2) => Promise<State>;
+export declare type StateManager = (fresh: CompleteResponse) => Promise<State>;
 
 export declare const StateManagerInjectionKey: InjectionKey<StateManager>;
 

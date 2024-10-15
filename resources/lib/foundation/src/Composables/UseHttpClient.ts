@@ -4,6 +4,7 @@ import type { State } from '../Types/State';
 import { ErrorModal } from '../Support/ErrorModal';
 import type { RouterRedirect } from '../Types/RouterRedirect';
 import type { Response } from '../Http/Client/Response';
+import { CompleteResponse } from '../Http/Client/Response';
 
 interface HttpOptions {
   data?: Body | undefined,
@@ -16,7 +17,7 @@ export function useHttpClient() {
   const signature = useStackSignature();
 
   async function dispatch(method: Method, url: string, { data = undefined, preserveScroll = false, replace = false }: HttpOptions = {}) {
-    return await Request.send(method, url, data, signature.value).then(async (response) => {
+    return await Request.send(method, url, data, signature.value).then(async (response: CompleteResponse) => {
       return await state.update(response).then((fresh) => {
         if (response.redirect) {
           return handleRedirectResponse(response.redirect);
@@ -38,11 +39,9 @@ export function useHttpClient() {
 
         return Promise.resolve(response);
       });
-    }).catch(async (error: Response) => {
-      if (error.status === 422) {
-        return await state.update(error).then(() => {
-          return Promise.reject(error);
-        });
+    }).catch(async (error: Response | CompleteResponse) => {
+      if (error instanceof CompleteResponse) {
+        return await state.update(error).then(() => Promise.reject(error));
       }
 
       console.error(error);

@@ -1,5 +1,5 @@
 export const ErrorModal = {
-  modal: undefined as HTMLDivElement | undefined,
+  modal: undefined as HTMLDialogElement | undefined,
   listener: undefined as any,
 
   show(html: Record<string, unknown> | string): void {
@@ -11,7 +11,7 @@ export const ErrorModal = {
     page.innerHTML = html;
     page.querySelectorAll('a').forEach((a) => a.setAttribute('target', '_top'));
 
-    this.modal = document.createElement('dialog');
+    this.modal = document.createElement('dialog') as HTMLDialogElement;
     this.modal.style.position = 'fixed';
     this.modal.style.inset = '0';
     this.modal.style.width = '100vw';

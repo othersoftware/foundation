@@ -1,5 +1,5 @@
 import type { StackedViewResolved } from './StackedView';
-import type { Response } from '../Http/Client/Response';
+import type { CompleteResponse } from '../Http/Client/Response';
 
 export interface State {
   location: string,
@@ -7,4 +7,4 @@ export interface State {
   stack: StackedViewResolved,
 }
 
-export type StateManager = (fresh: Response) => Promise<State>;
+export type StateManager = (fresh: CompleteResponse) => Promise<State>;

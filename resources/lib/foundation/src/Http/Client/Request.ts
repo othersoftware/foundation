@@ -1,4 +1,4 @@
-import { Response } from './Response';
+import { Response, CompleteResponse } from './Response';
 
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | string;
 export type Body = XMLHttpRequestBodyInit | Object | null | undefined;
@@ -23,7 +23,7 @@ export class Request {
     this.signature = signature;
   }
 
-  public send(): Promise<Response> {
+  public send(): Promise<CompleteResponse> {
     return new Promise((resolve, reject) => {
       this.xhr.open(this.method, this.url, true);
 
@@ -38,17 +38,17 @@ export class Request {
       }
 
       this.xhr.onload = () => {
-        if (this.xhr.readyState !== XMLHttpRequest.DONE || !this.xhr.status) {
-          return;
+        if (this.xhr.readyState === XMLHttpRequest.DONE && this.xhr.status) {
+          if (this.xhr.status < 200 || this.xhr.status >= 300) {
+            if (this.xhr.status === 422) {
+              reject(new CompleteResponse(this.xhr));
+            } else {
+              reject(new Response(this.xhr));
+            }
+          } else {
+            resolve(new CompleteResponse(this.xhr));
+          }
         }
-
-        const response = new Response(this.xhr);
-
-        if (response.fail) {
-          reject(response);
-        }
-
-        resolve(response);
       };
 
       this.xhr.onerror = () => {

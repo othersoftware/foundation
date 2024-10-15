@@ -1,6 +1,7 @@
 import { type PropType, ref, type Ref, nextTick, watch, provide, defineComponent, h, type SlotsType } from 'vue';
 import type { Method } from '../../Http/Client/Request';
 import type { Response } from '../../Http/Client/Response';
+import { CompleteResponse } from '../../Http/Client/Response';
 import { useHttpClient } from '../../Composables/UseHttpClient';
 import { createFormContext, FormContextInjectionKey, type FormContextInterface } from '../../Services/FormContext';
 
@@ -35,6 +36,7 @@ export const FormControllerComponent = defineComponent({
       errors: Record<string, string[]>,
       touched: Record<string, boolean>,
       ctx: FormContextInterface,
+      submit: () => void,
     },
   }>,
   setup(props, { slots, expose }) {
@@ -43,6 +45,10 @@ export const FormControllerComponent = defineComponent({
     const http = useHttpClient();
 
     const { data, processing, errors, touched } = ctx;
+
+    function submit() {
+      element.value.dispatchEvent(new SubmitEvent('submit'));
+    }
 
     function dispatch() {
       if (props.onSubmit) {
@@ -65,8 +71,8 @@ export const FormControllerComponent = defineComponent({
       touched.value = {};
 
       // noinspection JSIgnoredPromiseFromCall
-      nextTick(() => dispatch().catch((error: Response) => {
-        if (error.status && error.status === 422 && error.errors) {
+      nextTick(() => dispatch().catch((error: Response | CompleteResponse) => {
+        if (error instanceof CompleteResponse) {
           errors.value = error.errors;
         }
       }).finally(() => {
@@ -80,9 +86,7 @@ export const FormControllerComponent = defineComponent({
 
     expose({
       ctx,
-      submit() {
-        element.value.dispatchEvent(new SubmitEvent('submit'));
-      },
+      submit,
     });
 
     provide(FormContextInjectionKey, ctx);
@@ -97,7 +101,8 @@ export const FormControllerComponent = defineComponent({
       processing: processing.value,
       errors: errors.value,
       touched: touched.value,
-      ctx: ctx,
+      ctx,
+      submit,
     }));
   },
 });

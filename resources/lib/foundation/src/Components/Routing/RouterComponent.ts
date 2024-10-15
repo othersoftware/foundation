@@ -1,7 +1,7 @@
 import { defineComponent, type PropType, provide, h, ref, nextTick, toValue, toRaw, onMounted, onBeforeUnmount, computed } from 'vue';
 import { type ViewResolver } from '../../Types/ViewResolver';
 import { type State } from '../../Types/State';
-import type { Response } from '../../Http/Client/Response';
+import type { CompleteResponse } from '../../Http/Client/Response';
 import { StackedViewResolverInjectionKey, StackedViewInjectionKey, StackedViewDepthInjectionKey } from '../../Services/StackedView';
 import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack } from '../../Services/StateManager';
 import { RouterViewComponent } from './RouterViewComponent';
@@ -33,7 +33,7 @@ export const RouterComponent = defineComponent({
       };
     }
 
-    async function update(fresh: Response): Promise<State> {
+    async function update(fresh: CompleteResponse): Promise<State> {
       location.value = fresh.location;
       signature.value = fresh.signature;
 
