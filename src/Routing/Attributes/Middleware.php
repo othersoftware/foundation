@@ -14,6 +14,10 @@ readonly class Middleware
 
     public function __construct(string $middleware, ...$args)
     {
-        $this->middleware = $middleware . ':' . implode(',', $args);
+        if (count($args) > 0) {
+            $this->middleware = $middleware . ':' . implode(',', $args);
+        } else {
+            $this->middleware = $middleware;
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace OtherSoftware\Routing;
 
 
 use Composer\ClassMapGenerator\ClassMapGenerator;
+use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\Arr;
 use OtherSoftware\Routing\Attributes\Method;
 use OtherSoftware\Routing\Attributes\Middleware;
@@ -11,6 +12,7 @@ use OtherSoftware\Routing\Attributes\Name;
 use OtherSoftware\Routing\Attributes\Nested;
 use OtherSoftware\Routing\Attributes\Route;
 use OtherSoftware\Routing\Attributes\TranslatedRoute;
+use OtherSoftware\Routing\Attributes\Where;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionMethod;
@@ -64,21 +66,25 @@ final class Registrar
 
     private function compileGroup(ReflectionClass $reflection): void
     {
-        $this->router->group($this->compileGroupAttributes($reflection), function (Router $router) use ($reflection) {
+        $registrar = new RouteRegistrar($this->router);
+
+        $this->compileGroupAttributes($registrar, $reflection);
+
+        $registrar->group(function (Router $router) use ($reflection) {
             $this->compileRoutes($reflection, $router);
         });
     }
 
 
-    private function compileGroupAttributes(ReflectionClass $reflection): array
+    private function compileGroupAttributes(RouteRegistrar $registrar, ReflectionClass $reflection): void
     {
-        $options = [];
-
         if (count($middleware = $this->getMiddlewareAttributes($reflection)) > 0) {
-            $options['middleware'] = array_map(fn($attribute) => $attribute->middleware, $middleware);
+            $registrar->middleware(array_map(fn($attribute) => $attribute->middleware, $middleware));
         }
 
-        return $options;
+        foreach ($this->getWhereAttributes($reflection) as $where) {
+            $where->bind($registrar);
+        }
     }
 
 
@@ -156,6 +162,10 @@ final class Registrar
         }
 
         $route->name($name);
+
+        foreach ($this->getWhereAttributes($reflection) as $where) {
+            $where->bind($route);
+        }
 
         if (count($middleware = $this->getMiddlewareAttributes($reflection)) > 0) {
             $route->middleware(array_map(fn($attribute) => $attribute->middleware, $middleware));
@@ -253,6 +263,21 @@ final class Registrar
     private function getRouteAttributes(ReflectionMethod $reflection): array
     {
         if (count($attributes = $reflection->getAttributes(Route::class)) > 0) {
+            return array_map(fn($attribute) => $attribute->newInstance(), $attributes);
+        }
+
+        return [];
+    }
+
+
+    /**
+     * @param ReflectionClass|ReflectionMethod $reflection
+     *
+     * @return Where[]
+     */
+    private function getWhereAttributes(ReflectionClass|ReflectionMethod $reflection): array
+    {
+        if (count($attributes = $reflection->getAttributes(Where::class)) > 0) {
             return array_map(fn($attribute) => $attribute->newInstance(), $attributes);
         }
 
