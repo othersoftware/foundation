@@ -12,8 +12,8 @@ readonly class Middleware
     public string $middleware;
 
 
-    public function __construct(string $middleware)
+    public function __construct(string $middleware, ...$args)
     {
-        $this->middleware = $middleware;
+        $this->middleware = $middleware . ':' . implode(',', $args);
     }
 }
