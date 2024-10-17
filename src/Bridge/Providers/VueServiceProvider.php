@@ -3,6 +3,7 @@
 namespace OtherSoftware\Bridge\Providers;
 
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
@@ -31,6 +32,16 @@ class VueServiceProvider extends ServiceProvider
 
     private function bootVisitorValidationRenderable(Handler $instance): void
     {
+        $instance->renderable(function (AuthenticationException $exception, Request $request) {
+            if ($request->header('X-Stack-Router')) {
+                if ($target = $exception->redirectTo($request)) {
+                    return Vue::setRedirect($target);
+                }
+            }
+
+            return null;
+        });
+
         $instance->renderable(function (ValidationException $exception, Request $request) {
             if ($request->header('X-Stack-Router')) {
                 return Vue::setErrors($exception->errors())->toResponse($request)->setStatusCode($exception->status);
