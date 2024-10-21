@@ -8,7 +8,7 @@ export const RouterLinkComponent = defineComponent({
   props: {
     method: { type: String as PropType<Method>, required: false, default: 'GET' },
     href: { type: String as PropType<string | null | undefined>, required: false },
-    data: { type: [] as PropType<Body>, required: false },
+    data: { type: [Object, Array, String, null] as PropType<Body>, required: false },
     preserveScroll: { type: Boolean, required: false },
     replace: { type: Boolean, required: false },
     target: { type: String as PropType<string>, required: false },

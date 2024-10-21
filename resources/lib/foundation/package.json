@@ -21,7 +21,7 @@
     },
     "scripts": {
         "dev": "vite build -m development --watch",
-        "build": "vite build && tail -n +6 types/globals.d.ts >> dist/other-software-foundation.d.ts"
+        "build": "vite build && tail -n +7 types/globals.d.ts >> dist/other-software-foundation.d.ts"
     },
     "peerDependencies": {
         "vue": "^3.4.0"
@@ -33,6 +33,7 @@
         "lodash.set": "^4.3.2"
     },
     "devDependencies": {
+        "@vue/language-server": "^2.1.6",
         "@types/lodash.get": "^4.4.9",
         "@types/lodash.set": "^4.3.9",
         "@types/node": "^22.5.2",

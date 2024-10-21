@@ -9,6 +9,7 @@ use Illuminate\View\View as IlluminateView;
 use OtherSoftware\Bridge\Protocol\Redirect;
 use OtherSoftware\Bridge\Stack\StackMeta;
 use OtherSoftware\Bridge\Stack\View;
+use OtherSoftware\Support\Facades\Toast;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -105,6 +106,8 @@ final class ResponseFactory implements Responsable
         if (isset($this->raw)) {
             $data['raw'] = $this->raw;
         }
+
+        $data['toasts'] = Toast::flush();
 
         if ($request->header('X-Stack-Router')) {
             $response = $this->getContinuousResponse($data);

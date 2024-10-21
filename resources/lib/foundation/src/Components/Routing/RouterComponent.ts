@@ -1,10 +1,11 @@
 import { defineComponent, type PropType, provide, h, ref, nextTick, toValue, toRaw, onMounted, onBeforeUnmount, computed } from 'vue';
 import { type ViewResolver } from '../../Types/ViewResolver';
-import { type State } from '../../Types/State';
+import { type State, type InitialState } from '../../Types/State';
 import type { CompleteResponse } from '../../Http/Client/Response';
 import { StackedViewResolverInjectionKey, StackedViewInjectionKey, StackedViewDepthInjectionKey } from '../../Services/StackedView';
 import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack } from '../../Services/StateManager';
 import { RouterViewComponent } from './RouterViewComponent';
+import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
 
 
 export const RouterComponent = defineComponent({
@@ -16,7 +17,7 @@ export const RouterComponent = defineComponent({
       required: true,
     },
     state: {
-      type: Object as PropType<State>,
+      type: Object as PropType<InitialState>,
       required: true,
     },
   },
@@ -24,6 +25,7 @@ export const RouterComponent = defineComponent({
     const location = ref(props.state.location);
     const stack = ref(props.state.stack);
     const signature = ref(props.state.signature);
+    const toasts = ref(props.state.toasts);
 
     function buildState() {
       return {
@@ -41,6 +43,10 @@ export const RouterComponent = defineComponent({
         stack.value = updateStack(toRaw(toValue(stack.value)), fresh.stack);
       }
 
+      if (fresh.toasts && fresh.toasts.length > 0) {
+        toasts.value = [...toasts.value, ...fresh.toasts];
+      }
+
       return await nextTick(() => buildState());
     }
 
@@ -50,6 +56,7 @@ export const RouterComponent = defineComponent({
     provide(StackedViewResolverInjectionKey, props.resolver);
     provide(StackedViewDepthInjectionKey, computed(() => 0));
     provide(StackedViewInjectionKey, stack);
+    provide(ToastRegistryInjectionKey, toasts);
 
     function handlePopStateEvent(event: PopStateEvent) {
       if (event.state) {

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\ValidationException;
 use OtherSoftware\Bridge\ResponseFactory;
+use OtherSoftware\Bridge\Toasts\ToastsManager;
 use OtherSoftware\Support\Facades\Vue;
 
 
@@ -17,7 +18,8 @@ class VueServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->app->afterResolving(Handler::class, function (Handler $instance) {
-            $this->bootVisitorValidationRenderable($instance);
+            $this->bootAuthenticationRenderable($instance);
+            $this->bootValidationRenderable($instance);
         });
     }
 
@@ -27,10 +29,14 @@ class VueServiceProvider extends ServiceProvider
         $this->app->singleton('frontend', function () {
             return new ResponseFactory();
         });
+
+        $this->app->singleton('toasts', function () {
+            return new ToastsManager();
+        });
     }
 
 
-    private function bootVisitorValidationRenderable(Handler $instance): void
+    private function bootAuthenticationRenderable(Handler $instance): void
     {
         $instance->renderable(function (AuthenticationException $exception, Request $request) {
             if ($request->header('X-Stack-Router')) {
@@ -41,7 +47,11 @@ class VueServiceProvider extends ServiceProvider
 
             return null;
         });
+    }
 
+
+    private function bootValidationRenderable(Handler $instance): void
+    {
         $instance->renderable(function (ValidationException $exception, Request $request) {
             if ($request->header('X-Stack-Router')) {
                 return Vue::setErrors($exception->errors())->toResponse($request)->setStatusCode($exception->status);

@@ -2,12 +2,14 @@ import type { App, Plugin } from 'vue';
 import { FormControllerComponent } from './Components/Controllers/FormControllerComponent';
 import { RouterViewComponent } from './Components/Routing/RouterViewComponent';
 import { RouterLinkComponent } from './Components/Routing/RouterLinkComponent';
+import { ToastControllerComponent, ToastComponent } from './Components/Controllers/ToastControllerComponent';
 import { trans, transChoice } from './Support/Translator';
 import { route } from './Support/Route';
 
 export * from './Application/Factory';
 
 export * from './Components/Controllers/FormControllerComponent';
+export * from './Components/Controllers/ToastControllerComponent';
 
 export * from './Components/Routing/RouterComponent';
 export * from './Components/Routing/RouterLinkComponent';
@@ -30,6 +32,7 @@ export * from './Http/Client/Response';
 export * from './Services/FormContext';
 export * from './Services/StateManager';
 export * from './Services/StackedView';
+export * from './Services/ToastManager';
 
 export * from './Support/Empty';
 export * from './Support/ErrorModal';
@@ -43,6 +46,7 @@ export * from './Types/HeadMeta';
 export * from './Types/RouterRedirect';
 export * from './Types/StackedView';
 export * from './Types/State';
+export * from './Types/Toast';
 export * from './Types/ViewResolver';
 
 export function createOtherSoftwareFoundation(): Plugin {
@@ -51,6 +55,8 @@ export function createOtherSoftwareFoundation(): Plugin {
       app.component('RouterView', RouterViewComponent);
       app.component('RouterLink', RouterLinkComponent);
       app.component('FormController', FormControllerComponent);
+      app.component('ToastController', ToastControllerComponent);
+      app.component('Toast', ToastComponent);
 
       app.config.globalProperties.$t = trans;
       app.config.globalProperties.$tc = transChoice;

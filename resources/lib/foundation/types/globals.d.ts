@@ -1,6 +1,7 @@
 import { RouterViewComponent } from '../src/Components/Routing/RouterViewComponent';
 import { RouterLinkComponent } from '../src/Components/Routing/RouterLinkComponent';
 import { FormControllerComponent } from '../src/Components/Controllers/FormControllerComponent';
+import type { ToastControllerComponent, ToastComponent } from '../src/Components/Controllers/ToastControllerComponent';
 import { trans, transChoice } from '../src/Support/Translator';
 import { route } from '../src/Support/Route';
 
@@ -28,6 +29,8 @@ declare module '@vue/runtime-core' {
     RouterView: typeof RouterViewComponent,
     RouterLink: typeof RouterLinkComponent,
     FormController: typeof FormControllerComponent,
+    ToastController: typeof ToastControllerComponent,
+    Toast: typeof ToastComponent,
   }
 
   export interface ComponentCustomProperties {

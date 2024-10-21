@@ -23,6 +23,7 @@ export declare class CompleteResponse extends Response_2 {
     readonly signature: string;
     readonly redirect: RouterRedirect;
     readonly stack: StackedView;
+    readonly toasts: ToastRegistry;
     readonly errors: Record<string, string[]>;
     constructor(xhr: XMLHttpRequest);
 }
@@ -157,6 +158,10 @@ declare interface HttpOptions {
     replace?: boolean;
 }
 
+export declare interface InitialState extends State {
+    toasts: ToastRegistry;
+}
+
 export declare type Locale = {
     name: string;
     code: string;
@@ -214,7 +219,7 @@ type: PropType<ViewResolver>;
 required: true;
 };
 state: {
-type: PropType<State>;
+type: PropType<InitialState>;
 required: true;
 };
 }, () => VNode<RendererNode, RendererElement, {
@@ -225,7 +230,7 @@ type: PropType<ViewResolver>;
 required: true;
 };
 state: {
-type: PropType<State>;
+type: PropType<InitialState>;
 required: true;
 };
 }>>, {}, {}>;
@@ -381,6 +386,51 @@ export declare const StateManagerInjectionKey: InjectionKey<StateManager>;
 
 export declare const StateStackSignatureInjectionKey: InjectionKey<Ref<string>>;
 
+export declare interface Toast {
+    id: string;
+    description: string;
+    duration: number;
+    kind: ToastKind;
+}
+
+export declare const ToastComponent: DefineComponent<    {
+toast: {
+type: PropType<Toast>;
+required: true;
+};
+}, () => VNode<RendererNode, RendererElement, {
+[key: string]: any;
+}>, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+toast: {
+type: PropType<Toast>;
+required: true;
+};
+}>>, {}, SlotsType<{
+default: {
+toast: Toast;
+close: () => void;
+};
+}>>;
+
+export declare const ToastControllerComponent: DefineComponent<    {}, () => VNode<RendererNode, RendererElement, {
+[key: string]: any;
+}>, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {}>>, {}, SlotsType<{
+default: {
+toasts: ToastRegistry;
+};
+}>>;
+
+export declare enum ToastKind {
+    SUCCESS = "success",
+    DANGER = "danger",
+    INFO = "info",
+    WARNING = "warning"
+}
+
+export declare type ToastRegistry = Toast[];
+
+export declare const ToastRegistryInjectionKey: InjectionKey<Ref<ToastRegistry>>;
+
 export declare function trans(key: string, replace?: Record<string, string | number | boolean>): string;
 
 export declare function transChoice(key: string, number: number, replace?: Record<string, string | number | boolean>): string;
@@ -409,6 +459,8 @@ export declare function useStackSignature(): Ref<string>;
 export declare function useStateManager(): {
     update: StateManager;
 };
+
+export declare function useToasts(): Ref<ToastRegistry>;
 
 export declare function useViewDepth(): Ref<number>;
 
@@ -454,6 +506,8 @@ declare module '@vue/runtime-core' {
     RouterView: typeof RouterViewComponent,
     RouterLink: typeof RouterLinkComponent,
     FormController: typeof FormControllerComponent,
+    ToastController: typeof ToastControllerComponent,
+    Toast: typeof ToastComponent,
   }
 
   export interface ComponentCustomProperties {
