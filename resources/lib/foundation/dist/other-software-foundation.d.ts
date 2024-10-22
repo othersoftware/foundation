@@ -18,6 +18,8 @@ export declare function blank(value: any): boolean;
 declare type Body_2 = XMLHttpRequestBodyInit | Object | null | undefined;
 export { Body_2 as Body }
 
+declare type Callback<T> = () => Promise<T> | T;
+
 export declare class CompleteResponse extends Response_2 {
     readonly location: string;
     readonly signature: string;
@@ -26,6 +28,19 @@ export declare class CompleteResponse extends Response_2 {
     readonly toasts: ToastRegistry;
     readonly errors: Record<string, string[]>;
     constructor(xhr: XMLHttpRequest);
+}
+
+declare interface Config {
+    title?: string;
+    description?: string;
+    yes?: string;
+    no?: string;
+}
+
+export declare interface Confirmation extends Config {
+    processing: boolean;
+    confirm: () => void;
+    cancel: () => void;
 }
 
 export declare function createFormContext(initial?: Record<string, any>): {
@@ -61,6 +76,10 @@ declare type EventHandler = (event?: any) => boolean | undefined | void;
 declare type EventName = string;
 
 declare type Factory = (options: FactoryOptions) => any;
+
+declare function factory<T>(callback: Callback<T>): Promise<T>;
+
+declare function factory<T>(config: Config, callback: Callback<T>): Promise<T>;
 
 declare type FactoryOptions = {
     router: typeof RouterComponent;
@@ -438,6 +457,10 @@ export declare function transChoice(key: string, number: number, replace?: Recor
 export declare function updateStack(current: StackedViewResolved, fresh: StackedView): StackedViewResolved;
 
 export declare function url(uri: string, params?: Record<string, any>, hash?: string, base?: string | null): string;
+
+export declare function useConfirmation(): typeof factory;
+
+export declare function useCurrentConfirmation(): Ref<Confirmation | undefined>;
 
 export declare function useFromContext(): FormContextInterface | null;
 
