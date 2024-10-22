@@ -5,6 +5,7 @@ import { ErrorModal } from '../Support/ErrorModal';
 import type { RouterRedirect } from '../Types/RouterRedirect';
 import type { Response } from '../Http/Client/Response';
 import { CompleteResponse } from '../Http/Client/Response';
+import { EventBus } from '../Events/EventBus';
 
 interface HttpOptions {
   data?: Body | undefined,
@@ -42,6 +43,12 @@ export function useHttpClient() {
     }).catch(async (error: Response | CompleteResponse) => {
       if (error instanceof CompleteResponse) {
         return await state.update(error).then(() => Promise.reject(error));
+      }
+
+      if (error.status === 423) {
+        EventBus.dispatch('password.confirm', { method, url, options: { data, preserveScroll, replace } });
+
+        return Promise.reject(error);
       }
 
       console.error(error);

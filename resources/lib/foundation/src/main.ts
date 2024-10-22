@@ -3,6 +3,7 @@ import { FormControllerComponent } from './Components/Controllers/FormController
 import { RouterViewComponent } from './Components/Routing/RouterViewComponent';
 import { RouterLinkComponent } from './Components/Routing/RouterLinkComponent';
 import { ToastControllerComponent, ToastComponent } from './Components/Controllers/ToastControllerComponent';
+import { PasswordConfirmationControllerComponent } from './Components/Controllers/PasswordConfirmationControllerComponent';
 import { trans, transChoice } from './Support/Translator';
 import { route } from './Support/Route';
 
@@ -56,6 +57,7 @@ export function createOtherSoftwareFoundation(): Plugin {
       app.component('RouterLink', RouterLinkComponent);
       app.component('FormController', FormControllerComponent);
       app.component('ToastController', ToastControllerComponent);
+      app.component('PasswordConfirmationController', PasswordConfirmationControllerComponent);
       app.component('Toast', ToastComponent);
 
       app.config.globalProperties.$t = trans;

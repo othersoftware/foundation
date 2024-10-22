@@ -15,7 +15,7 @@ export const EventBus = {
     }
   },
 
-  remoteEventListener(name: EventName, callback: EventHandler) {
+  removeEventListener(name: EventName, callback: EventHandler) {
     if (!subscriptions[name]) {
       return;
     }

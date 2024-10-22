@@ -2,6 +2,7 @@ import { RouterViewComponent } from '../src/Components/Routing/RouterViewCompone
 import { RouterLinkComponent } from '../src/Components/Routing/RouterLinkComponent';
 import { FormControllerComponent } from '../src/Components/Controllers/FormControllerComponent';
 import type { ToastControllerComponent, ToastComponent } from '../src/Components/Controllers/ToastControllerComponent';
+import type { PasswordConfirmationControllerComponent } from '../src/Components/Controllers/PasswordConfirmationControllerComponent';
 import { trans, transChoice } from '../src/Support/Translator';
 import { route } from '../src/Support/Route';
 
@@ -30,6 +31,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof RouterLinkComponent,
     FormController: typeof FormControllerComponent,
     ToastController: typeof ToastControllerComponent,
+    PasswordConfirmationController: typeof PasswordConfirmationControllerComponent,
     Toast: typeof ToastComponent,
   }
 

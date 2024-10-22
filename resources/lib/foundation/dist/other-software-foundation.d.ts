@@ -52,7 +52,7 @@ export declare const ErrorModal: {
 
 export declare const EventBus: {
     addEventListener(name: EventName, callback: EventHandler): void;
-    remoteEventListener(name: EventName, callback: EventHandler): void;
+    removeEventListener(name: EventName, callback: EventHandler): void;
     dispatch<T>(name: EventName, event?: T): T | undefined;
 };
 
@@ -507,6 +507,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof RouterLinkComponent,
     FormController: typeof FormControllerComponent,
     ToastController: typeof ToastControllerComponent,
+    PasswordConfirmationController: typeof PasswordConfirmationControllerComponent,
     Toast: typeof ToastComponent,
   }
 

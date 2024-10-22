@@ -5,6 +5,7 @@ namespace OtherSoftware\Bridge;
 
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View as IlluminateView;
 use OtherSoftware\Bridge\Protocol\Redirect;
 use OtherSoftware\Bridge\Stack\StackMeta;
@@ -31,6 +32,12 @@ final class ResponseFactory implements Responsable
 
 
     private string $view;
+
+
+    public function isVuePowered(Request $request): bool
+    {
+        return (bool) $request->header('X-Stack-Router');
+    }
 
 
     public function setErrors(array $errors): ResponseFactory
@@ -109,7 +116,7 @@ final class ResponseFactory implements Responsable
 
         $data['toasts'] = Toast::flush();
 
-        if ($request->header('X-Stack-Router')) {
+        if ($this->isVuePowered($request)) {
             $response = $this->getContinuousResponse($data);
         } else {
             $response = $this->getInitialResponse($data);
