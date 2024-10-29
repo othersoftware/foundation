@@ -10,6 +10,13 @@ if (! function_exists('array_camel_keys')) {
     }
 }
 
+if (! function_exists('array_snake_keys')) {
+    function array_snake_keys(array $array): array
+    {
+        return array_combine(array_map(fn($key) => Str::snake($key), array_keys($array)), $array);
+    }
+}
+
 
 if (! function_exists('array_matrix')) {
     function array_matrix(array $input): array

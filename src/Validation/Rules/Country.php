@@ -5,13 +5,14 @@ namespace OtherSoftware\Validation\Rules;
 
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
+use Symfony\Component\Intl\Countries;
 
 
 class Country implements ValidationRule
 {
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! in_array($value, country_codes())) {
+        if (! Countries::exists($value)) {
             $fail(trans('Podana wartość jest nieprawidłowa.'));
         }
     }

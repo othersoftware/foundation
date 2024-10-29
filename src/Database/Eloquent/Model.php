@@ -15,7 +15,7 @@ abstract class Model extends EloquentModel
     #[Override]
     public function fill(array $attributes)
     {
-        return parent::fill(array_camel_keys($attributes));
+        return parent::fill(array_snake_keys($attributes));
     }
 
 
