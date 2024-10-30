@@ -49,6 +49,9 @@
         }
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        },
         "laravel": {
             "providers": [
                 "OtherSoftware\\Translation\\Providers\\TranslationServiceProvider",
