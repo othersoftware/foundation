@@ -706,6 +706,21 @@ final readonly class Constraint
     }
 
 
+    /**
+     * In some situations, you may wish to run validation checks against a field
+     * only if that field is present in the data being validated. To quickly
+     * accomplish this, add the `sometimes` rule to your rule list.
+     *
+     * @see https://laravel.com/docs/11.x/validation#validating-when-present
+     *
+     * @return string
+     */
+    public static function sometimes(): string
+    {
+        return 'sometimes';
+    }
+
+
     public static function string(): string
     {
         return 'string';
