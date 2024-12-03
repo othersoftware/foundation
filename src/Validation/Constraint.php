@@ -32,6 +32,40 @@ use UnitEnum;
 final readonly class Constraint
 {
     /**
+     * The field under validation must be `"yes"`, `"on"`, `1`, `"1"`, `true`,
+     * or `"true"`. This is useful for validating "Terms of Service" acceptance
+     * or similar fields.
+     *
+     * @return string
+     */
+    public static function accepted(): string
+    {
+        return 'accepted';
+    }
+
+
+    /**
+     * The field under validation must be `"yes"`, `"on"`, `1`, `"1"`, `true`,
+     * or `"true"` if another field under validation is equal to a specified
+     * value. This is useful for validating "Terms of Service" acceptance
+     * or similar fields.
+     *
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return string
+     */
+    public static function acceptedIf(string $field, mixed $value): string
+    {
+        if (is_bool($value)) {
+            $value = $value ? 'true' : 'false';
+        }
+
+        return sprintf('accepted_if:%s,%s', $field, $value);
+    }
+
+
+    /**
      * The field under validation must be a value after a given date.
      * The dates will be passed into the `strtotime` PHP function in order
      * to be converted to a valid `DateTime` instance:
