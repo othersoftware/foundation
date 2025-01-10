@@ -117,7 +117,9 @@ const er = {
 function pe() {
   const e = Qt(), t = Xt();
   async function r(i, c, { data: l = void 0, preserveScroll: u = !1, replace: f = !1 } = {}) {
-    return await he.send(i, c, l, t.value).then(async (d) => await e.update(d).then((h) => d.redirect ? a(d.redirect) : d.raw ? Promise.resolve(d.raw) : (u || s(), f ? o(h) : n(h), Promise.resolve(d)))).catch(async (d) => d instanceof G ? await e.update(d).then(() => Promise.reject(d)) : d.status === 423 ? (ce.dispatch("password.confirm", { method: i, url: c, options: { data: l, preserveScroll: u, replace: f } }), Promise.reject(d)) : (console.error(d), APP_DEBUG && d.content && er.show(d.content), Promise.reject(d)));
+    return document.body.classList.add("osf-loading"), await he.send(i, c, l, t.value).then(async (d) => await e.update(d).then((h) => d.redirect ? a(d.redirect) : d.raw ? Promise.resolve(d.raw) : (u || s(), f ? o(h) : n(h), Promise.resolve(d)))).catch(async (d) => d instanceof G ? await e.update(d).then(() => Promise.reject(d)) : d.status === 423 ? (ce.dispatch("password.confirm", { method: i, url: c, options: { data: l, preserveScroll: u, replace: f } }), Promise.reject(d)) : (console.error(d), APP_DEBUG && d.content && er.show(d.content), Promise.reject(d))).finally(() => {
+      document.body.classList.remove("osf-loading");
+    });
   }
   function n(i) {
     window.history.pushState(i, "", i.location);

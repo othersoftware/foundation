@@ -18,6 +18,8 @@ export function useHttpClient() {
   const signature = useStackSignature();
 
   async function dispatch(method: Method, url: string, { data = undefined, preserveScroll = false, replace = false }: HttpOptions = {}) {
+    document.body.classList.add('osf-loading');
+
     return await Request.send(method, url, data, signature.value).then(async (response: CompleteResponse) => {
       return await state.update(response).then((fresh) => {
         if (response.redirect) {
@@ -58,6 +60,8 @@ export function useHttpClient() {
       }
 
       return Promise.reject(error);
+    }).finally(() => {
+      document.body.classList.remove('osf-loading');
     });
   }
 
