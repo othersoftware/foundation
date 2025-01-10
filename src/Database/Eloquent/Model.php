@@ -13,6 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use IntlDateFormatter;
 use IntlDatePatternGenerator;
+use OtherSoftware\Support\Facades\Vue;
 use Override;
 
 
@@ -79,17 +80,21 @@ abstract class Model extends EloquentModel
     #[Override]
     protected function serializeDate(DateTimeInterface $date)
     {
-        $instance = $date instanceof DateTimeImmutable ? CarbonImmutable::instance($date) : Carbon::instance($date);
-        $locale = config('app.locale');
+        if (Vue::rendersVueResponse()) {
+            $instance = $date instanceof DateTimeImmutable ? CarbonImmutable::instance($date) : Carbon::instance($date);
+            $locale = config('app.locale');
 
-        if ($instance->isStartOfDay()) {
-            $pattern = (new IntlDatePatternGenerator($locale))->getBestPattern('dd/MM/yyyy');
-        } else {
-            $pattern = (new IntlDatePatternGenerator($locale))->getBestPattern('dd/MM/yyyy HH:mm');
+            if ($instance->isStartOfDay()) {
+                $pattern = (new IntlDatePatternGenerator($locale))->getBestPattern('dd/MM/yyyy');
+            } else {
+                $pattern = (new IntlDatePatternGenerator($locale))->getBestPattern('dd/MM/yyyy HH:mm');
+            }
+
+            $formatter = new IntlDateFormatter(locale: $locale, pattern: $pattern);
+
+            return $formatter->format($instance);
         }
 
-        $formatter = new IntlDateFormatter(locale: $locale, pattern: $pattern);
-
-        return $formatter->format($instance);
+        return parent::serializeDate($date);
     }
 }

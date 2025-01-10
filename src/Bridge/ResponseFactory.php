@@ -28,15 +28,24 @@ final class ResponseFactory implements Responsable
     private Redirect $redirect;
 
 
+    private bool $rendersVueResponse = false;
+
+
     private View $stack;
 
 
     private string $view;
 
 
-    public function isVuePowered(Request $request): bool
+    public function isVuePowered(?Request $request = null): bool
     {
-        return (bool) $request->header('X-Stack-Router');
+        return (bool) ($request ?? request())->header('X-Stack-Router');
+    }
+
+
+    public function rendersVueResponse(?Request $request = null): bool
+    {
+        return $this->rendersVueResponse || $this->isVuePowered($request);
     }
 
 
@@ -90,6 +99,8 @@ final class ResponseFactory implements Responsable
 
     public function toResponse($request): Response
     {
+        $this->rendersVueResponse = true;
+
         $data = [];
 
         $data['location'] = $request->fullUrl();
