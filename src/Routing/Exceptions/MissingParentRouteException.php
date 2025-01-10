@@ -3,11 +3,11 @@
 namespace OtherSoftware\Routing\Exceptions;
 
 
-use Exception;
+use LogicException;
 use Throwable;
 
 
-class MissingParentRouteException extends Exception
+class MissingParentRouteException extends LogicException
 {
     public function __construct(string $parent, string $current, int $code = 0, ?Throwable $previous = null)
     {

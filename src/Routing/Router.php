@@ -177,7 +177,7 @@ final class Router extends BaseRouter
     }
 
 
-    private function runRouteUp(Route $route, Request $request, View $nested = null)
+    private function runRouteUp(Route $route, Request $request, ?View $nested = null)
     {
         $this->running = $route;
 

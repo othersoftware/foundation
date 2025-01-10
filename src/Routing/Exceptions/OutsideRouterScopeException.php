@@ -3,11 +3,11 @@
 namespace OtherSoftware\Routing\Exceptions;
 
 
-use Exception;
+use LogicException;
 use Throwable;
 
 
-class OutsideRouterScopeException extends Exception
+class OutsideRouterScopeException extends LogicException
 {
     public function __construct(int $code = 0, ?Throwable $previous = null)
     {
