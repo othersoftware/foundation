@@ -39,6 +39,7 @@ export * from './Services/ToastManager';
 export * from './Support/Empty';
 export * from './Support/ErrorModal';
 export * from './Support/Hash';
+export * from './Support/NestedSet';
 export * from './Support/Route';
 export * from './Support/Translator';
 export * from './Support/Url';

@@ -1,4 +1,5 @@
 import { ComponentOptionsMixin } from 'vue';
+import { ComponentProvideOptions } from 'vue';
 import { ComputedRef } from 'vue';
 import { ConcreteComponent } from 'vue';
 import { DefineComponent } from 'vue';
@@ -44,10 +45,10 @@ export declare interface Confirmation extends Config {
 }
 
 export declare function createFormContext(initial?: Record<string, any>): {
-    data: Ref<Record<string, any>>;
-    errors: Ref<Record<string, string[]>>;
-    touched: Ref<Record<string, boolean>>;
-    processing: Ref<boolean>;
+    data: Ref<Record<string, any>, Record<string, any>>;
+    errors: Ref<Record<string, string[]>, Record<string, string[]>>;
+    touched: Ref<Record<string, boolean>, Record<string, boolean>>;
+    processing: Ref<boolean, boolean>;
     touch: (name: string) => void;
     value: (name: string, value: any) => any;
     fill: (name: string, value: any) => void;
@@ -95,7 +96,7 @@ export declare const FormContextInjectionKey: InjectionKey<FormContextInterface>
 
 export declare type FormContextInterface = ReturnType<typeof createFormContext>;
 
-export declare const FormControllerComponent: DefineComponent<    {
+export declare const FormControllerComponent: DefineComponent<ExtractPropTypes<    {
 action: {
 type: StringConstructor;
 required: false;
@@ -114,9 +115,9 @@ onSubmit: {
 type: PropType<FormHandler>;
 required: false;
 };
-}, () => VNode<RendererNode, RendererElement, {
+}>, () => VNode<RendererNode, RendererElement, {
 [key: string]: any;
-}>, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+}>, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
 action: {
 type: StringConstructor;
 required: false;
@@ -135,7 +136,7 @@ onSubmit: {
 type: PropType<FormHandler>;
 required: false;
 };
-}>>, {
+}>> & Readonly<{}>, {
 data: Record<string, any>;
 method: string;
 }, SlotsType<{
@@ -147,7 +148,7 @@ touched: Record<string, boolean>;
 ctx: FormContextInterface;
 submit: () => void;
 };
-}>>;
+}>, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
 declare type FormHandler = (data: any, ctx: FormContextInterface) => Promise<any>;
 
@@ -187,6 +188,24 @@ export declare type Locale = {
 };
 
 export declare type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | string;
+
+export declare type NestedSet<T extends NestedSetItem = any> = T[];
+
+export declare function nestedSetAncestors<T extends NestedSetItem = any>(data: NestedSet<T>, item: T): T[];
+
+export declare function nestedSetChildren<T extends NestedSetItem = any>(data: NestedSet<T>, item: T): T[];
+
+export declare function nestedSetDescendants<T extends NestedSetItem = any>(data: NestedSet<T>, item: T): T[];
+
+export declare type NestedSetItem = {
+    id: number;
+    left: number;
+    right: number;
+    parentId: number | null;
+    title: string;
+};
+
+export declare function nestedSetRoot<T extends NestedSetItem = any>(data: NestedSet<T>): T[];
 
 declare type Options = {
     initial?: State | undefined;
@@ -232,7 +251,7 @@ export declare type Route = {
 
 export declare function route(name: string, params?: Params, hash?: string): string;
 
-export declare const RouterComponent: DefineComponent<    {
+export declare const RouterComponent: DefineComponent<ExtractPropTypes<    {
 resolver: {
 type: PropType<ViewResolver>;
 required: true;
@@ -241,9 +260,9 @@ state: {
 type: PropType<InitialState>;
 required: true;
 };
-}, () => VNode<RendererNode, RendererElement, {
+}>, () => VNode<RendererNode, RendererElement, {
 [key: string]: any;
-}>, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+}>, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
 resolver: {
 type: PropType<ViewResolver>;
 required: true;
@@ -252,9 +271,9 @@ state: {
 type: PropType<InitialState>;
 required: true;
 };
-}>>, {}, {}>;
+}>> & Readonly<{}>, {}, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
-export declare const RouterLinkComponent: DefineComponent<    {
+export declare const RouterLinkComponent: DefineComponent<ExtractPropTypes<    {
 method: {
 type: PropType<Method>;
 required: false;
@@ -288,9 +307,9 @@ explicit: {
 type: BooleanConstructor;
 required: false;
 };
-}, () => VNode<RendererNode, RendererElement, {
+}>, () => VNode<RendererNode, RendererElement, {
 [key: string]: any;
-}>, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+}>, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
 method: {
 type: PropType<Method>;
 required: false;
@@ -324,36 +343,36 @@ explicit: {
 type: BooleanConstructor;
 required: false;
 };
-}>>, {
+}>> & Readonly<{}>, {
 preserveScroll: boolean;
 replace: boolean;
 method: string;
 disabled: boolean;
 explicit: boolean;
-}, {}>;
+}, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
 export declare interface RouterRedirect {
     target: string;
     reload: boolean;
 }
 
-export declare const RouterViewComponent: DefineComponent<    {
+export declare const RouterViewComponent: DefineComponent<ExtractPropTypes<    {
 allowLayouts: {
 type: PropType<boolean>;
 required: false;
 default: boolean;
 };
-}, () => VNode<RendererNode, RendererElement, {
+}>, () => VNode<RendererNode, RendererElement, {
 [key: string]: any;
-}> | undefined, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+}> | undefined, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
 allowLayouts: {
 type: PropType<boolean>;
 required: false;
 default: boolean;
 };
-}>>, {
+}>> & Readonly<{}>, {
 allowLayouts: boolean;
-}, {}>;
+}, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
 export declare function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any): any;
 
@@ -412,32 +431,32 @@ export declare interface Toast {
     kind: ToastKind;
 }
 
-export declare const ToastComponent: DefineComponent<    {
+export declare const ToastComponent: DefineComponent<ExtractPropTypes<    {
 toast: {
 type: PropType<Toast>;
 required: true;
 };
-}, () => VNode<RendererNode, RendererElement, {
+}>, () => VNode<RendererNode, RendererElement, {
 [key: string]: any;
-}>, unknown, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+}>, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
 toast: {
 type: PropType<Toast>;
 required: true;
 };
-}>>, {}, SlotsType<{
+}>> & Readonly<{}>, {}, SlotsType<{
 default: {
 toast: Toast;
 close: () => void;
 };
-}>>;
+}>, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
 export declare const ToastControllerComponent: DefineComponent<    {}, () => VNode<RendererNode, RendererElement, {
 [key: string]: any;
-}>, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {}>>, {}, SlotsType<{
+}>, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<{}> & Readonly<{}>, {}, SlotsType<{
 default: {
 toasts: ToastRegistry;
 };
-}>>;
+}>, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
 export declare enum ToastKind {
     SUCCESS = "success",
@@ -460,7 +479,7 @@ export declare function url(uri: string, params?: Record<string, any>, hash?: st
 
 export declare function useConfirmation(): typeof factory;
 
-export declare function useCurrentConfirmation(): Ref<Confirmation | undefined>;
+export declare function useCurrentConfirmation(): Ref<Confirmation | undefined, Confirmation | undefined>;
 
 export declare function useFromContext(): FormContextInterface | null;
 
@@ -473,17 +492,17 @@ export declare function useHttpClient(): {
     delete: (url: string, data?: Body_2 | undefined) => Promise<any>;
 };
 
-export declare function useLocation(): Ref<string>;
+export declare function useLocation(): Ref<string, string>;
 
 export declare function usePersistentFormContext(): FormContextInterface;
 
-export declare function useStackSignature(): Ref<string>;
+export declare function useStackSignature(): Ref<string, string>;
 
 export declare function useStateManager(): {
     update: StateManager;
 };
 
-export declare function useToasts(): Ref<ToastRegistry>;
+export declare function useToasts(): Ref<ToastRegistry, ToastRegistry>;
 
 export declare function useViewDepth(): Ref<number>;
 
