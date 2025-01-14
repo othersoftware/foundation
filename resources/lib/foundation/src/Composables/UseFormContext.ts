@@ -1,7 +1,7 @@
 import { inject } from 'vue';
 import { FormContextInjectionKey, type FormContextInterface } from '../Services/FormContext';
 
-export function useFromContext(): FormContextInterface | null {
+export function useFormContext(): FormContextInterface | null {
   return inject(FormContextInjectionKey, null);
 }
 

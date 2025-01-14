@@ -481,7 +481,7 @@ export declare function useConfirmation(): typeof factory;
 
 export declare function useCurrentConfirmation(): Ref<Confirmation | undefined, Confirmation | undefined>;
 
-export declare function useFromContext(): FormContextInterface | null;
+export declare function useFormContext(): FormContextInterface | null;
 
 export declare function useHttpClient(): {
     dispatch: (method: Method, url: string, { data, preserveScroll, replace }?: HttpOptions) => any;
