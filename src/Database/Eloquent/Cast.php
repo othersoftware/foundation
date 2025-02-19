@@ -3,7 +3,7 @@
 namespace OtherSoftware\Database\Eloquent;
 
 
-use Propaganistas\LaravelPhone\Casts\E164PhoneNumberCast;
+use OtherSoftware\Database\Eloquent\Casts\PhoneNumberCast;
 
 
 final readonly class Cast
@@ -62,6 +62,6 @@ final readonly class Cast
      */
     public static function phone(string $country = null): string
     {
-        return sprintf('%s:%s', E164PhoneNumberCast::class, $country ?: config('app.country'));
+        return sprintf('%s:%s', PhoneNumberCast::class, $country ?: config('app.country'));
     }
 }

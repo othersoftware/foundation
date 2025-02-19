@@ -541,6 +541,7 @@ declare global {
 
 declare global {
   type Nullable<T> = T | null | undefined;
+  type PhoneNumber = { national: string, rfc: string };
 }
 
 declare module '@vue/runtime-core' {
