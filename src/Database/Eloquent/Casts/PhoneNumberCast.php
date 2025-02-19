@@ -26,6 +26,7 @@ class PhoneNumberCast extends E164PhoneNumberCast
 
         return [
             'national' => $value->formatNational(),
+            'country' => $value->getCountry(),
             'rfc' => $value->formatRFC3966(),
         ];
     }
