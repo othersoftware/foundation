@@ -2422,7 +2422,7 @@ const Ds = Ve({
       };
     }
     async function S(_) {
-      return t.value = _.abilities, n.value = _.authenticated, o.value = _.location, u.value = _.signature, _.stack && (a.value = Cr(ke(Se(a.value)), _.stack)), _.toasts && _.toasts.length > 0 && (p.value = [...p.value, ..._.toasts]), await be(() => h());
+      return t.value = _.abilities, n.value = _.authenticated, _.location && (o.value = _.location), _.signature && (u.value = _.signature), _.stack && (a.value = Cr(ke(Se(a.value)), _.stack)), _.toasts && _.toasts.length > 0 && (p.value = [...p.value, ..._.toasts]), await be(() => h());
     }
     N(vr, t), N(br, n), N(wr, o), N(Sr, u), N(Er, S), N(Ar, e.resolver), N(qt, Q(() => 0)), N(Ut, a), N(Rr, p);
     function b(_) {

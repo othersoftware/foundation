@@ -128,12 +128,15 @@ final class ResponseFactory implements Responsable
 
         $data = [];
 
-        $data['location'] = $request->fullUrl();
-
         if (isset($this->meta)) {
             $data['signature'] = encrypt($this->meta->getViewStack());
+            $data['location'] = $request->fullUrl();
         } else {
             $data['signature'] = $request->header('X-Stack-Signature');
+        }
+
+        if (isset($this->stack)) {
+            $data['stack'] = $this->stack->toArray();
         }
 
         if (isset($this->redirect)) {
@@ -142,10 +145,6 @@ final class ResponseFactory implements Responsable
 
         $data['abilities'] = (object) $this->abilities;
         $data['errors'] = $this->errors;
-
-        if (isset($this->stack)) {
-            $data['stack'] = $this->stack->toArray();
-        }
 
         if (isset($this->raw)) {
             $data['raw'] = $this->raw;

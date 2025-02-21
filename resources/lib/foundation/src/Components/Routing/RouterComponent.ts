@@ -40,8 +40,14 @@ export const RouterComponent = defineComponent({
     async function update(fresh: CompleteResponse): Promise<State> {
       abilities.value = fresh.abilities;
       authenticated.value = fresh.authenticated;
-      location.value = fresh.location;
-      signature.value = fresh.signature;
+
+      if (fresh.location) {
+        location.value = fresh.location;
+      }
+
+      if (fresh.signature) {
+        signature.value = fresh.signature;
+      }
 
       if (fresh.stack) {
         stack.value = updateStack(toRaw(toValue(stack.value)), fresh.stack);

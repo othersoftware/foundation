@@ -24,7 +24,7 @@ class AbilityResponse extends Response
     #[Override]
     public static function deny($message = null, $code = null)
     {
-        return new static(static::resolveAbilityName(), true, $message, $code);
+        return new static(static::resolveAbilityName(), false, $message, $code);
     }
 
 
