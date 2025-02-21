@@ -14,6 +14,24 @@ import { RendererNode } from 'vue';
 import { SlotsType } from 'vue';
 import { VNode } from 'vue';
 
+export declare interface Abilities extends Record<string, Ability> {
+}
+
+export declare interface Ability {
+    allowed: boolean;
+    denied: boolean;
+    message: string | null;
+    code: any;
+}
+
+export declare interface Authenticated {
+    id: number;
+    name: string;
+    email: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export declare function blank(value: any): boolean;
 
 declare type Body_2 = XMLHttpRequestBodyInit | Object | null | undefined;
@@ -22,6 +40,8 @@ export { Body_2 as Body }
 declare type Callback<T> = () => Promise<T> | T;
 
 export declare class CompleteResponse extends Response_2 {
+    readonly abilities: Abilities;
+    readonly authenticated: Authenticated | null;
     readonly location: string;
     readonly signature: string;
     readonly redirect: RouterRedirect;
@@ -44,11 +64,12 @@ export declare interface Confirmation extends Config {
     cancel: () => void;
 }
 
-export declare function createFormContext(initial?: Record<string, any>): {
+export declare function createFormContext(initial?: Record<string, any>, initialReadonly?: boolean): {
     data: Ref<Record<string, any>, Record<string, any>>;
     errors: Ref<Record<string, string[]>, Record<string, string[]>>;
     touched: Ref<Record<string, boolean>, Record<string, boolean>>;
     processing: Ref<boolean, boolean>;
+    readonly: Ref<boolean, boolean>;
     touch: (name: string) => void;
     value: (name: string, value: any) => any;
     fill: (name: string, value: any) => void;
@@ -111,6 +132,11 @@ type: ObjectConstructor;
 required: false;
 default: {};
 };
+readonly: {
+type: BooleanConstructor;
+required: false;
+default: boolean;
+};
 onSubmit: {
 type: PropType<FormHandler>;
 required: false;
@@ -132,6 +158,11 @@ type: ObjectConstructor;
 required: false;
 default: {};
 };
+readonly: {
+type: BooleanConstructor;
+required: false;
+default: boolean;
+};
 onSubmit: {
 type: PropType<FormHandler>;
 required: false;
@@ -139,6 +170,7 @@ required: false;
 }>> & Readonly<{}>, {
 data: Record<string, any>;
 method: string;
+readonly: boolean;
 }, SlotsType<{
 default: {
 data: any;
@@ -179,6 +211,8 @@ declare interface HttpOptions {
 }
 
 export declare interface InitialState extends State {
+    abilities: Abilities;
+    authenticated: Authenticated | null;
     toasts: ToastRegistry;
 }
 
@@ -416,6 +450,10 @@ export declare interface State {
     stack: StackedViewResolved;
 }
 
+export declare const StateAbilities: InjectionKey<Ref<Abilities>>;
+
+export declare const StateAuthenticated: InjectionKey<Ref<Authenticated | null>>;
+
 export declare const StateLocationInjectionKey: InjectionKey<Ref<string>>;
 
 export declare type StateManager = (fresh: CompleteResponse) => Promise<State>;
@@ -476,6 +514,10 @@ export declare function transChoice(key: string, number: number, replace?: Recor
 export declare function updateStack(current: StackedViewResolved, fresh: StackedView): StackedViewResolved;
 
 export declare function url(uri: string, params?: Record<string, any>, hash?: string, base?: string | null): string;
+
+export declare function useAbilities(): Ref<Abilities, Abilities>;
+
+export declare function useAuthenticated(): Ref<Authenticated | null, Authenticated | null>;
 
 export declare function useConfirmation(): typeof factory;
 

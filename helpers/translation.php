@@ -1,8 +1,8 @@
 <?php
 
-use Astrotomic\Translatable\Locales;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\App;
+use OtherSoftware\Translation\Locales;
 
 
 if (! function_exists('run_with_locale')) {

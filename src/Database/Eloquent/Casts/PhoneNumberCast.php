@@ -4,6 +4,7 @@ namespace OtherSoftware\Database\Eloquent\Casts;
 
 
 use Illuminate\Database\Eloquent\Model;
+use OtherSoftware\Http\Resources\FormResource;
 use Propaganistas\LaravelPhone\Casts\E164PhoneNumberCast;
 use Propaganistas\LaravelPhone\PhoneNumber;
 
@@ -16,12 +17,16 @@ class PhoneNumberCast extends E164PhoneNumberCast
      * @param PhoneNumber|null $value
      * @param array $attributes
      *
-     * @return array|null
+     * @return string|array|null
      */
-    public function serialize($model, string $key, $value, array $attributes): ?array
+    public function serialize($model, string $key, $value, array $attributes): string|array|null
     {
         if (! $value) {
             return null;
+        }
+
+        if (FormResource::rendersForForm()) {
+            return $value->formatE164();
         }
 
         return [

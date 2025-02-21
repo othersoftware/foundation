@@ -13,7 +13,7 @@ export const RouterViewComponent = defineComponent({
     allowLayouts: {
       type: Boolean as PropType<boolean>,
       required: false,
-      default: false,
+      default: true,
     },
   },
   setup(props) {
@@ -41,10 +41,11 @@ export const RouterViewComponent = defineComponent({
     return () => {
       if (view.value && 'component' in view.value) {
         let component = resolver(view.value.component);
+        let viewProps = view.value.props;
 
         component.inheritAttrs = !!component.inheritAttrs;
 
-        let children = h(component, view.value.props);
+        let children = h(component, viewProps);
 
         if (props.allowLayouts && component.layout) {
           children = wrap(component.layout).concat(children).reverse().reduce((child, layout) => {
@@ -52,7 +53,7 @@ export const RouterViewComponent = defineComponent({
 
             layout.inheritAttrs = !!layout.inheritAttrs;
 
-            return h(layout, null, () => child);
+            return h(layout, viewProps, () => child);
           });
         }
 

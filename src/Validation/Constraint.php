@@ -179,8 +179,12 @@ final readonly class Constraint
     }
 
 
-    public static function confirmed(): string
+    public static function confirmed(?string $field = null): string
     {
+        if (filled($field)) {
+            return sprintf('confirmed:%s', $field);
+        }
+
         return 'confirmed';
     }
 

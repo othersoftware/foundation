@@ -11,15 +11,18 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class Context
 {
-    public static function using(string $view): string
+    public static function using(string $view, string $guard = 'web'): string
     {
-        return static::class . ':' . $view;
+        return static::class . ':' . $view . ',' . $guard;
     }
 
 
-    public function handle(Request $request, Closure $next, string $view)
+    public function handle(Request $request, Closure $next, ...$args)
     {
+        [$view, $guard] = $args;
+
         Vue::setView($view);
+        Vue::setGuard($guard);
 
         $response = $next($request);
 

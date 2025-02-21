@@ -4,9 +4,12 @@ namespace OtherSoftware\Bridge;
 
 
 use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View as IlluminateView;
+use OtherSoftware\Auth\Access\AbilityResponse;
 use OtherSoftware\Bridge\Protocol\Redirect;
 use OtherSoftware\Bridge\Stack\StackMeta;
 use OtherSoftware\Bridge\Stack\View;
@@ -16,7 +19,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ResponseFactory implements Responsable
 {
+    private array $abilities = [];
+
+
     private array $errors = [];
+
+
+    private string $guard = 'web';
 
 
     private StackMeta $meta;
@@ -49,9 +58,25 @@ final class ResponseFactory implements Responsable
     }
 
 
+    public function setAbilities(array $abilities): ResponseFactory
+    {
+        $this->abilities = array_merge($this->abilities, collect($abilities)->mapWithKeys(fn(AbilityResponse $res) => [$res->ability => $res->toArray()])->toArray());
+
+        return $this;
+    }
+
+
     public function setErrors(array $errors): ResponseFactory
     {
         $this->errors = $errors;
+
+        return $this;
+    }
+
+
+    public function setGuard(string $guard): ResponseFactory
+    {
+        $this->guard = $guard;
 
         return $this;
     }
@@ -115,6 +140,7 @@ final class ResponseFactory implements Responsable
             $data['redirect'] = $this->redirect->toArray();
         }
 
+        $data['abilities'] = (object) $this->abilities;
         $data['errors'] = $this->errors;
 
         if (isset($this->stack)) {
@@ -126,6 +152,7 @@ final class ResponseFactory implements Responsable
         }
 
         $data['toasts'] = Toast::flush();
+        $data['authenticated'] = $this->getAuthenticatedUser();
 
         if ($this->isVuePowered($request)) {
             $response = $this->getContinuousResponse($data);
@@ -150,6 +177,17 @@ final class ResponseFactory implements Responsable
     private function encodeJsonState(array $data): string
     {
         return json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
+
+    private function getAuthenticatedUser(): ?array
+    {
+        /** @var Model $authenticated */
+        if ($authenticated = Auth::guard($this->guard)->user()) {
+            return $authenticated->toArray();
+        }
+
+        return null;
     }
 
 

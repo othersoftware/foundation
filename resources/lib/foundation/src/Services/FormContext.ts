@@ -4,11 +4,12 @@ import lodashGet from 'lodash.get';
 
 export const FormContextInjectionKey = Symbol('FormContext') as InjectionKey<FormContextInterface>;
 
-export function createFormContext(initial: Record<string, any> = {}) {
+export function createFormContext(initial: Record<string, any> = {}, initialReadonly: boolean = false) {
   const data = ref(initial) as Ref<Record<string, any>>;
   const errors = ref({}) as Ref<Record<string, string[]>>;
   const touched = ref({}) as Ref<Record<string, boolean>>;
   const processing = ref(false);
+  const readonly = ref(initialReadonly);
 
   function touch(name: string) {
     lodashSet(touched.value, name, true);
@@ -27,6 +28,7 @@ export function createFormContext(initial: Record<string, any> = {}) {
     errors,
     touched,
     processing,
+    readonly,
     touch,
     value,
     fill,

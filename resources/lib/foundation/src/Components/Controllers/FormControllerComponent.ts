@@ -1,9 +1,10 @@
-import { type PropType, ref, type Ref, nextTick, watch, provide, defineComponent, h, type SlotsType } from 'vue';
+import { type PropType, ref, type Ref, nextTick, watch, provide, defineComponent, h, type SlotsType, toValue } from 'vue';
 import type { Method } from '../../Http/Client/Request';
 import type { Response } from '../../Http/Client/Response';
 import { CompleteResponse } from '../../Http/Client/Response';
 import { useHttpClient } from '../../Composables/UseHttpClient';
 import { createFormContext, FormContextInjectionKey, type FormContextInterface } from '../../Services/FormContext';
+import lodashCloneDeep from 'lodash.clonedeep';
 
 type FormHandler = (data: any, ctx: FormContextInterface) => Promise<any>;
 
@@ -24,6 +25,11 @@ export const FormControllerComponent = defineComponent({
       required: false,
       default: {},
     },
+    readonly: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     onSubmit: {
       type: Function as PropType<FormHandler>,
       required: false,
@@ -41,10 +47,10 @@ export const FormControllerComponent = defineComponent({
   }>,
   setup(props, { slots, expose }) {
     const element = ref() as Ref<HTMLFormElement>;
-    const ctx = createFormContext(props.data);
+    const ctx = createFormContext(lodashCloneDeep(toValue(props.data)), toValue(props.readonly));
     const http = useHttpClient();
 
-    const { data, processing, errors, touched } = ctx;
+    const { data, processing, readonly, errors, touched } = ctx;
 
     function submit() {
       element.value.dispatchEvent(new SubmitEvent('submit'));
@@ -81,7 +87,11 @@ export const FormControllerComponent = defineComponent({
     }
 
     watch(() => props.data, (values) => {
-      data.value = values;
+      data.value = lodashCloneDeep(toValue(values));
+    });
+
+    watch(() => props.readonly, (value) => {
+      readonly.value = toValue(value);
     });
 
     expose({
@@ -95,6 +105,7 @@ export const FormControllerComponent = defineComponent({
       ref: (el) => element.value = el as HTMLFormElement,
       action: props.action,
       method: props.method,
+      novalidate: true,
       onSubmit: handleSubmit,
     }, slots.default({
       data: data.value,

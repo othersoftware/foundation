@@ -3,7 +3,7 @@ import { type ViewResolver } from '../../Types/ViewResolver';
 import { type State, type InitialState } from '../../Types/State';
 import type { CompleteResponse } from '../../Http/Client/Response';
 import { StackedViewResolverInjectionKey, StackedViewInjectionKey, StackedViewDepthInjectionKey } from '../../Services/StackedView';
-import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack } from '../../Services/StateManager';
+import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities } from '../../Services/StateManager';
 import { RouterViewComponent } from './RouterViewComponent';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
 
@@ -22,6 +22,8 @@ export const RouterComponent = defineComponent({
     },
   },
   setup(props) {
+    const abilities = ref(props.state.abilities);
+    const authenticated = ref(props.state.authenticated);
     const location = ref(props.state.location);
     const stack = ref(props.state.stack);
     const signature = ref(props.state.signature);
@@ -36,6 +38,8 @@ export const RouterComponent = defineComponent({
     }
 
     async function update(fresh: CompleteResponse): Promise<State> {
+      abilities.value = fresh.abilities;
+      authenticated.value = fresh.authenticated;
       location.value = fresh.location;
       signature.value = fresh.signature;
 
@@ -50,6 +54,8 @@ export const RouterComponent = defineComponent({
       return await nextTick(() => buildState());
     }
 
+    provide(StateAbilities, abilities);
+    provide(StateAuthenticated, authenticated);
     provide(StateLocationInjectionKey, location);
     provide(StateStackSignatureInjectionKey, signature);
     provide(StateManagerInjectionKey, update);
@@ -79,7 +85,7 @@ export const RouterComponent = defineComponent({
     });
 
     return () => {
-      return h(RouterViewComponent, { allowLayouts: true });
+      return h(RouterViewComponent);
     };
   },
 });
