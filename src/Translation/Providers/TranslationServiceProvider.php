@@ -29,7 +29,7 @@ class TranslationServiceProvider extends ServiceProvider
 
     protected function registerTranslatableHelper(): void
     {
-        $this->app->singleton('translatable.locales', Locales::class);
+        $this->app->singleton('translations.locales', Locales::class);
         $this->app->singleton(Locales::class);
     }
 }

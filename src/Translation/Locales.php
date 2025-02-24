@@ -31,7 +31,7 @@ class Locales implements Arrayable
             throw LocalesNotDefinedException::make();
         }
 
-        $this->locales = $config;
+        $this->locales = array_combine($config, $config);
         $this->translator = $translator;
     }
 

@@ -29,7 +29,7 @@ class TranslatableFormRequest extends FormRequest
 
     protected function translatableLocales(): array
     {
-        return resolve('translatable.locales')->all();
+        return resolve('translations.locales')->all();
     }
 
 

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use OtherSoftware\Contracts\Translatable;
+use OtherSoftware\Database\Eloquent\Model as OtherSoftwareModel;
 
 
 /**
@@ -41,9 +42,16 @@ class FormResource extends JsonResource
             }
         }
 
-        $data['exists'] = $this->resource->exists;
-
         static::$rendersForForm = false;
+
+        $data['meta'] = [];
+        $data['meta']['exists'] = $this->resource->exists;
+
+        if ($this->resource instanceof OtherSoftwareModel) {
+            foreach ($this->resource->getSerializedDates() as $key => $value) {
+                $data['meta'][$key] = $value;
+            }
+        }
 
         return $data;
     }

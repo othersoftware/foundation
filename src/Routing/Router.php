@@ -158,7 +158,7 @@ final class Router extends BaseRouter
     }
 
 
-    private function findParentRoute(Route $route, bool $skipBinding = false): Route
+    private function findParentRoute(Route $route, bool $skipBinding = false, bool $rebound = false): Route
     {
         $parent = $this->routes->getByName($route->getParent());
 
@@ -169,7 +169,7 @@ final class Router extends BaseRouter
         assert($parent instanceof Route);
 
         // When route was not bound, bind parameters from nested route.
-        if (! isset($parent->parameters) && ! $skipBinding) {
+        if ($rebound || (! isset($parent->parameters) && ! $skipBinding)) {
             $parent->bindNested($route);
         }
 
@@ -199,7 +199,7 @@ final class Router extends BaseRouter
             }
 
             if ($route->isNested()) {
-                return $this->runRouteUp($this->findParentRoute($route), $request, $response);
+                return $this->runRouteUp($this->findParentRoute($route, rebound: true), $request, $response);
             }
         }
 

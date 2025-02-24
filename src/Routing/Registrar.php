@@ -6,6 +6,7 @@ namespace OtherSoftware\Routing;
 use Composer\ClassMapGenerator\ClassMapGenerator;
 use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\Arr;
+use OtherSoftware\Routing\Attributes\Authorize;
 use OtherSoftware\Routing\Attributes\Method;
 use OtherSoftware\Routing\Attributes\Middleware;
 use OtherSoftware\Routing\Attributes\Name;
@@ -80,6 +81,10 @@ final class Registrar
     {
         if (count($middleware = $this->getMiddlewareAttributes($reflection)) > 0) {
             $registrar->middleware(array_map(fn($attribute) => $attribute->middleware, $middleware));
+        }
+
+        if (count($authorizations = $this->getAuthorizationAttributes($reflection)) > 0) {
+            $registrar->middleware(array_map(fn($attribute) => $attribute->middleware, $authorizations));
         }
 
         foreach ($this->getWhereAttributes($reflection) as $where) {
@@ -171,6 +176,10 @@ final class Registrar
             $route->middleware(array_map(fn($attribute) => $attribute->middleware, $middleware));
         }
 
+        if (count($authorizations = $this->getAuthorizationAttributes($reflection)) > 0) {
+            $route->middleware(array_map(fn($attribute) => $attribute->middleware, $authorizations));
+        }
+
         if ($nested = $this->getNestedAttribute($reflection)) {
             $route->parent($nested->parent);
         }
@@ -182,6 +191,21 @@ final class Registrar
         if ($locale !== config('translations.default')) {
             $route->localize($locale);
         }
+    }
+
+
+    /**
+     * @param ReflectionClass|ReflectionMethod $reflection
+     *
+     * @return Authorize[]
+     */
+    private function getAuthorizationAttributes(ReflectionClass|ReflectionMethod $reflection): array
+    {
+        if (count($attributes = $reflection->getAttributes(Authorize::class)) > 0) {
+            return array_map(fn($attribute) => $attribute->newInstance(), $attributes);
+        }
+
+        return [];
     }
 
 

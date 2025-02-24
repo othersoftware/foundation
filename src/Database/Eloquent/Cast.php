@@ -3,6 +3,8 @@
 namespace OtherSoftware\Database\Eloquent;
 
 
+use OtherSoftware\Database\Eloquent\Casts\DateCast;
+use OtherSoftware\Database\Eloquent\Casts\DatetimeCast;
 use OtherSoftware\Database\Eloquent\Casts\PhoneNumberCast;
 
 
@@ -22,13 +24,13 @@ final readonly class Cast
 
     public static function date(): string
     {
-        return 'date';
+        return DateCast::class;
     }
 
 
     public static function datetime(): string
     {
-        return 'datetime';
+        return DatetimeCast::class;
     }
 
 
@@ -52,6 +54,12 @@ final readonly class Cast
     public static function hashed(): string
     {
         return 'hashed';
+    }
+
+
+    public static function json(): string
+    {
+        return 'json';
     }
 
 

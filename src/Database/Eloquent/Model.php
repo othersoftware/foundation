@@ -13,12 +13,22 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use IntlDateFormatter;
 use IntlDatePatternGenerator;
+use OtherSoftware\Http\Resources\FormResource;
 use OtherSoftware\Support\Facades\Vue;
 use Override;
 
 
 abstract class Model extends EloquentModel
 {
+    #[Override]
+    public function asDateTime($value)
+    {
+        // We make this protected function public, as we need it in custom
+        // date and datetime casters.
+        return parent::asDateTime($value);
+    }
+
+
     #[Override]
     public function fill(array $attributes)
     {
@@ -40,6 +50,20 @@ abstract class Model extends EloquentModel
         $key = Str::snake($key);
 
         return parent::getAttribute($key);
+    }
+
+
+    public function getSerializedDates()
+    {
+        $dates = [];
+
+        foreach ($this->getArrayableAttributes() as $key => $value) {
+            if ($this->isDateAttribute($key) || $this->hasCast($key, [Cast::datetime(), Cast::date()])) {
+                $dates[$key] = empty($value) ? $value : $this->serializeDate($this->asDateTime($value));
+            }
+        }
+
+        return array_camel_keys($dates);
     }
 
 
@@ -80,6 +104,16 @@ abstract class Model extends EloquentModel
     #[Override]
     protected function serializeDate(DateTimeInterface $date)
     {
+        if (FormResource::rendersForForm()) {
+            $instance = $date instanceof DateTimeImmutable ? CarbonImmutable::instance($date) : Carbon::instance($date);
+
+            if ($instance->isStartOfDay()) {
+                return $instance->format('Y-m-d');
+            }
+
+            return $instance->format('Y-m-d H:i');
+        }
+
         if (Vue::rendersVueResponse()) {
             $instance = $date instanceof DateTimeImmutable ? CarbonImmutable::instance($date) : Carbon::instance($date);
             $locale = config('app.locale');

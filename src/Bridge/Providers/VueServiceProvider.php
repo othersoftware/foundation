@@ -26,13 +26,8 @@ class VueServiceProvider extends ServiceProvider
 
     public function register(): void
     {
-        $this->app->singleton('frontend', function () {
-            return new ResponseFactory();
-        });
-
-        $this->app->singleton('toasts', function () {
-            return new ToastsManager();
-        });
+        $this->app->scoped('frontend', ResponseFactory::class);
+        $this->app->scoped('toasts', ToastsManager::class);
     }
 
 

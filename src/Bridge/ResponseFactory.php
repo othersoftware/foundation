@@ -40,15 +40,24 @@ final class ResponseFactory implements Responsable
     private bool $rendersVueResponse = false;
 
 
+    private Request $request;
+
+
     private View $stack;
 
 
     private string $view;
 
 
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
+
+
     public function isVuePowered(?Request $request = null): bool
     {
-        return (bool) ($request ?? request())->header('X-Stack-Router');
+        return (bool) ($request ?? $this->request)->header('X-Stack-Router');
     }
 
 
