@@ -11,6 +11,8 @@ use Illuminate\Validation\Validator;
 
 class RequiredWithImplicitAddress implements ValidationRule, ValidatorAwareRule
 {
+    public bool $implicit = true;
+
 
     private string $countryField;
 

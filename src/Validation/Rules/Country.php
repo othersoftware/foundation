@@ -10,6 +10,9 @@ use Symfony\Component\Intl\Countries;
 
 class Country implements ValidationRule
 {
+    public bool $implicit = true;
+
+
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (! Countries::exists($value)) {
