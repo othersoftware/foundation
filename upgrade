@@ -1,0 +1,4 @@
+#!/bin/bash
+composer update
+composer bump
+bunx npm-check-updates -ui -ws --root --install always
