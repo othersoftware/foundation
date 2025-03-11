@@ -11,7 +11,6 @@ use Doctrine\Migrations\Provider\SchemaProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use OtherSoftware\Database\Migrations\Provider\ViewsProvider;
 
 
 class SchemaUpdateCommand extends Command
@@ -48,9 +47,6 @@ class SchemaUpdateCommand extends Command
         $this->withProgressBar($sql, function ($query) use ($connection) {
             $connection->executeStatement($query);
         });
-
-        // Generate schema views.
-        resolve(ViewsProvider::class)->createViews();
 
         $this->line("\n");
         $this->getOutput()->success('You\'re up to date with your schema!');

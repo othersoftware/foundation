@@ -17,7 +17,7 @@ use OtherSoftware\Database\Console\Commands\SchemaDropCommand;
 use OtherSoftware\Database\Console\Commands\SchemaFreshCommand;
 use OtherSoftware\Database\Console\Commands\SchemaUpdateCommand;
 use OtherSoftware\Database\Console\Commands\SchemaUpgradeCommand;
-use OtherSoftware\Database\Console\Commands\SchemaViewsCommand;
+use OtherSoftware\Database\Console\Commands\SeedDictionariesCommand;
 use OtherSoftware\Database\DoctrineConnectionFactory;
 use OtherSoftware\Database\Migrations\Provider\SchemaProvider;
 
@@ -43,8 +43,8 @@ class DoctrineServiceProvider extends ServiceProvider
             SchemaDropCommand::class,
             SchemaFreshCommand::class,
             SchemaUpdateCommand::class,
-            SchemaViewsCommand::class,
             SchemaUpgradeCommand::class,
+            SeedDictionariesCommand::class,
         ]);
     }
 
