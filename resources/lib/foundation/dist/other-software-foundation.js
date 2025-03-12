@@ -1,7 +1,7 @@
 var zn = Object.defineProperty;
 var Yn = (e, t, n) => t in e ? zn(e, t, { enumerable: !0, configurable: !0, writable: !0, value: n }) : e[t] = n;
 var T = (e, t, n) => Yn(e, typeof t != "symbol" ? t + "" : t, n);
-import { inject as j, ref as R, defineComponent as Ve, toValue as Se, watch as ir, provide as N, h as Ee, nextTick as be, computed as Q, onMounted as Mt, onBeforeUnmount as Ht, toRaw as ke, ssrUtils as Ct, initDirectivesForSSR as Jn, createApp as Zn, createVNode as Xn, ssrContextKey as mr, warn as wt, Fragment as Qn, Static as eo, Comment as to, Text as ro, mergeProps as no } from "vue";
+import { inject as j, ref as x, defineComponent as Ve, toValue as Se, watch as ir, provide as N, h as Ee, nextTick as be, computed as Q, onMounted as Mt, onBeforeUnmount as Ht, toRaw as ke, ssrUtils as Ct, initDirectivesForSSR as Jn, createApp as Zn, createVNode as Xn, ssrContextKey as mr, warn as wt, Fragment as Qn, Static as eo, Comment as to, Text as ro, mergeProps as no } from "vue";
 class kt {
   constructor(t) {
     T(this, "xhr");
@@ -131,7 +131,7 @@ const io = {
 function Bt() {
   const e = ao(), t = so();
   async function n(h, S, { data: b = void 0, preserveScroll: _ = !1, replace: w = !1 } = {}) {
-    return document.body.classList.add("osf-loading"), await Ft.send(h, S, b, t.value).then(async (v) => await e.update(v).then((x) => v.redirect ? p(v.redirect) : v.raw ? Promise.resolve(v.raw) : (_ || u(), w ? a(x) : o(x), Promise.resolve(v)))).catch(async (v) => v instanceof St ? await e.update(v).then(() => Promise.reject(v)) : v.status === 423 ? ($t.dispatch("password.confirm", { method: h, url: S, options: { data: b, preserveScroll: _, replace: w } }), Promise.reject(v)) : (console.error(v), APP_DEBUG && v.content && io.show(v.content), Promise.reject(v))).finally(() => {
+    return document.body.classList.add("osf-loading"), await Ft.send(h, S, b, t.value).then(async (v) => await e.update(v).then((P) => v.redirect ? p(v.redirect) : v.raw ? Promise.resolve(v.raw) : (_ || u(), w ? a(P) : o(P), Promise.resolve(v)))).catch(async (v) => v instanceof St ? await e.update(v).then(() => Promise.reject(v)) : v.status === 423 ? ($t.dispatch("password.confirm", { method: h, url: S, options: { data: b, preserveScroll: _, replace: w } }), Promise.reject(v)) : (console.error(v), APP_DEBUG && v.content && io.show(v.content), Promise.reject(v))).finally(() => {
       document.body.classList.remove("osf-loading");
     });
   }
@@ -179,7 +179,7 @@ var Nt, cr;
 function co() {
   if (cr) return Nt;
   cr = 1;
-  var e = "Expected a function", t = "__lodash_hash_undefined__", n = 9007199254740991, o = "[object Function]", a = "[object GeneratorFunction]", u = "[object Symbol]", p = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, h = /^\w*$/, S = /^\./, b = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, _ = /[\\^$.*+?()[\]{}|]/g, w = /\\(\\)?/g, v = /^\[object .+?Constructor\]$/, x = /^(?:0|[1-9]\d*)$/, O = typeof M == "object" && M && M.Object === Object && M, F = typeof self == "object" && self && self.Object === Object && self, ue = O || F || Function("return this")();
+  var e = "Expected a function", t = "__lodash_hash_undefined__", n = 9007199254740991, o = "[object Function]", a = "[object GeneratorFunction]", u = "[object Symbol]", p = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, h = /^\w*$/, S = /^\./, b = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, _ = /[\\^$.*+?()[\]{}|]/g, w = /\\(\\)?/g, v = /^\[object .+?Constructor\]$/, P = /^(?:0|[1-9]\d*)$/, O = typeof M == "object" && M && M.Object === Object && M, F = typeof self == "object" && self && self.Object === Object && self, ue = O || F || Function("return this")();
   function le(s, l) {
     return s == null ? void 0 : s[l];
   }
@@ -334,7 +334,7 @@ function co() {
     return ut(g) ? g : void 0;
   }
   function V(s, l) {
-    return l = l ?? n, !!l && (typeof s == "number" || x.test(s)) && s > -1 && s % 1 == 0 && s < l;
+    return l = l ?? n, !!l && (typeof s == "number" || P.test(s)) && s > -1 && s % 1 == 0 && s < l;
   }
   function _e(s, l) {
     if (me(s))
@@ -420,7 +420,7 @@ var Lt, lr;
 function lo() {
   if (lr) return Lt;
   lr = 1;
-  var e = "Expected a function", t = "__lodash_hash_undefined__", n = "[object Function]", o = "[object GeneratorFunction]", a = "[object Symbol]", u = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, p = /^\w*$/, h = /^\./, S = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, b = /[\\^$.*+?()[\]{}|]/g, _ = /\\(\\)?/g, w = /^\[object .+?Constructor\]$/, v = typeof M == "object" && M && M.Object === Object && M, x = typeof self == "object" && self && self.Object === Object && self, O = v || x || Function("return this")();
+  var e = "Expected a function", t = "__lodash_hash_undefined__", n = "[object Function]", o = "[object GeneratorFunction]", a = "[object Symbol]", u = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, p = /^\w*$/, h = /^\./, S = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, b = /[\\^$.*+?()[\]{}|]/g, _ = /\\(\\)?/g, w = /^\[object .+?Constructor\]$/, v = typeof M == "object" && M && M.Object === Object && M, P = typeof self == "object" && self && self.Object === Object && self, O = v || P || Function("return this")();
   function F(c, d) {
     return c == null ? void 0 : c[d];
   }
@@ -644,7 +644,7 @@ function lo() {
 var fo = lo();
 const ho = /* @__PURE__ */ Gt(fo), Kt = Symbol("FormContext");
 function po(e = {}, t = !1) {
-  const n = R(e), o = R({}), a = R({}), u = R(!1), p = R(t);
+  const n = x(e), o = x({}), a = x({}), u = x(!1), p = x(t);
   function h(_) {
     ur(a.value, _, !0);
   }
@@ -676,8 +676,8 @@ dt.exports;
 var fr;
 function _o() {
   return fr || (fr = 1, function(e, t) {
-    var n = 200, o = "__lodash_hash_undefined__", a = 9007199254740991, u = "[object Arguments]", p = "[object Array]", h = "[object Boolean]", S = "[object Date]", b = "[object Error]", _ = "[object Function]", w = "[object GeneratorFunction]", v = "[object Map]", x = "[object Number]", O = "[object Object]", F = "[object Promise]", ue = "[object RegExp]", le = "[object Set]", De = "[object String]", Ce = "[object Symbol]", ee = "[object WeakMap]", fe = "[object ArrayBuffer]", B = "[object DataView]", te = "[object Float32Array]", de = "[object Float64Array]", re = "[object Int8Array]", he = "[object Int16Array]", Me = "[object Int32Array]", Ae = "[object Uint8Array]", z = "[object Uint8ClampedArray]", Oe = "[object Uint16Array]", G = "[object Uint32Array]", $ = /[\\^$.*+?()[\]{}|]/g, He = /\w*$/, K = /^\[object .+?Constructor\]$/, rt = /^(?:0|[1-9]\d*)$/, C = {};
-    C[u] = C[p] = C[fe] = C[B] = C[h] = C[S] = C[te] = C[de] = C[re] = C[he] = C[Me] = C[v] = C[x] = C[O] = C[ue] = C[le] = C[De] = C[Ce] = C[Ae] = C[z] = C[Oe] = C[G] = !0, C[b] = C[_] = C[ee] = !1;
+    var n = 200, o = "__lodash_hash_undefined__", a = 9007199254740991, u = "[object Arguments]", p = "[object Array]", h = "[object Boolean]", S = "[object Date]", b = "[object Error]", _ = "[object Function]", w = "[object GeneratorFunction]", v = "[object Map]", P = "[object Number]", O = "[object Object]", F = "[object Promise]", ue = "[object RegExp]", le = "[object Set]", De = "[object String]", Ce = "[object Symbol]", ee = "[object WeakMap]", fe = "[object ArrayBuffer]", B = "[object DataView]", te = "[object Float32Array]", de = "[object Float64Array]", re = "[object Int8Array]", he = "[object Int16Array]", Me = "[object Int32Array]", Ae = "[object Uint8Array]", z = "[object Uint8ClampedArray]", Oe = "[object Uint16Array]", G = "[object Uint32Array]", $ = /[\\^$.*+?()[\]{}|]/g, He = /\w*$/, K = /^\[object .+?Constructor\]$/, rt = /^(?:0|[1-9]\d*)$/, C = {};
+    C[u] = C[p] = C[fe] = C[B] = C[h] = C[S] = C[te] = C[de] = C[re] = C[he] = C[Me] = C[v] = C[P] = C[O] = C[ue] = C[le] = C[De] = C[Ce] = C[Ae] = C[z] = C[Oe] = C[G] = !0, C[b] = C[_] = C[ee] = !1;
     var nt = typeof M == "object" && M && M.Object === Object && M, Y = typeof self == "object" && self && self.Object === Object && self, k = nt || Y || Function("return this")(), U = t && !t.nodeType && t, Fe = U && !0 && e && !e.nodeType && e, ot = Fe && Fe.exports === U;
     function st(r, i) {
       return r.set(i[0], i[1]), r;
@@ -691,13 +691,13 @@ function _o() {
       return r;
     }
     function W(r, i) {
-      for (var f = -1, m = i.length, P = r.length; ++f < m; )
-        r[P + f] = i[f];
+      for (var f = -1, m = i.length, R = r.length; ++f < m; )
+        r[R + f] = i[f];
       return r;
     }
     function Be(r, i, f, m) {
-      for (var P = -1, L = r ? r.length : 0; ++P < L; )
-        f = i(f, r[P], P, r);
+      for (var R = -1, L = r ? r.length : 0; ++R < L; )
+        f = i(f, r[R], R, r);
       return f;
     }
     function it(r, i) {
@@ -719,8 +719,8 @@ function _o() {
     }
     function Ge(r) {
       var i = -1, f = Array(r.size);
-      return r.forEach(function(m, P) {
-        f[++i] = [P, m];
+      return r.forEach(function(m, R) {
+        f[++i] = [R, m];
       }), f;
     }
     function Te(r, i) {
@@ -853,9 +853,9 @@ function _o() {
     }
     Je.prototype.clear = dn, Je.prototype.delete = hn, Je.prototype.get = pn, Je.prototype.has = _n, Je.prototype.set = gn;
     function yn(r, i) {
-      var f = xt(r) || Fn(r) ? it(r.length, String) : [], m = f.length, P = !!m;
+      var f = xt(r) || Fn(r) ? it(r.length, String) : [], m = f.length, R = !!m;
       for (var L in r)
-        V.call(r, L) && !(P && (L == "length" || Vn(L, m))) && f.push(L);
+        V.call(r, L) && !(R && (L == "length" || Vn(L, m))) && f.push(L);
       return f;
     }
     function Jt(r, i, f) {
@@ -871,9 +871,9 @@ function _o() {
     function mn(r, i) {
       return r && Zt(i, Pt(i), r);
     }
-    function Ot(r, i, f, m, P, L, ce) {
+    function Ot(r, i, f, m, R, L, ce) {
       var I;
-      if (m && (I = L ? m(r, P, L, ce) : m(r)), I !== void 0)
+      if (m && (I = L ? m(r, R, L, ce) : m(r)), I !== void 0)
         return I;
       if (!_t(r))
         return r;
@@ -971,8 +971,8 @@ function _o() {
     }
     function Zt(r, i, f, m) {
       f || (f = {});
-      for (var P = -1, L = i.length; ++P < L; ) {
-        var ce = i[P], I = void 0;
+      for (var R = -1, L = i.length; ++R < L; ) {
+        var ce = i[R], I = void 0;
         Jt(f, ce, I === void 0 ? r[ce] : I);
       }
       return f;
@@ -1017,13 +1017,13 @@ function _o() {
       return typeof r.constructor == "function" && !Qt(r) ? wn(ft(r)) : {};
     }
     function $n(r, i, f, m) {
-      var P = r.constructor;
+      var R = r.constructor;
       switch (i) {
         case fe:
           return Tt(r);
         case h:
         case S:
-          return new P(+r);
+          return new R(+r);
         case B:
           return An(r, m);
         case te:
@@ -1038,9 +1038,9 @@ function _o() {
           return Rn(r, m);
         case v:
           return On(r, m, f);
-        case x:
+        case P:
         case De:
-          return new P(r);
+          return new R(r);
         case ue:
           return Tn(r);
         case le:
@@ -1149,7 +1149,7 @@ const dr = /* @__PURE__ */ Gt(go), yo = Ve({
   },
   slots: Object,
   setup(e, { slots: t, expose: n }) {
-    const o = R(), a = po(dr(Se(e.data)), Se(e.readonly)), u = Bt(), { data: p, processing: h, readonly: S, errors: b, touched: _ } = a;
+    const o = x(), a = po(dr(Se(e.data)), Se(e.readonly)), u = Bt(), { data: p, processing: h, readonly: S, errors: b, touched: _ } = a;
     function w() {
       o.value.dispatchEvent(new SubmitEvent("submit"));
     }
@@ -1160,7 +1160,7 @@ const dr = /* @__PURE__ */ Gt(go), yo = Ve({
         throw new Error("You must either provide action or your custom form handler!");
       return u.dispatch(e.method, e.action, { data: p.value });
     }
-    function x(O) {
+    function P(O) {
       O.preventDefault(), O.stopPropagation(), h.value = !0, b.value = {}, _.value = {}, be(() => v().catch((F) => {
         F instanceof St && (b.value = F.errors);
       }).finally(() => {
@@ -1179,7 +1179,7 @@ const dr = /* @__PURE__ */ Gt(go), yo = Ve({
       action: e.action,
       method: e.method,
       novalidate: !0,
-      onSubmit: x
+      onSubmit: P
     }, t.default({
       data: p.value,
       processing: h.value,
@@ -1257,17 +1257,17 @@ const Pr = Ve({
     explicit: { type: Boolean, required: !1 }
   },
   setup(e, { attrs: t, slots: n }) {
-    const o = oo(), a = Bt(), u = R(!1), p = Q(() => {
+    const o = oo(), a = Bt(), u = x(!1), p = Q(() => {
       var O;
-      let _ = o.value.replace(/\/$/, ""), w = (O = e.href) == null ? void 0 : O.replace(/\/$/, ""), v = _ === w, x = !e.explicit && w && o.value.startsWith(w);
-      return v || x;
+      let _ = o.value.replace(/\/$/, ""), w = (O = e.href) == null ? void 0 : O.replace(/\/$/, ""), v = _ === w, P = !e.explicit && w && o.value.startsWith(w);
+      return v || P;
     }), h = Q(() => e.href ? "a" : "button"), S = Q(() => e.href ? { target: e.target } : { disabled: e.disabled });
     function b(_) {
       if (!e.href || !Eo(_, e.href, e.target) || (_.preventDefault(), e.disabled))
         return;
-      let { method: w, href: v, data: x, preserveScroll: O, replace: F } = e;
+      let { method: w, href: v, data: P, preserveScroll: O, replace: F } = e;
       u.value = !0, be(() => {
-        a.dispatch(w, v, { data: x, preserveScroll: O, replace: F }).then(() => {
+        a.dispatch(w, v, { data: P, preserveScroll: O, replace: F }).then(() => {
           u.value = !1;
         }).catch(() => {
           u.value = !1;
@@ -1320,7 +1320,7 @@ const Ao = Ve({
   },
   slots: Object,
   setup(e, { slots: t, attrs: n }) {
-    const o = Nr(), a = R();
+    const o = Nr(), a = x();
     function u() {
       clearTimeout(a.value), o.value = o.value.filter((p) => p.id !== e.toast.id);
     }
@@ -1337,13 +1337,13 @@ const Ao = Ve({
   },
   slots: Object,
   setup(e, { slots: t, attrs: n }) {
-    const o = Bt(), a = R(), u = R(!1);
+    const o = Bt(), a = x(), u = x(!1);
     function p(b) {
       a.value = b, u.value = !0;
     }
     async function h(b) {
       let { method: _, url: w, options: v } = a.value;
-      return await o.post(e.action, b).then(async () => await o.dispatch(_, w, v).then(async (x) => (S(), await be(() => x))));
+      return await o.post(e.action, b).then(async () => await o.dispatch(_, w, v).then(async (P) => (S(), await be(() => P))));
     }
     function S() {
       u.value = !1, a.value = void 0;
@@ -2413,7 +2413,7 @@ const Ds = Ve({
     }
   },
   setup(e) {
-    const t = R(e.state.abilities), n = R(e.state.authenticated), o = R(e.state.location), a = R(e.state.stack), u = R(e.state.signature), p = R(e.state.toasts);
+    const t = x(e.state.abilities), n = x(e.state.authenticated), o = x(e.state.location), a = x(e.state.stack), u = x(e.state.signature), p = x(e.state.toasts);
     function h() {
       return {
         location: ke(Se(o)),
@@ -2445,7 +2445,7 @@ function Ms() {
     throw new Error("Cannot find initial script element with MVC state.");
   return JSON.parse(e.textContent);
 }
-const et = R();
+const et = x();
 async function yr(e, t) {
   return new Promise((n, o) => {
     function a() {
@@ -2473,15 +2473,18 @@ function ea() {
   return Hs;
 }
 function ta() {
-  return j(Kt, null);
+  return x();
 }
 function ra() {
+  return j(Kt, null);
+}
+function na() {
   let e = j(Kt);
   if (!e)
     throw new Error("Accessing form outside of context.");
   return e;
 }
-function na() {
+function oa() {
   const e = j(Tr);
   if (!e)
     throw new Error("You're trying to get stacked view parent out of Router context!");
@@ -2493,14 +2496,14 @@ function Fs() {
     throw new Error("You're trying to get parent view out of Router context!");
   return e;
 }
-function oa() {
+function sa() {
   const e = Fs();
   return Q(() => {
     if (e && e.value && e.value.location)
       return jr(e.value.location, e.value.query);
   });
 }
-function sa() {
+function aa() {
   const e = j(xr);
   if (!e)
     throw new Error("You're trying to get stacked view query params out of Router context!");
@@ -2509,26 +2512,26 @@ function sa() {
 function Bs(e) {
   return e == null ? !0 : typeof e == "number" || typeof e == "boolean" ? !1 : typeof e == "string" ? e.trim() === "" : e instanceof Array ? e.length > 0 : e instanceof Set || e instanceof Map ? e.size > 0 : !e;
 }
-function aa(e) {
+function ia(e) {
   return !Bs(e);
 }
-function ia(e = 16) {
+function ca(e = 16) {
   return Array.from(window.crypto.getRandomValues(new Uint8Array(Math.ceil(e / 2))), (t) => ("0" + (t & 255).toString(16)).slice(-2)).join("");
 }
-function ca(e) {
+function ua(e) {
   return e.filter((t) => t.parentId === null);
 }
-function ua(e, t) {
+function la(e, t) {
   return e.filter((n) => n.left > t.left && n.right < t.right && n.parentId === t.id);
 }
-function la(e, t) {
+function fa(e, t) {
   return e.filter((n) => n.left < t.left && n.right > t.right);
 }
-function fa(e, t) {
+function da(e, t) {
   return e.filter((n) => n.left > t.left && n.right < t.right);
 }
 var Gs = /* @__PURE__ */ ((e) => (e.SUCCESS = "success", e.DANGER = "danger", e.INFO = "info", e.WARNING = "warning", e))(Gs || {});
-function da() {
+function ha() {
   return {
     install(e) {
       e.component("RouterView", Pr), e.component("RouterLink", vo), e.component("FormController", yo), e.component("ToastController", Ao), e.component("PasswordConfirmationController", To), e.component("Toast", Oo), e.config.globalProperties.$t = xo, e.config.globalProperties.$tc = Po, e.config.globalProperties.$route = $o;
@@ -2564,14 +2567,14 @@ export {
   Bs as blank,
   po as createFormContext,
   Xs as createFoundationController,
-  da as createOtherSoftwareFoundation,
-  aa as filled,
+  ha as createOtherSoftwareFoundation,
+  ia as filled,
   Ys as getModelFromContext,
-  ia as hash,
-  la as nestedSetAncestors,
-  ua as nestedSetChildren,
-  fa as nestedSetDescendants,
-  ca as nestedSetRoot,
+  ca as hash,
+  fa as nestedSetAncestors,
+  la as nestedSetChildren,
+  da as nestedSetDescendants,
+  ua as nestedSetRoot,
   $o as route,
   zs as setModelWithContext,
   xo as trans,
@@ -2582,18 +2585,19 @@ export {
   Ws as useAuthenticated,
   ea as useConfirmation,
   Qs as useCurrentConfirmation,
-  ta as useFormContext,
+  ta as useFormApi,
+  ra as useFormContext,
   Bt as useHttpClient,
   oo as useLocation,
-  ra as usePersistentFormContext,
+  na as usePersistentFormContext,
   so as useStackSignature,
   ao as useStateManager,
   Nr as useToasts,
   bo as useViewDepth,
-  na as useViewLocation,
+  oa as useViewLocation,
   Fs as useViewParent,
-  oa as useViewParentLocation,
-  sa as useViewQuery,
+  sa as useViewParentLocation,
+  aa as useViewQuery,
   wo as useViewResolver,
   So as useViewStack,
   mo as wrap

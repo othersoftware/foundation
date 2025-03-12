@@ -113,6 +113,11 @@ declare type FactoryOptions = {
 
 export declare function filled(value: any): boolean;
 
+declare type FormApi = {
+    ctx: FormContextInterface;
+    submit: () => void;
+};
+
 export declare const FormContextInjectionKey: InjectionKey<FormContextInterface>;
 
 export declare type FormContextInterface = ReturnType<typeof createFormContext>;
@@ -522,6 +527,8 @@ export declare function useAuthenticated(): Ref<Authenticated | null, Authentica
 export declare function useConfirmation(): typeof factory;
 
 export declare function useCurrentConfirmation(): Ref<Confirmation | undefined, Confirmation | undefined>;
+
+export declare function useFormApi(): Ref<FormApi>;
 
 export declare function useFormContext(): FormContextInterface | null;
 

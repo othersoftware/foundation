@@ -53,6 +53,17 @@ abstract class Model extends EloquentModel
     }
 
 
+    #[Override]
+    public function getOriginal($key = null, $default = null)
+    {
+        if ($key) {
+            return parent::getOriginal(Str::snake($key), $default);
+        }
+
+        return parent::getOriginal($key, $default);
+    }
+
+
     public function getSerializedDates()
     {
         $dates = [];
@@ -64,6 +75,21 @@ abstract class Model extends EloquentModel
         }
 
         return array_camel_keys($dates);
+    }
+
+
+    #[Override]
+    public function isDirty($attributes = null)
+    {
+        if (is_null($attributes)) {
+            return parent::isDirty();
+        }
+
+        if (is_array($attributes)) {
+            return parent::isDirty(array_map(fn($attr) => Str::snake($attr), $attributes));
+        }
+
+        return parent::isDirty(array_map(fn($attr) => Str::snake($attr), func_get_args()));
     }
 
 
