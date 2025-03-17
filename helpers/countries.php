@@ -7,7 +7,13 @@ use Symfony\Component\Intl\Countries;
 if (! function_exists('countries_dictionary')) {
     function countries_dictionary(): array
     {
-        return collect(Countries::getNames(App::getLocale()))->map(fn(string $label, string $value) => compact('label', 'value'))->values()->toArray();
+        static $dict;
+
+        if (! isset($dict)) {
+            $dict = collect(Countries::getNames(App::getLocale()))->map(fn($name, $code) => ['label' => sprintf('%s - %s', $code, $name), 'value' => $code])->values()->toArray();
+        }
+
+        return $dict;
     }
 }
 

@@ -157,4 +157,40 @@ abstract class Model extends EloquentModel
 
         return parent::serializeDate($date);
     }
+
+
+    #[Override]
+    protected function setKeysForSaveQuery($query)
+    {
+        if (is_array($this->primaryKey)) {
+            return $query->where($this->getKeysForCompositePrimaryKey());
+        }
+
+        return parent::setKeysForSaveQuery($query);
+    }
+
+
+    #[Override]
+    protected function setKeysForSelectQuery($query)
+    {
+        if (is_array($this->primaryKey)) {
+            return $query->where($this->getKeysForCompositePrimaryKey());
+        }
+
+        return parent::setKeysForSelectQuery($query);
+    }
+
+
+    private function getKeysForCompositePrimaryKey(): array
+    {
+        assert(is_array($this->primaryKey));
+
+        $keys = [];
+
+        foreach ($this->primaryKey as $attr) {
+            $keys[$attr] = $this->original[$attr] ?? $this->getAttribute($attr);
+        }
+
+        return $keys;
+    }
 }
