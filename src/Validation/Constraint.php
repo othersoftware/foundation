@@ -23,6 +23,7 @@ use Illuminate\Validation\Rules\RequiredIf;
 use Illuminate\Validation\Rules\Unique;
 use Illuminate\Validation\Validator;
 use OtherSoftware\Validation\Rules\Country;
+use OtherSoftware\Validation\Rules\Currency;
 use OtherSoftware\Validation\Rules\MaxUploadSize;
 use OtherSoftware\Validation\Rules\RequiredWithExplicitAddress;
 use OtherSoftware\Validation\Rules\RequiredWithImplicitAddress;
@@ -198,6 +199,18 @@ final readonly class Constraint
     public static function country(): Country
     {
         return new Country();
+    }
+
+
+    /**
+     * The field under validation must be a valid currency code following
+     * the ISO 4217 Alphabetic Code specification.
+     *
+     * @return Currency
+     */
+    public static function currency(): Currency
+    {
+        return new Currency();
     }
 
 
