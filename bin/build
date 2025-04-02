@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Find and run build scripts, excluding node_modules and vendor directories
+find . -name "package.json" \
+  -not -path "*/node_modules/*" \
+  -not -path "*/vendor/*" \
+  -type f | while read -r pkgfile; do
+
+  if grep -q '"build":' "$pkgfile"; then
+    dir=$(dirname "$pkgfile")
+
+    echo "🚀 Found build script in: $dir"
+    echo "💻 Running: bun run build"
+
+    # Run in subshell to maintain current directory
+    (cd "$dir" && bun run build)
+
+    echo "----------------------------------------"
+  fi
+done

@@ -9,9 +9,10 @@ export type ViewsCollection = { components: ComponentsMap, vendors: ComponentsMa
 
 type Local = string;
 type Vendor = string | null | undefined;
+type Namespace = string | null | false | undefined;
 type Sources = Record<Local, Vendor> | Local[] | Local;
 
-export function collect(config: ResolvedConfig, sources: Sources): ViewsCollection {
+export function collect(config: ResolvedConfig, sources: Sources, namespace: Namespace = undefined): ViewsCollection {
   const vendors: ComponentsMap = new Map();
   const components: ComponentsMap = new Map();
 
@@ -25,20 +26,20 @@ export function collect(config: ResolvedConfig, sources: Sources): ViewsCollecti
 
   Object.entries(sources).forEach(([local, vendor]) => {
     if (vendor) {
-      scanComponents(resolve(config.root, vendor), components, vendors);
+      scanComponents(resolve(config.root, vendor), components, vendors, namespace);
     }
 
-    scanComponents(resolve(config.root, local), components);
+    scanComponents(resolve(config.root, local), components, undefined, namespace);
   });
 
   return { components, vendors };
 }
 
-function scanComponents(source: string, components: ComponentsMap, vendors: ComponentsMap | undefined = undefined) {
+function scanComponents(source: string, components: ComponentsMap, vendors: ComponentsMap | undefined = undefined, namespace: Namespace = undefined) {
   scan(source).forEach((path) => {
-    let global = asGlobalComponent(path);
-    let laravel = asLaravel(source, path);
-    let name = asComponent(source, path);
+    let global = asGlobalComponent(path, namespace);
+    let laravel = asLaravel(source, path, namespace);
+    let name = asComponent(source, path, namespace);
 
     path = normalizePath(path);
 

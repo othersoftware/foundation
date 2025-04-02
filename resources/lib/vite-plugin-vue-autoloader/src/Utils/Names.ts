@@ -2,25 +2,42 @@ import { normalizePath } from 'vite';
 import { parse, basename } from 'node:path';
 import { toSnakeCase, toPascalCase } from './Strings';
 
-export function asLaravel(path: string, absolute: string) {
+export function asLaravel(path: string, absolute: string, namespace: string | null | false | undefined = undefined) {
   absolute = normalizePath(absolute);
   path = normalizePath(path);
 
-  return absolute.replace(path, '').replace(/^\//, '').replace('.vue', '').split('/').map(toSnakeCase).join('.');
+  let compiled = absolute.replace(path, '').replace(/^\//, '').replace('.vue', '').split('/').map(toSnakeCase).join('.');
+
+  if (namespace) {
+    return toSnakeCase(namespace) + '::' + compiled;
+  }
+
+  return compiled;
 }
 
-export function asComponent(path: string, absolute: string) {
+export function asComponent(path: string, absolute: string, namespace: string | null | false | undefined = undefined) {
   absolute = normalizePath(absolute);
   path = normalizePath(path);
 
-  return absolute.replace(path, '').replace(/^\//, '').replace('.vue', '').split('/').map(toPascalCase).join('');
+  let segments = absolute.replace(path, '').replace(/^\//, '').replace('.vue', '').split('/');
+
+  if (namespace) {
+    segments.unshift(namespace);
+  }
+
+  return segments.map(toPascalCase).join('');
 }
 
-export function asGlobalComponent(absolute: string) {
+export function asGlobalComponent(absolute: string, namespace: string | null | false | undefined = undefined) {
   absolute = normalizePath(absolute);
 
   let base = basename(absolute);
   let parsed = parse(base);
+  let name = toPascalCase(parsed.name);
 
-  return toPascalCase(parsed.name);
+  if (namespace) {
+    return toPascalCase(namespace) + name;
+  }
+
+  return name;
 }

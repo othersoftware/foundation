@@ -12,7 +12,7 @@ export function provideVirtualViewsModule(config: ResolvedConfig, options: Optio
   }
 
   let [local, vendor] = target;
-  const views = collect(config, options.views);
+  const views = collect(config, options.views, options.namespace);
 
   if (vendor) {
     writeComponentsDeclarations(config, vendor);

@@ -305,7 +305,7 @@ final readonly class Constraint
      *
      * ```
      * use Illuminate\Support\Facades\Validator;
-     * use OtherCommerce\Foundation\Validation\Constraint;
+     * use OtherSoftware\Validation\Constraint;
      *
      * Validator::make($request->all(), [
      *   'role_id' => Constraint::excludeIf($request->user()->is_admin),
@@ -475,7 +475,7 @@ final readonly class Constraint
      *
      * ```
      * use Illuminate\Support\Facades\Validator;
-     * use OtherCommerce\Foundation\Validation\Constraint;
+     * use OtherSoftware\Validation\Constraint;
      *
      * Validator::make($data, [
      *     'zones' => [
@@ -493,7 +493,7 @@ final readonly class Constraint
      *
      * ```
      * use Illuminate\Support\Facades\Validator;
-     * use OtherCommerce\Foundation\Validation\Constraint;
+     * use OtherSoftware\Validation\Constraint;
      *
      * $input = [
      *     'airports' => ['NYC', 'LAS'],
@@ -594,7 +594,7 @@ final readonly class Constraint
      *
      * ```
      * use Illuminate\Support\Facades\Validator;
-     * use OtherCommerce\Foundation\Validation\Constraint;
+     * use OtherSoftware\Validation\Constraint;
      *
      * Validator::make($data, [
      *   'toppings' => [

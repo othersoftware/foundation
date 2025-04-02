@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Safety check - confirm before deletion
+read -p "⚠️  This will delete all node_modules and vendor directories. Continue? [y/N] " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "❌ Aborted"
+    exit 1
+fi
+
+# Find and delete directories
+echo "🔍 Searching for directories to remove..."
+find . -type d \( -name "node_modules" -o -name "vendor" \) -print0 | while IFS= read -r -d '' dir; do
+    echo "🗑️  Removing: $dir"
+    rm -rf "$dir"
+done
+
+echo "✅ Cleanup complete!"
