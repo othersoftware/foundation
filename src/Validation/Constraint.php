@@ -24,6 +24,8 @@ use Illuminate\Validation\Rules\Unique;
 use Illuminate\Validation\Validator;
 use OtherSoftware\Validation\Rules\Country;
 use OtherSoftware\Validation\Rules\Currency;
+use OtherSoftware\Validation\Rules\ExcludeWithExplicitAddress;
+use OtherSoftware\Validation\Rules\ExcludeWithImplicitAddress;
 use OtherSoftware\Validation\Rules\MaxUploadSize;
 use OtherSoftware\Validation\Rules\RequiredWithExplicitAddress;
 use OtherSoftware\Validation\Rules\RequiredWithImplicitAddress;
@@ -407,6 +409,34 @@ final readonly class Constraint
 
 
     /**
+     * The field under validation must be excluded from the request data only if
+     * the *countryField* is one of countries with explicit addresses.
+     *
+     * @param string $countryField
+     *
+     * @return ExcludeWithExplicitAddress
+     */
+    public static function excludeWithExplicitAddress(string $countryField): ExcludeWithExplicitAddress
+    {
+        return new ExcludeWithExplicitAddress($countryField);
+    }
+
+
+    /**
+     * The field under validation must be excluded from the request data only if
+     * the *countryField* is one of countries with implicit addresses.
+     *
+     * @param string $countryField
+     *
+     * @return ExcludeWithImplicitAddress
+     */
+    public static function excludeWithImplicitAddress(string $countryField): ExcludeWithImplicitAddress
+    {
+        return new ExcludeWithImplicitAddress($countryField);
+    }
+
+
+    /**
      * The field under validation will be excluded from the request data
      * returned by the `validate` and `validated` methods if the *anotherfield*
      * field is not present.
@@ -739,7 +769,7 @@ final readonly class Constraint
 
     /**
      * The field under validation must be present and not empty only if
-     * the *countryfield* is one of countries with explicit addresses.
+     * the *countryField* is one of countries with explicit addresses.
      *
      * @param string $countryField
      *

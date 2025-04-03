@@ -221,6 +221,10 @@ export declare interface InitialState extends State {
     toasts: ToastRegistry;
 }
 
+export declare function isCountryExplicit(country: string | null | undefined): boolean;
+
+export declare function isCountryImplicit(country: string | null | undefined): boolean;
+
 export declare type Locale = {
     name: string;
     code: string;
@@ -583,6 +587,7 @@ declare global {
   declare const APP_AVAILABLE_LOCALES: string[];
   declare const APP_FALLBACK_LOCALE: string;
   declare const APP_COUNTRY: string;
+  declare const APP_COUNTRIES_IMPLICIT: string[];
   declare const APP_CURRENCY: string;
   declare const APP_ROUTES: Record<string, any>;
   declare const APP_TRANSLATIONS: Record<string, any>;

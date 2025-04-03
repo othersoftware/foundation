@@ -1,17 +1,17 @@
 var zn = Object.defineProperty;
 var Yn = (e, t, n) => t in e ? zn(e, t, { enumerable: !0, configurable: !0, writable: !0, value: n }) : e[t] = n;
-var T = (e, t, n) => Yn(e, typeof t != "symbol" ? t + "" : t, n);
+var O = (e, t, n) => Yn(e, typeof t != "symbol" ? t + "" : t, n);
 import { inject as j, ref as x, defineComponent as Ve, toValue as Se, watch as ir, provide as N, h as Ee, nextTick as be, computed as Q, onMounted as Mt, onBeforeUnmount as Ht, toRaw as ke, ssrUtils as Ct, initDirectivesForSSR as Jn, createApp as Zn, createVNode as Xn, ssrContextKey as mr, warn as wt, Fragment as Qn, Static as eo, Comment as to, Text as ro, mergeProps as no } from "vue";
 class kt {
   constructor(t) {
-    T(this, "xhr");
-    T(this, "status");
-    T(this, "success");
-    T(this, "fail");
-    T(this, "partial");
-    T(this, "raw");
-    T(this, "message");
-    T(this, "content");
+    O(this, "xhr");
+    O(this, "status");
+    O(this, "success");
+    O(this, "fail");
+    O(this, "partial");
+    O(this, "raw");
+    O(this, "message");
+    O(this, "content");
     if (this.xhr = t, this.xhr.getResponseHeader("x-stack-router"))
       throw new Error("Invalid response for MVC HTTP client.");
     this.status = this.xhr.status, this.success = this.xhr.status >= 200 && this.xhr.status < 300, this.fail = !this.success, this.content = this.xhr.response, this.message = this.xhr.statusText, this.partial = !!this.xhr.getResponseHeader("x-partial"), this.raw = !!this.xhr.getResponseHeader("x-raw");
@@ -20,26 +20,26 @@ class kt {
 class St extends kt {
   constructor(n) {
     super(n);
-    T(this, "abilities");
-    T(this, "authenticated");
-    T(this, "location");
-    T(this, "signature");
-    T(this, "redirect");
-    T(this, "stack");
-    T(this, "toasts");
-    T(this, "errors");
+    O(this, "abilities");
+    O(this, "authenticated");
+    O(this, "location");
+    O(this, "signature");
+    O(this, "redirect");
+    O(this, "stack");
+    O(this, "toasts");
+    O(this, "errors");
     let o = JSON.parse(this.xhr.response);
     this.abilities = o.abilities, this.authenticated = o.authenticated, this.location = o.location, this.signature = o.signature, this.redirect = o.redirect, this.stack = o.stack, this.errors = o.errors, this.toasts = o.toasts;
   }
 }
 const wr = Symbol("StateLocation"), Sr = Symbol("StateStackSignature"), br = Symbol("StateAuthenticated"), vr = Symbol("StateAbilities"), Er = Symbol("StateManager");
-function qs() {
+function Ws() {
   let e = j(vr);
   if (!e)
     throw new Error("Abilities are used out of router context!");
   return e;
 }
-function Ws() {
+function zs() {
   let e = j(br);
   if (!e)
     throw new Error("Authenticated is used out of router context!");
@@ -68,11 +68,11 @@ function Cr(e, t) {
 }
 class Ft {
   constructor(t, n, o = void 0, a = void 0) {
-    T(this, "method");
-    T(this, "url");
-    T(this, "xhr");
-    T(this, "body");
-    T(this, "signature");
+    O(this, "method");
+    O(this, "url");
+    O(this, "xhr");
+    O(this, "body");
+    O(this, "signature");
     this.xhr = new XMLHttpRequest(), this.method = t, this.url = n, this.body = o, this.signature = a;
   }
   static send(t, n, o = void 0, a = void 0) {
@@ -179,7 +179,7 @@ var Nt, cr;
 function co() {
   if (cr) return Nt;
   cr = 1;
-  var e = "Expected a function", t = "__lodash_hash_undefined__", n = 9007199254740991, o = "[object Function]", a = "[object GeneratorFunction]", u = "[object Symbol]", p = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, h = /^\w*$/, S = /^\./, b = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, _ = /[\\^$.*+?()[\]{}|]/g, w = /\\(\\)?/g, v = /^\[object .+?Constructor\]$/, P = /^(?:0|[1-9]\d*)$/, O = typeof M == "object" && M && M.Object === Object && M, F = typeof self == "object" && self && self.Object === Object && self, ue = O || F || Function("return this")();
+  var e = "Expected a function", t = "__lodash_hash_undefined__", n = 9007199254740991, o = "[object Function]", a = "[object GeneratorFunction]", u = "[object Symbol]", p = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, h = /^\w*$/, S = /^\./, b = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, _ = /[\\^$.*+?()[\]{}|]/g, w = /\\(\\)?/g, v = /^\[object .+?Constructor\]$/, P = /^(?:0|[1-9]\d*)$/, T = typeof M == "object" && M && M.Object === Object && M, F = typeof self == "object" && self && self.Object === Object && self, ue = T || F || Function("return this")();
   function le(s, l) {
     return s == null ? void 0 : s[l];
   }
@@ -197,7 +197,7 @@ function co() {
     return s ? "Symbol(src)_1." + s : "";
   }(), de = ee.toString, re = fe.hasOwnProperty, he = fe.toString, Me = RegExp(
     "^" + de.call(re).replace(_, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
-  ), Ae = ue.Symbol, z = Ce.splice, Oe = Pe(ue, "Map"), G = Pe(Object, "create"), $ = Ae ? Ae.prototype : void 0, He = $ ? $.toString : void 0;
+  ), Ae = ue.Symbol, z = Ce.splice, Te = Pe(ue, "Map"), G = Pe(Object, "create"), $ = Ae ? Ae.prototype : void 0, He = $ ? $.toString : void 0;
   function K(s) {
     var l = -1, g = s ? s.length : 0;
     for (this.clear(); ++l < g; ) {
@@ -267,7 +267,7 @@ function co() {
   function Be() {
     this.__data__ = {
       hash: new K(),
-      map: new (Oe || U)(),
+      map: new (Te || U)(),
       string: new K()
     };
   }
@@ -284,7 +284,7 @@ function co() {
     return ae(this, s).set(s, l), this;
   }
   W.prototype.clear = Be, W.prototype.delete = it, W.prototype.get = ct, W.prototype.has = ne, W.prototype.set = Ge;
-  function Te(s, l, g) {
+  function Oe(s, l, g) {
     var A = s[l];
     (!(re.call(s, l) && Ue(A, g)) || g === void 0 && !(l in s)) && (s[l] = g);
   }
@@ -310,7 +310,7 @@ function co() {
         var Z = Ne[ze];
         Le = void 0, Le === void 0 && (Le = we(Z) ? Z : V(l[D + 1]) ? [] : {});
       }
-      Te(Ne, ze, Le), Ne = Ne[ze];
+      Oe(Ne, ze, Le), Ne = Ne[ze];
     }
     return s;
   }
@@ -420,7 +420,7 @@ var Lt, lr;
 function lo() {
   if (lr) return Lt;
   lr = 1;
-  var e = "Expected a function", t = "__lodash_hash_undefined__", n = "[object Function]", o = "[object GeneratorFunction]", a = "[object Symbol]", u = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, p = /^\w*$/, h = /^\./, S = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, b = /[\\^$.*+?()[\]{}|]/g, _ = /\\(\\)?/g, w = /^\[object .+?Constructor\]$/, v = typeof M == "object" && M && M.Object === Object && M, P = typeof self == "object" && self && self.Object === Object && self, O = v || P || Function("return this")();
+  var e = "Expected a function", t = "__lodash_hash_undefined__", n = "[object Function]", o = "[object GeneratorFunction]", a = "[object Symbol]", u = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, p = /^\w*$/, h = /^\./, S = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, b = /[\\^$.*+?()[\]{}|]/g, _ = /\\(\\)?/g, w = /^\[object .+?Constructor\]$/, v = typeof M == "object" && M && M.Object === Object && M, P = typeof self == "object" && self && self.Object === Object && self, T = v || P || Function("return this")();
   function F(c, d) {
     return c == null ? void 0 : c[d];
   }
@@ -433,12 +433,12 @@ function lo() {
       }
     return d;
   }
-  var le = Array.prototype, De = Function.prototype, Ce = Object.prototype, ee = O["__core-js_shared__"], fe = function() {
+  var le = Array.prototype, De = Function.prototype, Ce = Object.prototype, ee = T["__core-js_shared__"], fe = function() {
     var c = /[^.]+$/.exec(ee && ee.keys && ee.keys.IE_PROTO || "");
     return c ? "Symbol(src)_1." + c : "";
   }(), B = De.toString, te = Ce.hasOwnProperty, de = Ce.toString, re = RegExp(
     "^" + B.call(te).replace(b, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
-  ), he = O.Symbol, Me = le.splice, Ae = se(O, "Map"), z = se(Object, "create"), Oe = he ? he.prototype : void 0, G = Oe ? Oe.toString : void 0;
+  ), he = T.Symbol, Me = le.splice, Ae = se(T, "Map"), z = se(Object, "create"), Te = he ? he.prototype : void 0, G = Te ? Te.toString : void 0;
   function $(c) {
     var d = -1, y = c ? c.length : 0;
     for (this.clear(); ++d < y; ) {
@@ -537,7 +537,7 @@ function lo() {
       c = c[_e(d[y++])];
     return y && y == E ? c : void 0;
   }
-  function Te(c) {
+  function Oe(c) {
     if (!ye(c) || Pe(c))
       return !1;
     var d = ft(c) || ue(c) ? re : w;
@@ -560,7 +560,7 @@ function lo() {
   }
   function se(c, d) {
     var y = F(c, d);
-    return Te(y) ? y : void 0;
+    return Oe(y) ? y : void 0;
   }
   function xe(c, d) {
     if (Re(c))
@@ -665,10 +665,10 @@ function po(e = {}, t = !1) {
     fill: b
   };
 }
-function zs(e, t, n) {
+function Ys(e, t, n) {
   return e && t && (t.touch(e), t.fill(e, n)), n;
 }
-function Ys(e, t, n) {
+function Js(e, t, n) {
   return e && t ? t.value(e, n) : n;
 }
 var dt = { exports: {} };
@@ -676,8 +676,8 @@ dt.exports;
 var fr;
 function _o() {
   return fr || (fr = 1, function(e, t) {
-    var n = 200, o = "__lodash_hash_undefined__", a = 9007199254740991, u = "[object Arguments]", p = "[object Array]", h = "[object Boolean]", S = "[object Date]", b = "[object Error]", _ = "[object Function]", w = "[object GeneratorFunction]", v = "[object Map]", P = "[object Number]", O = "[object Object]", F = "[object Promise]", ue = "[object RegExp]", le = "[object Set]", De = "[object String]", Ce = "[object Symbol]", ee = "[object WeakMap]", fe = "[object ArrayBuffer]", B = "[object DataView]", te = "[object Float32Array]", de = "[object Float64Array]", re = "[object Int8Array]", he = "[object Int16Array]", Me = "[object Int32Array]", Ae = "[object Uint8Array]", z = "[object Uint8ClampedArray]", Oe = "[object Uint16Array]", G = "[object Uint32Array]", $ = /[\\^$.*+?()[\]{}|]/g, He = /\w*$/, K = /^\[object .+?Constructor\]$/, rt = /^(?:0|[1-9]\d*)$/, C = {};
-    C[u] = C[p] = C[fe] = C[B] = C[h] = C[S] = C[te] = C[de] = C[re] = C[he] = C[Me] = C[v] = C[P] = C[O] = C[ue] = C[le] = C[De] = C[Ce] = C[Ae] = C[z] = C[Oe] = C[G] = !0, C[b] = C[_] = C[ee] = !1;
+    var n = 200, o = "__lodash_hash_undefined__", a = 9007199254740991, u = "[object Arguments]", p = "[object Array]", h = "[object Boolean]", S = "[object Date]", b = "[object Error]", _ = "[object Function]", w = "[object GeneratorFunction]", v = "[object Map]", P = "[object Number]", T = "[object Object]", F = "[object Promise]", ue = "[object RegExp]", le = "[object Set]", De = "[object String]", Ce = "[object Symbol]", ee = "[object WeakMap]", fe = "[object ArrayBuffer]", B = "[object DataView]", te = "[object Float32Array]", de = "[object Float64Array]", re = "[object Int8Array]", he = "[object Int16Array]", Me = "[object Int32Array]", Ae = "[object Uint8Array]", z = "[object Uint8ClampedArray]", Te = "[object Uint16Array]", G = "[object Uint32Array]", $ = /[\\^$.*+?()[\]{}|]/g, He = /\w*$/, K = /^\[object .+?Constructor\]$/, rt = /^(?:0|[1-9]\d*)$/, C = {};
+    C[u] = C[p] = C[fe] = C[B] = C[h] = C[S] = C[te] = C[de] = C[re] = C[he] = C[Me] = C[v] = C[P] = C[T] = C[ue] = C[le] = C[De] = C[Ce] = C[Ae] = C[z] = C[Te] = C[G] = !0, C[b] = C[_] = C[ee] = !1;
     var nt = typeof M == "object" && M && M.Object === Object && M, Y = typeof self == "object" && self && self.Object === Object && self, k = nt || Y || Function("return this")(), U = t && !t.nodeType && t, Fe = U && !0 && e && !e.nodeType && e, ot = Fe && Fe.exports === U;
     function st(r, i) {
       return r.set(i[0], i[1]), r;
@@ -723,7 +723,7 @@ function _o() {
         f[++i] = [R, m];
       }), f;
     }
-    function Te(r, i) {
+    function Oe(r, i) {
       return function(f) {
         return r(i(f));
       };
@@ -739,7 +739,7 @@ function _o() {
       return r ? "Symbol(src)_1." + r : "";
     }(), Pe = pe.toString, V = se.hasOwnProperty, _e = se.toString, lt = RegExp(
       "^" + Pe.call(V).replace($, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
-    ), ge = ot ? k.Buffer : void 0, Ke = k.Symbol, Re = k.Uint8Array, ft = Te(Object.getPrototypeOf, Object), ye = Object.create, Ue = se.propertyIsEnumerable, me = ut.splice, qe = Object.getOwnPropertySymbols, we = ge ? ge.isBuffer : void 0, c = Te(Object.keys, Object), d = Ze(k, "DataView"), y = Ze(k, "Map"), E = Ze(k, "Promise"), s = Ze(k, "Set"), l = Ze(k, "WeakMap"), g = Ze(Object, "create"), A = je(d), D = je(y), J = je(E), We = je(s), Ne = je(l), ze = Ke ? Ke.prototype : void 0, Le = ze ? ze.valueOf : void 0;
+    ), ge = ot ? k.Buffer : void 0, Ke = k.Symbol, Re = k.Uint8Array, ft = Oe(Object.getPrototypeOf, Object), ye = Object.create, Ue = se.propertyIsEnumerable, me = ut.splice, qe = Object.getOwnPropertySymbols, we = ge ? ge.isBuffer : void 0, c = Oe(Object.keys, Object), d = Ze(k, "DataView"), y = Ze(k, "Map"), E = Ze(k, "Promise"), s = Ze(k, "Set"), l = Ze(k, "WeakMap"), g = Ze(Object, "create"), A = je(d), D = je(y), J = je(E), We = je(s), Ne = je(l), ze = Ke ? Ke.prototype : void 0, Le = ze ? ze.valueOf : void 0;
     function Z(r) {
       var i = -1, f = r ? r.length : 0;
       for (this.clear(); ++i < f; ) {
@@ -871,7 +871,7 @@ function _o() {
     function mn(r, i) {
       return r && Zt(i, Pt(i), r);
     }
-    function Ot(r, i, f, m, R, L, ce) {
+    function Tt(r, i, f, m, R, L, ce) {
       var I;
       if (m && (I = L ? m(r, R, L, ce) : m(r)), I !== void 0)
         return I;
@@ -885,7 +885,7 @@ function _o() {
         var Xe = Ie(r), or = Xe == _ || Xe == w;
         if (Gn(r))
           return Cn(r, i);
-        if (Xe == O || Xe == u || or && !L) {
+        if (Xe == T || Xe == u || or && !L) {
           if (ne(r))
             return L ? r : {};
           if (I = kn(or ? {} : r), !i)
@@ -893,7 +893,7 @@ function _o() {
         } else {
           if (!C[Xe])
             return L ? r : {};
-          I = $n(r, Xe, Ot, i);
+          I = $n(r, Xe, Tt, i);
         }
       }
       ce || (ce = new Je());
@@ -903,7 +903,7 @@ function _o() {
       if (ce.set(r, I), !nr)
         var ar = f ? In(r) : Pt(r);
       return at(ar || r, function(Rt, gt) {
-        ar && (gt = Rt, Rt = r[gt]), Jt(I, gt, Ot(Rt, i, f, m, gt, r, ce));
+        ar && (gt = Rt, Rt = r[gt]), Jt(I, gt, Tt(Rt, i, f, m, gt, r, ce));
       }), I;
     }
     function wn(r) {
@@ -936,19 +936,19 @@ function _o() {
       var f = new r.constructor(r.length);
       return r.copy(f), f;
     }
-    function Tt(r) {
+    function Ot(r) {
       var i = new r.constructor(r.byteLength);
       return new Re(i).set(new Re(r)), i;
     }
     function An(r, i) {
-      var f = i ? Tt(r.buffer) : r.buffer;
+      var f = i ? Ot(r.buffer) : r.buffer;
       return new r.constructor(f, r.byteOffset, r.byteLength);
     }
-    function On(r, i, f) {
+    function Tn(r, i, f) {
       var m = i ? f(Ge(r), !0) : Ge(r);
       return Be(m, st, new r.constructor());
     }
-    function Tn(r) {
+    function On(r) {
       var i = new r.constructor(r.source, He.exec(r));
       return i.lastIndex = r.lastIndex, i;
     }
@@ -960,7 +960,7 @@ function _o() {
       return Le ? Object(Le.call(r)) : {};
     }
     function Rn(r, i) {
-      var f = i ? Tt(r.buffer) : r.buffer;
+      var f = i ? Ot(r.buffer) : r.buffer;
       return new r.constructor(f, r.byteOffset, r.length);
     }
     function Nn(r, i) {
@@ -991,9 +991,9 @@ function _o() {
       var f = ct(r, i);
       return vn(f) ? f : void 0;
     }
-    var Xt = qe ? Te(qe, Object) : qn, Ie = bn;
+    var Xt = qe ? Oe(qe, Object) : qn, Ie = bn;
     (d && Ie(new d(new ArrayBuffer(1))) != B || y && Ie(new y()) != v || E && Ie(E.resolve()) != F || s && Ie(new s()) != le || l && Ie(new l()) != ee) && (Ie = function(r) {
-      var i = _e.call(r), f = i == O ? r.constructor : void 0, m = f ? je(f) : void 0;
+      var i = _e.call(r), f = i == T ? r.constructor : void 0, m = f ? je(f) : void 0;
       if (m)
         switch (m) {
           case A:
@@ -1020,7 +1020,7 @@ function _o() {
       var R = r.constructor;
       switch (i) {
         case fe:
-          return Tt(r);
+          return Ot(r);
         case h:
         case S:
           return new R(+r);
@@ -1033,16 +1033,16 @@ function _o() {
         case Me:
         case Ae:
         case z:
-        case Oe:
+        case Te:
         case G:
           return Rn(r, m);
         case v:
-          return On(r, m, f);
+          return Tn(r, m, f);
         case P:
         case De:
           return new R(r);
         case ue:
-          return Tn(r);
+          return On(r);
         case le:
           return xn(r, m, f);
         case Ce:
@@ -1077,7 +1077,7 @@ function _o() {
       return "";
     }
     function Hn(r) {
-      return Ot(r, !0, !0);
+      return Tt(r, !0, !0);
     }
     function er(r, i) {
       return r === i || r !== r && i !== i;
@@ -1160,22 +1160,22 @@ const dr = /* @__PURE__ */ Gt(go), yo = Ve({
         throw new Error("You must either provide action or your custom form handler!");
       return u.dispatch(e.method, e.action, { data: p.value });
     }
-    function P(O) {
-      O.preventDefault(), O.stopPropagation(), h.value = !0, b.value = {}, _.value = {}, be(() => v().catch((F) => {
+    function P(T) {
+      T.preventDefault(), T.stopPropagation(), h.value = !0, b.value = {}, _.value = {}, be(() => v().catch((F) => {
         F instanceof St && (b.value = F.errors);
       }).finally(() => {
         h.value = !1;
       }));
     }
-    return ir(() => e.data, (O) => {
-      p.value = dr(Se(O));
-    }), ir(() => e.readonly, (O) => {
-      S.value = Se(O);
+    return ir(() => e.data, (T) => {
+      p.value = dr(Se(T));
+    }), ir(() => e.readonly, (T) => {
+      S.value = Se(T);
     }), n({
       ctx: a,
       submit: w
     }), N(Kt, a), () => Ee("form", {
-      ref: (O) => o.value = O,
+      ref: (T) => o.value = T,
       action: e.action,
       method: e.method,
       novalidate: !0,
@@ -1189,7 +1189,7 @@ const dr = /* @__PURE__ */ Gt(go), yo = Ve({
       submit: w
     }));
   }
-}), Ar = Symbol("ViewResolver"), Ut = Symbol("StackedView"), qt = Symbol("StackedViewDepth"), Or = Symbol("StackedViewParent"), Tr = Symbol("StackedViewLocation"), xr = Symbol("StackedViewQuery");
+}), Ar = Symbol("ViewResolver"), Ut = Symbol("StackedView"), qt = Symbol("StackedViewDepth"), Tr = Symbol("StackedViewParent"), Or = Symbol("StackedViewLocation"), xr = Symbol("StackedViewQuery");
 function mo(e) {
   return Array.isArray(e) ? e : [e];
 }
@@ -1232,10 +1232,10 @@ const Pr = Ve({
       if (o.value && o.value.child)
         return { ...o.value.child, parent: o.value };
     });
-    return N(Ut, p), N(qt, Q(() => n.value + 1)), N(Or, Q(() => {
+    return N(Ut, p), N(qt, Q(() => n.value + 1)), N(Tr, Q(() => {
       var h;
       return (h = o.value) == null ? void 0 : h.parent;
-    })), N(Tr, a), N(xr, u), () => {
+    })), N(Or, a), N(xr, u), () => {
       if (o.value && "component" in o.value) {
         let h = t(o.value.component), S = o.value.props;
         h.inheritAttrs = !!h.inheritAttrs;
@@ -1258,16 +1258,16 @@ const Pr = Ve({
   },
   setup(e, { attrs: t, slots: n }) {
     const o = oo(), a = Bt(), u = x(!1), p = Q(() => {
-      var O;
-      let _ = o.value.replace(/\/$/, ""), w = (O = e.href) == null ? void 0 : O.replace(/\/$/, ""), v = _ === w, P = !e.explicit && w && o.value.startsWith(w);
+      var T;
+      let _ = o.value.replace(/\/$/, ""), w = (T = e.href) == null ? void 0 : T.replace(/\/$/, ""), v = _ === w, P = !e.explicit && w && o.value.startsWith(w);
       return v || P;
     }), h = Q(() => e.href ? "a" : "button"), S = Q(() => e.href ? { target: e.target } : { disabled: e.disabled });
     function b(_) {
       if (!e.href || !Eo(_, e.href, e.target) || (_.preventDefault(), e.disabled))
         return;
-      let { method: w, href: v, data: P, preserveScroll: O, replace: F } = e;
+      let { method: w, href: v, data: P, preserveScroll: T, replace: F } = e;
       u.value = !0, be(() => {
-        a.dispatch(w, v, { data: P, preserveScroll: O, replace: F }).then(() => {
+        a.dispatch(w, v, { data: P, preserveScroll: T, replace: F }).then(() => {
           u.value = !1;
         }).catch(() => {
           u.value = !1;
@@ -1313,7 +1313,7 @@ const Ao = Ve({
     const o = Nr();
     return () => Ee("div", n, t.default({ toasts: o.value }));
   }
-}), Oo = Ve({
+}), To = Ve({
   name: "Toast",
   props: {
     toast: { type: Object, required: !0 }
@@ -1330,7 +1330,7 @@ const Ao = Ve({
       clearTimeout(a.value);
     }), () => Ee("li", n, t.default({ toast: e.toast, close: u }));
   }
-}), To = Ve({
+}), Oo = Ve({
   name: "PasswordConfirmationController",
   props: {
     action: { type: String, required: !0 }
@@ -1910,7 +1910,7 @@ function _s(e) {
   const t = kr(e);
   return ve(Jo(t));
 }
-const { ensureValidVNode: Js } = Ct;
+const { ensureValidVNode: Zs } = Ct;
 function gs(e, t, n, o, a) {
   e("<!--teleport start-->");
   const u = a.appContext.provides[mr], p = u.__teleportBuffers || (u.__teleportBuffers = {}), h = p[n] || (p[n] = []), S = h.length;
@@ -2122,7 +2122,7 @@ function Fr(e, t) {
   );
 }
 process.env.NODE_ENV;
-const Os = /(?:^|[-_])(\w)/g, Ts = (e) => e.replace(Os, (t) => t.toUpperCase()).replace(/[-_]/g, "");
+const Ts = /(?:^|[-_])(\w)/g, Os = (e) => e.replace(Ts, (t) => t.toUpperCase()).replace(/[-_]/g, "");
 function xs(e, t = !0) {
   return tt(e) ? e.displayName || e.name : e.name || t && e.__name;
 }
@@ -2142,7 +2142,7 @@ function Br(e, t, n = !1) {
       e.components || e.parent.type.components
     ) || a(e.appContext.components);
   }
-  return o ? Ts(o) : n ? "App" : "Anonymous";
+  return o ? Os(o) : n ? "App" : "Anonymous";
 }
 process.env.NODE_ENV;
 process.env.NODE_ENV;
@@ -2397,7 +2397,7 @@ async function Vs(e) {
       );
   }
 }
-const { isVNode: Zs } = Ct;
+const { isVNode: Xs } = Ct;
 Jn();
 const Ds = Ve({
   inheritAttrs: !1,
@@ -2435,7 +2435,7 @@ const Ds = Ve({
     }), () => Ee(Pr);
   }
 });
-async function Xs({ initial: e, resolver: t, setup: n }) {
+async function Qs({ initial: e, resolver: t, setup: n }) {
   const o = typeof window > "u", a = e || Ms(), u = n({ router: Ds, props: { resolver: t, state: a } });
   return o ? await Yr(u) : "";
 }
@@ -2466,75 +2466,81 @@ async function yr(e, t) {
 async function Hs(e, t) {
   return t !== void 0 ? yr(e, t) : yr({}, e);
 }
-function Qs() {
+function ea() {
   return et;
 }
-function ea() {
+function ta() {
   return Hs;
 }
-function ta() {
+function ra() {
   return x();
 }
-function ra() {
+function na() {
   return j(Kt, null);
 }
-function na() {
+function oa() {
   let e = j(Kt);
   if (!e)
     throw new Error("Accessing form outside of context.");
   return e;
 }
-function oa() {
-  const e = j(Tr);
+function sa() {
+  const e = j(Or);
   if (!e)
     throw new Error("You're trying to get stacked view parent out of Router context!");
   return e;
 }
 function Fs() {
-  const e = j(Or);
+  const e = j(Tr);
   if (!e)
     throw new Error("You're trying to get parent view out of Router context!");
   return e;
 }
-function sa() {
+function aa() {
   const e = Fs();
   return Q(() => {
     if (e && e.value && e.value.location)
       return jr(e.value.location, e.value.query);
   });
 }
-function aa() {
+function ia() {
   const e = j(xr);
   if (!e)
     throw new Error("You're trying to get stacked view query params out of Router context!");
   return e;
 }
 function Bs(e) {
-  return e == null ? !0 : typeof e == "number" || typeof e == "boolean" ? !1 : typeof e == "string" ? e.trim() === "" : e instanceof Array ? e.length > 0 : e instanceof Set || e instanceof Map ? e.size > 0 : !e;
+  return e ? APP_COUNTRIES_IMPLICIT.includes(e) : !1;
 }
-function ia(e) {
+function ca(e) {
   return !Bs(e);
 }
-function ca(e = 16) {
-  return Array.from(window.crypto.getRandomValues(new Uint8Array(Math.ceil(e / 2))), (t) => ("0" + (t & 255).toString(16)).slice(-2)).join("");
+function Gs(e) {
+  return e == null ? !0 : typeof e == "number" || typeof e == "boolean" ? !1 : typeof e == "string" ? e.trim() === "" : e instanceof Array ? e.length > 0 : e instanceof Set || e instanceof Map ? e.size > 0 : !e;
 }
 function ua(e) {
+  return !Gs(e);
+}
+function la(e = 16) {
+  return Array.from(window.crypto.getRandomValues(new Uint8Array(Math.ceil(e / 2))), (t) => ("0" + (t & 255).toString(16)).slice(-2)).join("");
+}
+function fa(e) {
   return e.filter((t) => t.parentId === null);
 }
-function la(e, t) {
+function da(e, t) {
   return e.filter((n) => n.left > t.left && n.right < t.right && n.parentId === t.id);
 }
-function fa(e, t) {
+function ha(e, t) {
   return e.filter((n) => n.left < t.left && n.right > t.right);
 }
-function da(e, t) {
+function pa(e, t) {
   return e.filter((n) => n.left > t.left && n.right < t.right);
 }
-var Gs = /* @__PURE__ */ ((e) => (e.SUCCESS = "success", e.DANGER = "danger", e.INFO = "info", e.WARNING = "warning", e))(Gs || {});
-function ha() {
+var Ks = /* @__PURE__ */ ((e) => (e.SUCCESS = "success", e.DANGER = "danger", e.INFO = "info", e.WARNING = "warning", e))(Ks || {});
+function _a() {
   return {
     install(e) {
-      e.component("RouterView", Pr), e.component("RouterLink", vo), e.component("FormController", yo), e.component("ToastController", Ao), e.component("PasswordConfirmationController", To), e.component("Toast", Oo), e.config.globalProperties.$t = xo, e.config.globalProperties.$tc = Po, e.config.globalProperties.$route = $o;
+      e.component("RouterView", Pr), e.component("RouterLink", vo), e.component("FormController", yo), e.component("ToastController", Ao), e.component("PasswordConfirmationController", Oo), e.component("Toast", To), e.config.globalProperties.$t = xo, e.config.globalProperties.$tc = Po, e.config.globalProperties.$route = $o;
     }
   };
 }
@@ -2551,8 +2557,8 @@ export {
   Pr as RouterViewComponent,
   qt as StackedViewDepthInjectionKey,
   Ut as StackedViewInjectionKey,
-  Tr as StackedViewLocationInjectionKey,
-  Or as StackedViewParentInjectionKey,
+  Or as StackedViewLocationInjectionKey,
+  Tr as StackedViewParentInjectionKey,
   xr as StackedViewQueryInjectionKey,
   Ar as StackedViewResolverInjectionKey,
   vr as StateAbilities,
@@ -2560,44 +2566,46 @@ export {
   wr as StateLocationInjectionKey,
   Er as StateManagerInjectionKey,
   Sr as StateStackSignatureInjectionKey,
-  Oo as ToastComponent,
+  To as ToastComponent,
   Ao as ToastControllerComponent,
-  Gs as ToastKind,
+  Ks as ToastKind,
   Rr as ToastRegistryInjectionKey,
-  Bs as blank,
+  Gs as blank,
   po as createFormContext,
-  Xs as createFoundationController,
-  ha as createOtherSoftwareFoundation,
-  ia as filled,
-  Ys as getModelFromContext,
-  ca as hash,
-  fa as nestedSetAncestors,
-  la as nestedSetChildren,
-  da as nestedSetDescendants,
-  ua as nestedSetRoot,
+  Qs as createFoundationController,
+  _a as createOtherSoftwareFoundation,
+  ua as filled,
+  Js as getModelFromContext,
+  la as hash,
+  ca as isCountryExplicit,
+  Bs as isCountryImplicit,
+  ha as nestedSetAncestors,
+  da as nestedSetChildren,
+  pa as nestedSetDescendants,
+  fa as nestedSetRoot,
   $o as route,
-  zs as setModelWithContext,
+  Ys as setModelWithContext,
   xo as trans,
   Po as transChoice,
   Cr as updateStack,
   jr as url,
-  qs as useAbilities,
-  Ws as useAuthenticated,
-  ea as useConfirmation,
-  Qs as useCurrentConfirmation,
-  ta as useFormApi,
-  ra as useFormContext,
+  Ws as useAbilities,
+  zs as useAuthenticated,
+  ta as useConfirmation,
+  ea as useCurrentConfirmation,
+  ra as useFormApi,
+  na as useFormContext,
   Bt as useHttpClient,
   oo as useLocation,
-  na as usePersistentFormContext,
+  oa as usePersistentFormContext,
   so as useStackSignature,
   ao as useStateManager,
   Nr as useToasts,
   bo as useViewDepth,
-  oa as useViewLocation,
+  sa as useViewLocation,
   Fs as useViewParent,
-  sa as useViewParentLocation,
-  aa as useViewQuery,
+  aa as useViewParentLocation,
+  ia as useViewQuery,
   wo as useViewResolver,
   So as useViewStack,
   mo as wrap
