@@ -1,6 +1,6 @@
 export function isCountryImplicit(country: string | null | undefined) {
   if (country) {
-    return APP_COUNTRIES_IMPLICIT.includes(country);
+    return APP_COUNTRIES_IMPLICITLY_ADDRESSES.includes(country);
   }
 
   return false;
