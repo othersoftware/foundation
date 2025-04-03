@@ -246,6 +246,34 @@ final readonly class Constraint
     }
 
 
+    /**
+     * When validating arrays, the field under validation must not have any
+     * duplicate values. Distinct uses loose variable comparisons by default.
+     * To use strict comparisons, you may add the `strict` parameter to your
+     * validation rule definition. You may add `ignoreCase` to the validation
+     * rule's arguments to make the rule ignore capitalization differences.
+     *
+     * @see https://laravel.com/docs/11.x/validation#rule-distinct
+     *
+     * @param bool $strict
+     * @param bool $ignoreCase
+     *
+     * @return string
+     */
+    public static function distinct(bool $strict = false, bool $ignoreCase = false): string
+    {
+        if ($strict) {
+            return 'distinct:strict';
+        }
+
+        if ($ignoreCase) {
+            return 'distinct:ignore_case';
+        }
+
+        return 'distinct';
+    }
+
+
     public static function email(): string
     {
         return 'email';

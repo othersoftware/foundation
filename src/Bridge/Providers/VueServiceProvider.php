@@ -10,6 +10,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\ValidationException;
 use OtherSoftware\Bridge\ResponseFactory;
 use OtherSoftware\Bridge\Toasts\ToastsManager;
+use OtherSoftware\Support\Facades\Toast;
 use OtherSoftware\Support\Facades\Vue;
 
 
@@ -49,7 +50,10 @@ class VueServiceProvider extends ServiceProvider
     {
         $instance->renderable(function (ValidationException $exception, Request $request) {
             if ($request->header('X-Stack-Router')) {
-                return Vue::setErrors($exception->errors())->toResponse($request)->setStatusCode($exception->status);
+                Vue::setErrors($exception->errors());
+                Toast::danger(trans('validation.errors'));
+
+                return Vue::toResponse($request)->setStatusCode($exception->status);
             }
 
             return null;

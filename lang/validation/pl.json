@@ -1,4 +1,5 @@
 {
+    "validation.errors": "Przesłane dane zawierają błędy, popraw je aby kontynuować.",
     "validation.accepted": "Musisz zaznaczyć to pole.",
     "validation.accepted_if": "Musisz zaznaczyć to pole.",
     "validation.active_url": "Nieprawidłowy adres URL.",
