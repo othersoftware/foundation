@@ -102,7 +102,11 @@ final class Router extends BaseRouter
         $next = $this->buildViewStackFromRoute($route);
         $total = count($next) - 1;
 
-        $changed = false;
+        // Check for stack refresh header. At some points, for example forms
+        // in modals we might want to refresh the whole stack, to reload data
+        // underneath modal window.
+        $changed = $request->header('X-Stack-Refresh') === 'true';
+
         $stack = new StackMeta();
 
         for ($i = 0; $i <= $total; $i++) {

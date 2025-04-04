@@ -11,16 +11,17 @@ interface HttpOptions {
   data?: Body | undefined,
   preserveScroll?: boolean,
   replace?: boolean,
+  refreshStack?: boolean,
 }
 
 export function useHttpClient() {
   const state = useStateManager();
   const signature = useStackSignature();
 
-  async function dispatch(method: Method, url: string, { data = undefined, preserveScroll = false, replace = false }: HttpOptions = {}) {
+  async function dispatch(method: Method, url: string, { data = undefined, preserveScroll = false, replace = false, refreshStack = false }: HttpOptions = {}) {
     document.body.classList.add('osf-loading');
 
-    return await Request.send(method, url, data, signature.value).then(async (response: CompleteResponse) => {
+    return await Request.send(method, url, data, signature.value, refreshStack).then(async (response: CompleteResponse) => {
       return await state.update(response).then((fresh) => {
         if (response.redirect) {
           return handleRedirectResponse(response.redirect);
@@ -87,6 +88,7 @@ export function useHttpClient() {
     return await dispatch('GET', redirect.target, {
       preserveScroll: true,
       replace: false,
+      refreshStack: true,
     });
   }
 

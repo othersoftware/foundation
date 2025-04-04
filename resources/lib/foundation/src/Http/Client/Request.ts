@@ -10,17 +10,19 @@ export class Request {
   protected xhr: XMLHttpRequest;
   protected body: Body;
   protected signature: Signature;
+  protected refreshStack: boolean;
 
-  static send(method: Method, url: string, body: Body = undefined, signature: Signature = undefined) {
-    return new Request(method, url, body, signature).send();
+  static send(method: Method, url: string, body: Body = undefined, signature: Signature = undefined, refreshStack: boolean = false) {
+    return new Request(method, url, body, signature, refreshStack).send();
   }
 
-  constructor(method: Method, url: string, body: Body = undefined, signature: Signature = undefined) {
+  constructor(method: Method, url: string, body: Body = undefined, signature: Signature = undefined, refreshStack: boolean = false) {
     this.xhr = new XMLHttpRequest();
     this.method = method;
     this.url = url;
     this.body = body;
     this.signature = signature;
+    this.refreshStack = refreshStack;
   }
 
   public send(): Promise<CompleteResponse> {
@@ -30,6 +32,10 @@ export class Request {
       this.xhr.setRequestHeader('Language', APP_LOCALE);
       this.xhr.setRequestHeader('X-Stack-Router', 'true');
       this.xhr.setRequestHeader('X-XSRF-TOKEN', this.readCookie('XSRF-TOKEN'));
+
+      if (this.refreshStack) {
+        this.xhr.setRequestHeader('X-Stack-Refresh', 'true');
+      }
 
       if (this.signature) {
         this.xhr.setRequestHeader('X-Stack-Signature', this.signature);

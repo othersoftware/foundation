@@ -213,6 +213,7 @@ declare interface HttpOptions {
     data?: Body_2 | undefined;
     preserveScroll?: boolean;
     replace?: boolean;
+    refreshStack?: boolean;
 }
 
 export declare interface InitialState extends State {
@@ -264,8 +265,9 @@ declare class Request_2 {
     protected xhr: XMLHttpRequest;
     protected body: Body_2;
     protected signature: Signature;
-    static send(method: Method, url: string, body?: Body_2, signature?: Signature): Promise<CompleteResponse>;
-    constructor(method: Method, url: string, body?: Body_2, signature?: Signature);
+    protected refreshStack: boolean;
+    static send(method: Method, url: string, body?: Body_2, signature?: Signature, refreshStack?: boolean): Promise<CompleteResponse>;
+    constructor(method: Method, url: string, body?: Body_2, signature?: Signature, refreshStack?: boolean);
     send(): Promise<CompleteResponse>;
     protected transform(body: any): string | Blob | ArrayBuffer | FormData | URLSearchParams | null;
     protected readCookie(name: string): string;
@@ -537,7 +539,7 @@ export declare function useFormApi(): Ref<FormApi>;
 export declare function useFormContext(): FormContextInterface | null;
 
 export declare function useHttpClient(): {
-    dispatch: (method: Method, url: string, { data, preserveScroll, replace }?: HttpOptions) => any;
+    dispatch: (method: Method, url: string, { data, preserveScroll, replace, refreshStack }?: HttpOptions) => any;
     get: (url: string) => Promise<any>;
     post: (url: string, data?: Body_2 | undefined) => Promise<any>;
     patch: (url: string, data?: Body_2 | undefined) => Promise<any>;
