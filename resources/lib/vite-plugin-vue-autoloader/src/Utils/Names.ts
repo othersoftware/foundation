@@ -1,15 +1,15 @@
 import { normalizePath } from 'vite';
 import { parse, basename } from 'node:path';
-import { toSnakeCase, toPascalCase } from './Strings';
+import { toPascalCase } from './Strings';
 
 export function asLaravel(path: string, absolute: string, namespace: string | null | false | undefined = undefined) {
   absolute = normalizePath(absolute);
   path = normalizePath(path);
 
-  let compiled = absolute.replace(path, '').replace(/^\//, '').replace('.vue', '').split('/').map(toSnakeCase).join('.');
+  let compiled = absolute.replace(path, '').replace(/^\//, '').replace('.vue', '').split('/').join('.');
 
   if (namespace) {
-    return toSnakeCase(namespace) + '::' + compiled;
+    return namespace + '::' + compiled;
   }
 
   return compiled;
