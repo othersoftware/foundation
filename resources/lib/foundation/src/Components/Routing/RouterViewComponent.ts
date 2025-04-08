@@ -1,4 +1,4 @@
-import { defineComponent, provide, h, type PropType, computed } from 'vue';
+import { defineComponent, provide, h, type PropType, computed, type SlotsType } from 'vue';
 import { StackedViewInjectionKey, StackedViewQueryInjectionKey, StackedViewLocationInjectionKey, StackedViewDepthInjectionKey, StackedViewParentInjectionKey } from '../../Services/StackedView';
 import { wrap } from '../../Support/Wrap';
 import { useViewResolver } from '../../Composables/UseViewResolver';
@@ -16,7 +16,10 @@ export const RouterViewComponent = defineComponent({
       default: true,
     },
   },
-  setup(props) {
+  slots: Object as SlotsType<{
+    default?: () => any,
+  }>,
+  setup(props, { slots }) {
     const resolver = useViewResolver();
     const depth = useViewDepth();
     const view = useViewStack();
@@ -58,6 +61,10 @@ export const RouterViewComponent = defineComponent({
         }
 
         return children;
+      }
+
+      if (slots.default) {
+        return slots.default();
       }
     };
   },

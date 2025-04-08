@@ -407,9 +407,7 @@ type: PropType<boolean>;
 required: false;
 default: boolean;
 };
-}>, () => VNode<RendererNode, RendererElement, {
-[key: string]: any;
-}> | undefined, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+}>, () => any, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
 allowLayouts: {
 type: PropType<boolean>;
 required: false;
@@ -417,7 +415,9 @@ default: boolean;
 };
 }>> & Readonly<{}>, {
 allowLayouts: boolean;
-}, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
+}, SlotsType<{
+default?: () => any;
+}>, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
 export declare function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any): any;
 
