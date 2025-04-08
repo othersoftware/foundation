@@ -9,12 +9,6 @@ use Illuminate\Support\Arr;
 
 class TranslatableFormRequest extends FormRequest
 {
-    public function isTranslatableOptional(): bool
-    {
-        return false;
-    }
-
-
     public function validatedTranslations(): mixed
     {
         return Arr::only($this->validated(), $this->translatableLocales());
@@ -23,7 +17,7 @@ class TranslatableFormRequest extends FormRequest
 
     protected function translatableDefaultLocale(): string
     {
-        return config('app.fallback_locale');
+        return config('translations.default');
     }
 
 
@@ -53,7 +47,11 @@ class TranslatableFormRequest extends FormRequest
 
             $rules[$locale] = $this->createTranslatableGroupRules($locale, $default);
 
-            $mapper = function ($rule) use ($locale) {
+            $mapper = function ($rule) use ($locale, $default) {
+                if (str_starts_with($rule, 'required') && $locale !== $default) {
+                    return 'nullable';
+                }
+
                 if (is_string($rule)) {
                     return str_replace('{locale}', $locale, $rule);
                 }
@@ -72,7 +70,7 @@ class TranslatableFormRequest extends FormRequest
 
     private function createTranslatableGroupRules(string $locale, string $default): array
     {
-        if ($locale === $default && ! $this->isTranslatableOptional()) {
+        if ($locale === $default) {
             return ['required', 'array'];
         } else {
             return ['sometimes', 'array'];
