@@ -6,6 +6,7 @@ namespace OtherSoftware\Http\Resources;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Str;
 use OtherSoftware\Contracts\Translatable;
 use OtherSoftware\Database\Eloquent\Model as OtherSoftwareModel;
 
@@ -26,32 +27,42 @@ class FormResource extends JsonResource
 
     public function toArray(Request $request): array
     {
+        // Keep the previous state, as we might render nested form resources.
+        $previousState = static::$rendersForForm;
+
+        // Enable form render mode
         static::$rendersForForm = true;
 
         $data = $this->resource->toArray();
 
         if ($this->resource instanceof Translatable) {
             foreach (config('translations.locales') as $locale) {
-                data_set($data, $locale, $this->resource->translateOrNew($locale)->toArray());
+                data_set($data, $locale, FormResource::make($this->resource->translateOrNew($locale))->toArray($request));
             }
 
             $default = $this->resource->translateOrNew(config('app.fallback_locale'));
 
             foreach ($this->resource->translatedAttributes as $attribute) {
-                data_set($data, $attribute, $default->getAttribute($attribute));
+                data_set($data, Str::camel($attribute), $default->getAttribute($attribute));
             }
         }
 
+        // Meta section we want without the form render mode.
         static::$rendersForForm = false;
 
         $data['meta'] = [];
         $data['meta']['exists'] = $this->resource->exists;
+        $data['meta']['morphType'] = $this->resource->getMorphClass();
+        $data['meta']['morphKey'] = $this->resource->getKey();
 
         if ($this->resource instanceof OtherSoftwareModel) {
             foreach ($this->resource->getSerializedDates() as $key => $value) {
                 $data['meta'][$key] = $value;
             }
         }
+
+        // Finally return to previous render mode.
+        static::$rendersForForm = $previousState;
 
         return $data;
     }

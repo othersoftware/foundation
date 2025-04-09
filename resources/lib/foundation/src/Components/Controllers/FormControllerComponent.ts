@@ -72,7 +72,10 @@ export const FormControllerComponent = defineComponent({
       event.preventDefault();
       event.stopPropagation();
 
+      let beforeReadonly = readonly.value;
+
       processing.value = true;
+      readonly.value = true;
       errors.value = {};
       touched.value = {};
 
@@ -83,6 +86,7 @@ export const FormControllerComponent = defineComponent({
         }
       }).finally(() => {
         processing.value = false;
+        readonly.value = beforeReadonly;
       }));
     }
 

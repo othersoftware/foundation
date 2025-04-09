@@ -8,11 +8,14 @@ namespace OtherSoftware\Database\Eloquent;
 use Carbon\CarbonImmutable;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use IntlDateFormatter;
 use IntlDatePatternGenerator;
+use OtherSoftware\Contracts\Translatable;
 use OtherSoftware\Http\Resources\FormResource;
 use OtherSoftware\Support\Facades\Vue;
 use Override;
@@ -108,6 +111,41 @@ abstract class Model extends EloquentModel
 
 
     #[Override]
+    public function relationsToArray()
+    {
+        if (FormResource::rendersForForm()) {
+            $attributes = [];
+
+            foreach ($this->getArrayableRelations() as $key => $value) {
+                // Skip translations, as this relation is processed separately
+                // in FormResource class.
+                if ($this instanceof Translatable && $key === 'translations') {
+                    continue;
+                }
+
+                if ($value instanceof Collection) {
+                    $relation = $value->map(fn($related) => FormResource::make($related))->toArray();
+                } elseif ($value instanceof EloquentModel) {
+                    $relation = FormResource::make($value);
+                } elseif (is_null($value)) {
+                    $relation = $value;
+                }
+
+                if (isset($relation)) {
+                    $attributes[$key] = $relation;
+                }
+
+                unset($relation);
+            }
+
+            return $attributes;
+        }
+
+        return parent::relationsToArray();
+    }
+
+
+    #[Override]
     public function setAttribute($key, $value)
     {
         if (str_contains($key, '->')) {
@@ -124,6 +162,28 @@ abstract class Model extends EloquentModel
     public function toArray()
     {
         return array_camel_keys(parent::toArray());
+    }
+
+
+    /**
+     * This method provides an option to run a callback once a transaction
+     * has been committed. When called outside of transaction it will be
+     * executed straight away.
+     *
+     * @param callable $callback
+     *
+     * @return void
+     */
+    protected function runHandlerAfterCommit(callable $callback): void
+    {
+        if (Container::getInstance()->bound('db.transactions')) {
+            if (! is_null($transactions = Container::getInstance()->make('db.transactions'))) {
+                $transactions->addCallback($callback);
+                return;
+            }
+        }
+
+        $callback();
     }
 
 
