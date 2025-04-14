@@ -61,6 +61,14 @@ final class ResponseFactory implements Responsable
     }
 
 
+    public function noContent(): ResponseFactory
+    {
+        $this->raw = null;
+
+        return $this;
+    }
+
+
     public function rendersVueResponse(?Request $request = null): bool
     {
         return $this->rendersVueResponse || $this->isVuePowered($request);

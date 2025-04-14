@@ -36,6 +36,8 @@ class FormResource extends JsonResource
         $data = $this->resource->toArray();
 
         if ($this->resource instanceof Translatable) {
+            $this->resource->loadMissing('translations');
+
             foreach (config('translations.locales') as $locale) {
                 data_set($data, $locale, FormResource::make($this->resource->translateOrNew($locale))->toArray($request));
             }

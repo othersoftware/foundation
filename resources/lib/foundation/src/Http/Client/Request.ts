@@ -11,18 +11,20 @@ export class Request {
   protected body: Body;
   protected signature: Signature;
   protected refreshStack: boolean;
+  protected referer: string | null | undefined;
 
-  static send(method: Method, url: string, body: Body = undefined, signature: Signature = undefined, refreshStack: boolean = false) {
-    return new Request(method, url, body, signature, refreshStack).send();
+  static send(method: Method, url: string, body: Body = undefined, signature: Signature = undefined, refreshStack: boolean = false, referer: string | null | undefined = undefined) {
+    return new Request(method, url, body, signature, refreshStack, referer).send();
   }
 
-  constructor(method: Method, url: string, body: Body = undefined, signature: Signature = undefined, refreshStack: boolean = false) {
+  constructor(method: Method, url: string, body: Body = undefined, signature: Signature = undefined, refreshStack: boolean = false, referer: string | null | undefined = undefined) {
     this.xhr = new XMLHttpRequest();
     this.method = method;
     this.url = url;
     this.body = body;
     this.signature = signature;
     this.refreshStack = refreshStack;
+    this.referer = referer;
   }
 
   public send(): Promise<CompleteResponse> {
@@ -33,14 +35,16 @@ export class Request {
       this.xhr.setRequestHeader('X-Stack-Router', 'true');
       this.xhr.setRequestHeader('X-XSRF-TOKEN', this.readCookie('XSRF-TOKEN'));
 
+      if (this.referer) {
+        this.xhr.setRequestHeader('X-Stack-Referer', this.referer);
+      }
+
       if (this.refreshStack) {
         this.xhr.setRequestHeader('X-Stack-Refresh', 'true');
       }
 
       if (this.signature) {
         this.xhr.setRequestHeader('X-Stack-Signature', this.signature);
-      } else {
-        throw new Error('Missing signature!');
       }
 
       this.xhr.onload = () => {

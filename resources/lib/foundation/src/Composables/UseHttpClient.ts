@@ -1,11 +1,11 @@
-import { useStateManager, useStackSignature } from '../Services/StateManager';
+import { useStateManager, useStackSignature, useStateHistory, useLocation } from '../Services/StateManager';
 import { Request, type Method, type Body } from '../Http/Client/Request';
-import type { State } from '../Types/State';
 import { ErrorModal } from '../Support/ErrorModal';
 import type { RouterRedirect } from '../Types/RouterRedirect';
 import type { Response } from '../Http/Client/Response';
 import { CompleteResponse } from '../Http/Client/Response';
 import { EventBus } from '../Events/EventBus';
+import { inject, type InjectionKey } from 'vue';
 
 interface HttpOptions {
   data?: Body | undefined,
@@ -14,14 +14,20 @@ interface HttpOptions {
   refreshStack?: boolean,
 }
 
+export const HttpClientForceScrollPreservation = Symbol('HttpClientForceScrollPreservation') as InjectionKey<boolean>;
+
 export function useHttpClient() {
   const state = useStateManager();
   const signature = useStackSignature();
+  const history = useStateHistory();
+  const location = useLocation();
+
+  const forceScrollPreserve = inject(HttpClientForceScrollPreservation, false);
 
   async function dispatch(method: Method, url: string, { data = undefined, preserveScroll = false, replace = false, refreshStack = false }: HttpOptions = {}) {
     document.body.classList.add('osf-loading');
 
-    return await Request.send(method, url, data, signature.value, refreshStack).then(async (response: CompleteResponse) => {
+    return await Request.send(method, url, data, signature.value, refreshStack, location.value).then(async (response: CompleteResponse) => {
       return await state.update(response).then((fresh) => {
         if (response.redirect) {
           return handleRedirectResponse(response.redirect);
@@ -31,14 +37,14 @@ export function useHttpClient() {
           return Promise.resolve(response.raw);
         }
 
-        if (!preserveScroll) {
+        if (!forceScrollPreserve && !preserveScroll) {
           resetScrollPosition();
         }
 
         if (replace) {
-          historyReplaceState(fresh);
+          history.historyReplaceState(fresh);
         } else {
-          historyPushState(fresh);
+          history.historyPushState(fresh);
         }
 
         return Promise.resolve(response);
@@ -64,14 +70,6 @@ export function useHttpClient() {
     }).finally(() => {
       document.body.classList.remove('osf-loading');
     });
-  }
-
-  function historyPushState(state: State) {
-    window.history.pushState(state, '', state.location);
-  }
-
-  function historyReplaceState(state: State) {
-    window.history.replaceState(state, '', state.location);
   }
 
   function resetScrollPosition() {

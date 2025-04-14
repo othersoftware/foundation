@@ -6,6 +6,7 @@ import { ToastControllerComponent, ToastComponent } from './Components/Controlle
 import { PasswordConfirmationControllerComponent } from './Components/Controllers/PasswordConfirmationControllerComponent';
 import { trans, transChoice } from './Support/Translator';
 import { route } from './Support/Route';
+import { RouterNestedComponent } from './Components/Routing/RouterNestedComponent.ts';
 
 export * from './Application/Factory';
 
@@ -57,6 +58,7 @@ export * from './Types/ViewResolver';
 export function createOtherSoftwareFoundation(): Plugin {
   return {
     install(app: App) {
+      app.component('RouterNested', RouterNestedComponent);
       app.component('RouterView', RouterViewComponent);
       app.component('RouterLink', RouterLinkComponent);
       app.component('FormController', FormControllerComponent);

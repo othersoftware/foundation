@@ -1,4 +1,4 @@
-import { type PropType, ref, type Ref, nextTick, watch, provide, defineComponent, h, type SlotsType, toValue } from 'vue';
+import { type PropType, ref, type Ref, nextTick, watch, provide, defineComponent, h, type SlotsType, toValue, inject } from 'vue';
 import type { Method } from '../../Http/Client/Request';
 import type { Response } from '../../Http/Client/Response';
 import { CompleteResponse } from '../../Http/Client/Response';
@@ -49,12 +49,9 @@ export const FormControllerComponent = defineComponent({
     const element = ref() as Ref<HTMLFormElement>;
     const ctx = createFormContext(lodashCloneDeep(toValue(props.data)), toValue(props.readonly));
     const http = useHttpClient();
+    const parent = inject(FormContextInjectionKey, null);
 
     const { data, processing, readonly, errors, touched } = ctx;
-
-    function submit() {
-      element.value.dispatchEvent(new SubmitEvent('submit'));
-    }
 
     function dispatch() {
       if (props.onSubmit) {
@@ -68,10 +65,7 @@ export const FormControllerComponent = defineComponent({
       return http.dispatch(props.method, props.action, { data: data.value });
     }
 
-    function handleSubmit(event: Event) {
-      event.preventDefault();
-      event.stopPropagation();
-
+    function submit() {
       let beforeReadonly = readonly.value;
 
       processing.value = true;
@@ -105,12 +99,11 @@ export const FormControllerComponent = defineComponent({
 
     provide(FormContextInjectionKey, ctx);
 
-    return () => h('form', {
+    return () => h(parent ? 'div' : 'form', {
       ref: (el) => element.value = el as HTMLFormElement,
-      action: props.action,
-      method: props.method,
-      novalidate: true,
-      onSubmit: handleSubmit,
+      class: 'form',
+      ['data-action']: props.action,
+      ['data-method']: props.method,
     }, slots.default({
       data: data.value,
       processing: processing.value,

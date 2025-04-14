@@ -7,6 +7,7 @@ use Composer\ClassMapGenerator\ClassMapGenerator;
 use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\Arr;
 use OtherSoftware\Routing\Attributes\Authorize;
+use OtherSoftware\Routing\Attributes\FallbackRoute;
 use OtherSoftware\Routing\Attributes\Method;
 use OtherSoftware\Routing\Attributes\Middleware;
 use OtherSoftware\Routing\Attributes\Name;
@@ -54,6 +55,9 @@ final class Registrar
     public function compile(): void
     {
         foreach ($this->scan() as $class) {
+            if (str_contains($class, 'HomepageController')) {
+                $this->debug = true;
+            }
             $this->compileGroup(new ReflectionClass($class));
         }
     }
@@ -191,6 +195,10 @@ final class Registrar
         if ($locale !== config('translations.default')) {
             $route->localize($locale);
         }
+
+        if ($this->isFallback($reflection)) {
+            $route->fallback();
+        }
     }
 
 
@@ -306,6 +314,12 @@ final class Registrar
         }
 
         return [];
+    }
+
+
+    private function isFallback(ReflectionClass|ReflectionMethod $reflection): bool
+    {
+        return count($reflection->getAttributes(FallbackRoute::class)) > 0;
     }
 
 

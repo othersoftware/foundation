@@ -1,5 +1,5 @@
 import { type InjectionKey, inject, type Ref } from 'vue';
-import type { StateManager, Authenticated, Abilities } from '../Types/State';
+import type { StateManager, Authenticated, Abilities, StateHistory } from '../Types/State';
 import type { StackedView, StackedViewResolved } from '../Types/StackedView';
 
 export const StateLocationInjectionKey = Symbol('StateLocation') as InjectionKey<Ref<string>>;
@@ -7,6 +7,7 @@ export const StateStackSignatureInjectionKey = Symbol('StateStackSignature') as 
 export const StateAuthenticated = Symbol('StateAuthenticated') as InjectionKey<Ref<Authenticated | null>>;
 export const StateAbilities = Symbol('StateAbilities') as InjectionKey<Ref<Abilities>>;
 export const StateManagerInjectionKey = Symbol('StateManager') as InjectionKey<StateManager>;
+export const StateHistoryInjectionKey = Symbol('StateHistory') as InjectionKey<StateHistory>;
 
 export function useAbilities() {
   let abilities = inject(StateAbilities);
@@ -56,6 +57,16 @@ export function useStateManager() {
   }
 
   return { update: manager };
+}
+
+export function useStateHistory() {
+  let history = inject(StateHistoryInjectionKey);
+
+  if (!history) {
+    throw new Error('State history is used out of router context!');
+  }
+
+  return history;
 }
 
 export function updateStack(current: StackedViewResolved, fresh: StackedView): StackedViewResolved {

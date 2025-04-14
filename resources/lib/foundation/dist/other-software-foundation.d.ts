@@ -209,6 +209,8 @@ export declare type HeadMeta = {
     content: string;
 };
 
+export declare const HttpClientForceScrollPreservation: InjectionKey<boolean>;
+
 declare interface HttpOptions {
     data?: Body_2 | undefined;
     preserveScroll?: boolean;
@@ -266,8 +268,9 @@ declare class Request_2 {
     protected body: Body_2;
     protected signature: Signature;
     protected refreshStack: boolean;
-    static send(method: Method, url: string, body?: Body_2, signature?: Signature, refreshStack?: boolean): Promise<CompleteResponse>;
-    constructor(method: Method, url: string, body?: Body_2, signature?: Signature, refreshStack?: boolean);
+    protected referer: string | null | undefined;
+    static send(method: Method, url: string, body?: Body_2, signature?: Signature, refreshStack?: boolean, referer?: string | null | undefined): Promise<CompleteResponse>;
+    constructor(method: Method, url: string, body?: Body_2, signature?: Signature, refreshStack?: boolean, referer?: string | null | undefined);
     send(): Promise<CompleteResponse>;
     protected transform(body: any): string | Blob | ArrayBuffer | FormData | URLSearchParams | null;
     protected readCookie(name: string): string;
@@ -465,6 +468,13 @@ export declare const StateAbilities: InjectionKey<Ref<Abilities>>;
 
 export declare const StateAuthenticated: InjectionKey<Ref<Authenticated | null>>;
 
+export declare type StateHistory = {
+    historyPushState(state: State): void;
+    historyReplaceState(state: State): void;
+};
+
+export declare const StateHistoryInjectionKey: InjectionKey<StateHistory>;
+
 export declare const StateLocationInjectionKey: InjectionKey<Ref<string>>;
 
 export declare type StateManager = (fresh: CompleteResponse) => Promise<State>;
@@ -552,6 +562,8 @@ export declare function useLocation(): Ref<string, string>;
 export declare function usePersistentFormContext(): FormContextInterface;
 
 export declare function useStackSignature(): Ref<string, string>;
+
+export declare function useStateHistory(): StateHistory;
 
 export declare function useStateManager(): {
     update: StateManager;

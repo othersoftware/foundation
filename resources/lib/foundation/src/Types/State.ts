@@ -34,3 +34,8 @@ export interface InitialState extends State {
 }
 
 export type StateManager = (fresh: CompleteResponse) => Promise<State>;
+
+export type StateHistory = {
+  historyPushState(state: State): void;
+  historyReplaceState(state: State): void;
+}

@@ -23,6 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @method static ResponseFactory setStackMeta(StackMeta $meta)
  * @method static ResponseFactory setView(string $view)
  * @method static ResponseFactory setAbilities(array $abilities)
+ * @method static ResponseFactory noContent()
  * @method static Response toResponse(Request $request)
  */
 final class Vue extends Facade

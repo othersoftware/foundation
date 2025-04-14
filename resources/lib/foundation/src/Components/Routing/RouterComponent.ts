@@ -3,7 +3,7 @@ import { type ViewResolver } from '../../Types/ViewResolver';
 import { type State, type InitialState } from '../../Types/State';
 import type { CompleteResponse } from '../../Http/Client/Response';
 import { StackedViewResolverInjectionKey, StackedViewInjectionKey, StackedViewDepthInjectionKey } from '../../Services/StackedView';
-import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities } from '../../Services/StateManager';
+import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities, StateHistoryInjectionKey } from '../../Services/StateManager';
 import { RouterViewComponent } from './RouterViewComponent';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
 
@@ -69,6 +69,14 @@ export const RouterComponent = defineComponent({
     provide(StackedViewDepthInjectionKey, computed(() => 0));
     provide(StackedViewInjectionKey, stack);
     provide(ToastRegistryInjectionKey, toasts);
+    provide(StateHistoryInjectionKey, {
+      historyPushState(state: State) {
+        window.history.pushState(state, '', state.location);
+      },
+      historyReplaceState(state: State) {
+        window.history.replaceState(state, '', state.location);
+      },
+    });
 
     function handlePopStateEvent(event: PopStateEvent) {
       if (event.state) {
