@@ -1,4 +1,4 @@
-import { type PropType, ref, type Ref, nextTick, watch, provide, defineComponent, h, type SlotsType, toValue, inject } from 'vue';
+import { type PropType, nextTick, watch, provide, defineComponent, h, type SlotsType, toValue, inject, computed } from 'vue';
 import type { Method } from '../../Http/Client/Request';
 import type { Response } from '../../Http/Client/Response';
 import { CompleteResponse } from '../../Http/Client/Response';
@@ -46,12 +46,25 @@ export const FormControllerComponent = defineComponent({
     },
   }>,
   setup(props, { slots, expose }) {
-    const element = ref() as Ref<HTMLFormElement>;
     const ctx = createFormContext(lodashCloneDeep(toValue(props.data)), toValue(props.readonly));
     const http = useHttpClient();
     const parent = inject(FormContextInjectionKey, null);
 
     const { data, processing, readonly, errors, touched } = ctx;
+
+    const element = computed(() => {
+      return parent ? 'div' : 'form';
+    });
+
+    const specific = computed(() => {
+      return parent ? {
+        ['data-action']: props.action,
+        ['data-method']: props.method,
+      } : {
+        ['action']: props.action,
+        ['method']: props.method,
+      };
+    });
 
     function dispatch() {
       if (props.onSubmit) {
@@ -99,12 +112,7 @@ export const FormControllerComponent = defineComponent({
 
     provide(FormContextInjectionKey, ctx);
 
-    return () => h(parent ? 'div' : 'form', {
-      ref: (el) => element.value = el as HTMLFormElement,
-      class: 'form',
-      ['data-action']: props.action,
-      ['data-method']: props.method,
-    }, slots.default({
+    return () => h(element, { class: 'form', ...specific }, slots.default({
       data: data.value,
       processing: processing.value,
       errors: errors.value,
