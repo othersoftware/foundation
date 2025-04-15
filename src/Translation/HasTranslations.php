@@ -136,11 +136,11 @@ trait HasTranslations
     public function fill(array $attributes)
     {
         foreach ($attributes as $key => $values) {
-            if (
-                $this->getLocalesHelper()->has($key)
-                && is_array($values)
-            ) {
-                $this->getTranslationOrNew($key)->fill($values);
+            if (\Symfony\Component\Intl\Locales::exists($key) && is_array($values)) {
+                if ($this->getLocalesHelper()->has($key)) {
+                    $this->getTranslationOrNew($key)->fill($values);
+                }
+
                 unset($attributes[$key]);
             } else {
                 [$attribute, $locale] = $this->getAttributeAndLocale($key);
