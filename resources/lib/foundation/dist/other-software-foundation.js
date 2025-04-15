@@ -1177,7 +1177,7 @@ const vr = /* @__PURE__ */ er(wo), So = pe({
     }), n({
       ctx: o,
       submit: b
-    }), O(bt, o), () => oe(v, { class: "form", ...E }, t.default({
+    }), O(bt, o), () => oe(v.value, { class: "form", ...E.value }, t.default({
       data: d.value,
       processing: g.value,
       errors: S.value,

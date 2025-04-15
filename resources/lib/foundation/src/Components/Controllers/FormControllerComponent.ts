@@ -112,7 +112,7 @@ export const FormControllerComponent = defineComponent({
 
     provide(FormContextInjectionKey, ctx);
 
-    return () => h(element, { class: 'form', ...specific }, slots.default({
+    return () => h(element.value, { class: 'form', ...specific.value }, slots.default({
       data: data.value,
       processing: processing.value,
       errors: errors.value,
