@@ -28,13 +28,13 @@ export function useHttpClient() {
     document.body.classList.add('osf-loading');
 
     return await Request.send(method, url, data, signature.value, refreshStack, location.value).then(async (response: CompleteResponse) => {
-      return await state.update(response).then((fresh) => {
+      return await state.update(response).then(async (fresh) => {
         if (response.redirect) {
-          return handleRedirectResponse(response.redirect);
+          return await handleRedirectResponse(response.redirect);
         }
 
         if (response.raw) {
-          return Promise.resolve(response.raw);
+          return Promise.resolve(response.data);
         }
 
         if (!forceScrollPreserve && !preserveScroll) {

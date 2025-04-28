@@ -1,5 +1,6 @@
 import { RouterViewComponent } from '../src/Components/Routing/RouterViewComponent';
 import { RouterLinkComponent } from '../src/Components/Routing/RouterLinkComponent';
+import { RouterNestedComponent } from '../src/Components/Routing/RouterNestedComponent.ts';
 import { FormControllerComponent } from '../src/Components/Controllers/FormControllerComponent';
 import type { ToastControllerComponent, ToastComponent } from '../src/Components/Controllers/ToastControllerComponent';
 import type { PasswordConfirmationControllerComponent } from '../src/Components/Controllers/PasswordConfirmationControllerComponent';
@@ -27,8 +28,9 @@ declare global {
   type PhoneNumber = { national: string, country: string, rfc: string };
 }
 
-declare module '@vue/runtime-core' {
+declare module 'vue' {
   export interface GlobalComponents {
+    RouterNested: typeof RouterNestedComponent,
     RouterView: typeof RouterViewComponent,
     RouterLink: typeof RouterLinkComponent,
     FormController: typeof FormControllerComponent,

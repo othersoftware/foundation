@@ -28,7 +28,7 @@ function appendSearchParameter(search: URLSearchParams, name: string, value: any
   }
 
   if (value == null) {
-    search.append(name, '');
+    search.set(name, '');
     return search;
   }
 
@@ -56,7 +56,7 @@ function appendSearchParameter(search: URLSearchParams, name: string, value: any
     value = '';
   }
 
-  search.append(name, value);
+  search.set(name, value);
 
   return search;
 }

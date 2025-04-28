@@ -48,6 +48,7 @@ export declare class CompleteResponse extends Response_2 {
     readonly stack: StackedView;
     readonly toasts: ToastRegistry;
     readonly errors: Record<string, string[]>;
+    readonly data: any;
     constructor(xhr: XMLHttpRequest);
 }
 
@@ -399,6 +400,22 @@ disabled: boolean;
 explicit: boolean;
 }, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
+export declare const RouterNestedComponent: DefineComponent<ExtractPropTypes<    {
+action: {
+type: StringConstructor;
+required: true;
+};
+}>, () => VNode<RendererNode, RendererElement, {
+[key: string]: any;
+}>, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+action: {
+type: StringConstructor;
+required: true;
+};
+}>> & Readonly<{}>, {}, SlotsType<{
+default?: () => any;
+}>, {}, {}, string, ComponentProvideOptions, true, {}, any>;
+
 export declare interface RouterRedirect {
     target: string;
     reload: boolean;
@@ -612,8 +629,9 @@ declare global {
   type PhoneNumber = { national: string, country: string, rfc: string };
 }
 
-declare module '@vue/runtime-core' {
+declare module 'vue' {
   export interface GlobalComponents {
+    RouterNested: typeof RouterNestedComponent,
     RouterView: typeof RouterViewComponent,
     RouterLink: typeof RouterLinkComponent,
     FormController: typeof FormControllerComponent,

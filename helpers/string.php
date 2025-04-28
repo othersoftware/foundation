@@ -92,3 +92,31 @@ if (! function_exists('str_prefixed')) {
         return $prefix ? str_concat_underscore($prefix, $name) : $name;
     }
 }
+
+if (! function_exists('str_encode_url')) {
+    function str_encode_url(string $url): string
+    {
+        $parts = parse_url($url);
+
+        if (isset($parts['path'])) {
+            $parts['path'] = implode('/', array_map('rawurlencode', explode('/', $parts['path'])));
+        }
+
+        $scheme = $parts['scheme'] ?? 'https';
+        $host = $parts['host'] ?? '';
+        $path = $parts['path'] ?? '';
+
+        $rebuild = "{$scheme}://{$host}{$path}";
+
+        if (isset($parts['query'])) {
+            parse_str($parts['query'], $params);
+            $rebuild .= '?' . http_build_query($params);
+        }
+
+        if (isset($parts['fragment'])) {
+            $rebuild .= '#' . rawurlencode($parts['fragment']);
+        }
+
+        return $rebuild;
+    }
+}

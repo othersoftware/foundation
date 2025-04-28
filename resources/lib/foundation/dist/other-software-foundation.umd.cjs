@@ -1,13 +1,3689 @@
-(function(g,a){typeof exports=="object"&&typeof module<"u"?a(exports,require("vue")):typeof define=="function"&&define.amd?define(["exports","vue"],a):(g=typeof globalThis<"u"?globalThis:g||self,a(g.OtherSoftwareFoundation={},g.Vue))})(this,function(g,a){"use strict";var Wa=Object.defineProperty;var za=(g,a,Q)=>a in g?Wa(g,a,{enumerable:!0,configurable:!0,writable:!0,value:Q}):g[a]=Q;var j=(g,a,Q)=>za(g,typeof a!="symbol"?a+"":a,Q);class Q{constructor(t){j(this,"xhr");j(this,"status");j(this,"success");j(this,"fail");j(this,"partial");j(this,"raw");j(this,"message");j(this,"content");if(this.xhr=t,this.xhr.getResponseHeader("x-stack-router"))throw new Error("Invalid response for MVC HTTP client.");this.status=this.xhr.status,this.success=this.xhr.status>=200&&this.xhr.status<300,this.fail=!this.success,this.content=this.xhr.response,this.message=this.xhr.statusText,this.partial=!!this.xhr.getResponseHeader("x-partial"),this.raw=!!this.xhr.getResponseHeader("x-raw")}}class Je extends Q{constructor(r){super(r);j(this,"abilities");j(this,"authenticated");j(this,"location");j(this,"signature");j(this,"redirect");j(this,"stack");j(this,"toasts");j(this,"errors");let o=JSON.parse(this.xhr.response);this.abilities=o.abilities,this.authenticated=o.authenticated,this.location=o.location,this.signature=o.signature,this.redirect=o.redirect,this.stack=o.stack,this.errors=o.errors,this.toasts=o.toasts}}const pt=Symbol("StateLocation"),_t=Symbol("StateStackSignature"),Xe=Symbol("StateAuthenticated"),gt=Symbol("StateAbilities"),yt=Symbol("StateManager"),mt=Symbol("StateHistory");function cr(){let e=a.inject(gt);if(!e)throw new Error("Abilities are used out of router context!");return e}function ur(){let e=a.inject(Xe);if(!e)throw new Error("Authenticated is used out of router context!");return e}function Lt(){let e=a.inject(pt);if(!e)throw new Error("Location is used out of router context!");return e}function nn(){let e=a.inject(_t);if(!e)throw new Error("Stack signature is used out of router context!");return e}function rn(){let e=a.inject(yt);if(!e)throw new Error("State manager is used out of router context!");return{update:e}}function on(){let e=a.inject(mt);if(!e)throw new Error("State history is used out of router context!");return e}function wt(e,t){return"keep"in t?t.child?(e.child?e.child=wt(e.child,t.child):e.child=t.child,{...e}):{...e}:{...t}}class St{constructor(t,r,o=void 0,i=void 0,c=!1,h=void 0){j(this,"method");j(this,"url");j(this,"xhr");j(this,"body");j(this,"signature");j(this,"refreshStack");j(this,"referer");this.xhr=new XMLHttpRequest,this.method=t,this.url=r,this.body=o,this.signature=i,this.refreshStack=c,this.referer=h}static send(t,r,o=void 0,i=void 0,c=!1,h=void 0){return new St(t,r,o,i,c,h).send()}send(){return new Promise((t,r)=>{this.xhr.open(this.method,this.url,!0),this.xhr.setRequestHeader("Language",APP_LOCALE),this.xhr.setRequestHeader("X-Stack-Router","true"),this.xhr.setRequestHeader("X-XSRF-TOKEN",this.readCookie("XSRF-TOKEN")),this.referer&&this.xhr.setRequestHeader("X-Stack-Referer",this.referer),this.refreshStack&&this.xhr.setRequestHeader("X-Stack-Refresh","true"),this.signature&&this.xhr.setRequestHeader("X-Stack-Signature",this.signature),this.xhr.onload=()=>{this.xhr.readyState===XMLHttpRequest.DONE&&this.xhr.status&&(this.xhr.status<200||this.xhr.status>=300?this.xhr.status===422?r(new Je(this.xhr)):r(new Q(this.xhr)):t(new Je(this.xhr)))},this.xhr.onerror=()=>{r(new Q(this.xhr))},this.xhr.send(this.transform(this.body))})}transform(t){return t instanceof Blob||t instanceof ArrayBuffer||t instanceof FormData||t instanceof URLSearchParams||typeof t=="string"?t:t===null?null:(this.xhr.setRequestHeader("Content-Type","application/json;charset=UTF-8"),JSON.stringify(t))}readCookie(t){const r=document.cookie.match(new RegExp("(^|;\\s*)("+t+")=([^;]*)"));return r?decodeURIComponent(r[3]):""}}const an={modal:void 0,listener:void 0,show(e){typeof e=="object"&&(e=`All requests must receive a valid MVC response, however a plain JSON response was received.<hr>${JSON.stringify(e)}`);const t=document.createElement("html");t.innerHTML=e,t.querySelectorAll("a").forEach(o=>o.setAttribute("target","_top")),this.modal=document.createElement("dialog"),this.modal.style.display="flex",this.modal.style.width="100%",this.modal.style.height="100dvh",this.modal.style.maxWidth="100%",this.modal.style.maxHeight="100dvh",this.modal.style.padding="2rem",this.modal.style.boxSizing="border-box",this.modal.style.border="none",this.modal.style.backgroundColor="rgba(0, 0, 0, 0.6)",this.modal.style.backdropFilter="blur(0.125rem)",this.modal.addEventListener("click",()=>this.hide());const r=document.createElement("iframe");if(r.style.backgroundColor="white",r.style.borderRadius="0.5rem",r.style.border="none",r.style.width="100%",r.style.height="100%",this.modal.appendChild(r),document.body.prepend(this.modal),document.body.style.overflow="hidden",!r.contentWindow)throw new Error("iframe not yet ready.");r.contentWindow.document.open(),r.contentWindow.document.write(t.outerHTML),r.contentWindow.document.close(),this.listener=this.hideOnEscape.bind(this),this.modal.showModal(),document.addEventListener("keydown",this.listener)},hide(){this.modal.outerHTML="",this.modal=void 0,document.body.style.overflow="visible",document.removeEventListener("keydown",this.listener)},hideOnEscape(e){e.key==="Escape"&&this.hide()}},z={},bt={addEventListener(e,t){z[e]?z[e].push(t):z[e]=[t]},removeEventListener(e,t){z[e]&&(z[e]=z[e].filter(r=>r!==t),z[e].length===0&&delete z[e])},dispatch(e,t){return z[e]&&z[e].forEach(r=>r(t)),t}},xt=Symbol("HttpClientForceScrollPreservation");function Ze(){const e=rn(),t=nn(),r=on(),o=Lt(),i=a.inject(xt,!1);async function c(y,C,{data:_=void 0,preserveScroll:E=!1,replace:T=!1,refreshStack:I=!1}={}){return document.body.classList.add("osf-loading"),await St.send(y,C,_,t.value,I,o.value).then(async A=>await e.update(A).then(v=>A.redirect?m(A.redirect):A.raw?Promise.resolve(A.raw):(!i&&!E&&h(),T?r.historyReplaceState(v):r.historyPushState(v),Promise.resolve(A)))).catch(async A=>A instanceof Je?await e.update(A).then(()=>Promise.reject(A)):A.status===423?(bt.dispatch("password.confirm",{method:y,url:C,options:{data:_,preserveScroll:E,replace:T}}),Promise.reject(A)):(console.error(A),APP_DEBUG&&A.content&&an.show(A.content),Promise.reject(A))).finally(()=>{document.body.classList.remove("osf-loading")})}function h(){window.scroll(0,0)}async function m(y){return y.reload?await new Promise(()=>{window.location.href=y.target}):await c("GET",y.target,{preserveScroll:!0,replace:!1,refreshStack:!0})}return{dispatch:c,get:async function(y){return await c("GET",y)},post:async function(y,C=void 0){return await c("POST",y,{data:C,preserveScroll:!0})},patch:async function(y,C=void 0){return await c("PATCH",y,{data:C,preserveScroll:!0})},put:async function(y,C=void 0){return await c("PUT",y,{data:C,preserveScroll:!0})},delete:async function(y,C=void 0){return await c("DELETE",y,{data:C,preserveScroll:!0})}}}var V=typeof globalThis<"u"?globalThis:typeof window<"u"?window:typeof global<"u"?global:typeof self<"u"?self:{};function kt(e){return e&&e.__esModule&&Object.prototype.hasOwnProperty.call(e,"default")?e.default:e}var Vt,sn;function lr(){if(sn)return Vt;sn=1;var e="Expected a function",t="__lodash_hash_undefined__",r=9007199254740991,o="[object Function]",i="[object GeneratorFunction]",c="[object Symbol]",h=/\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,m=/^\w*$/,y=/^\./,C=/[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g,_=/[\\^$.*+?()[\]{}|]/g,E=/\\(\\)?/g,T=/^\[object .+?Constructor\]$/,I=/^(?:0|[1-9]\d*)$/,A=typeof V=="object"&&V&&V.Object===Object&&V,v=typeof self=="object"&&self&&self.Object===Object&&self,F=A||v||Function("return this")();function le(s,f){return s==null?void 0:s[f]}function ke(s){var f=!1;if(s!=null&&typeof s.toString!="function")try{f=!!(s+"")}catch{}return f}var be=Array.prototype,ee=Function.prototype,fe=Object.prototype,K=F["__core-js_shared__"],te=function(){var s=/[^.]+$/.exec(K&&K.keys&&K.keys.IE_PROTO||"");return s?"Symbol(src)_1."+s:""}(),de=ee.toString,ne=fe.hasOwnProperty,he=fe.toString,Ve=RegExp("^"+de.call(ne).replace(_,"\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,"$1.*?")+"$"),Ce=F.Symbol,Y=be.splice,Ee=Oe(F,"Map"),B=Oe(Object,"create"),M=Ce?Ce.prototype:void 0,He=M?M.toString:void 0;function U(s){var f=-1,w=s?s.length:0;for(this.clear();++f<w;){var P=s[f];this.set(P[0],P[1])}}function ot(){this.__data__=B?B(null):{}}function R(s){return this.has(s)&&delete this.__data__[s]}function at(s){var f=this.__data__;if(B){var w=f[s];return w===t?void 0:w}return ne.call(f,s)?f[s]:void 0}function J(s){var f=this.__data__;return B?f[s]!==void 0:ne.call(f,s)}function k(s,f){var w=this.__data__;return w[s]=B&&f===void 0?t:f,this}U.prototype.clear=ot,U.prototype.delete=R,U.prototype.get=at,U.prototype.has=J,U.prototype.set=k;function q(s){var f=-1,w=s?s.length:0;for(this.clear();++f<w;){var P=s[f];this.set(P[0],P[1])}}function Me(){this.__data__=[]}function it(s){var f=this.__data__,w=oe(f,s);if(w<0)return!1;var P=f.length-1;return w==P?f.pop():Y.call(f,w,1),!0}function st(s){var f=this.__data__,w=oe(f,s);return w<0?void 0:f[w][1]}function G(s){return oe(this.__data__,s)>-1}function ct(s,f){var w=this.__data__,P=oe(w,s);return P<0?w.push([s,f]):w[P][1]=f,this}q.prototype.clear=Me,q.prototype.delete=it,q.prototype.get=st,q.prototype.has=G,q.prototype.set=ct;function W(s){var f=-1,w=s?s.length:0;for(this.clear();++f<w;){var P=s[f];this.set(P[0],P[1])}}function $e(){this.__data__={hash:new U,map:new(Ee||q),string:new U}}function ut(s){return ie(this,s).delete(s)}function lt(s){return ie(this,s).get(s)}function re(s){return ie(this,s).has(s)}function De(s,f){return ie(this,s).set(s,f),this}W.prototype.clear=$e,W.prototype.delete=ut,W.prototype.get=lt,W.prototype.has=re,W.prototype.set=De;function Ae(s,f,w){var P=s[f];(!(ne.call(s,f)&&Ke(P,w))||w===void 0&&!(f in s))&&(s[f]=w)}function oe(s,f){for(var w=s.length;w--;)if(Ke(s[w][0],f))return w;return-1}function ft(s){if(!we(s)||ge(s))return!1;var f=Be(s)||ke(s)?Ve:T;return f.test(ht(s))}function pe(s,f,w,P){if(!we(s))return s;f=_e(f,s)?[f]:Te(f);for(var D=-1,X=f.length,Ue=X-1,Pe=s;Pe!=null&&++D<X;){var qe=Re(f[D]),je=w;if(D!=Ue){var Z=Pe[qe];je=void 0,je===void 0&&(je=we(Z)?Z:$(f[D+1])?[]:{})}Ae(Pe,qe,je),Pe=Pe[qe]}return s}function ae(s){if(typeof s=="string")return s;if(p(s))return He?He.call(s):"";var f=s+"";return f=="0"&&1/s==-1/0?"-0":f}function Te(s){return me(s)?s:Fe(s)}function ie(s,f){var w=s.__data__;return dt(f)?w[typeof f=="string"?"string":"hash"]:w.map}function Oe(s,f){var w=le(s,f);return ft(w)?w:void 0}function $(s,f){return f=f??r,!!f&&(typeof s=="number"||I.test(s))&&s>-1&&s%1==0&&s<f}function _e(s,f){if(me(s))return!1;var w=typeof s;return w=="number"||w=="symbol"||w=="boolean"||s==null||p(s)?!0:m.test(s)||!h.test(s)||f!=null&&s in Object(f)}function dt(s){var f=typeof s;return f=="string"||f=="number"||f=="symbol"||f=="boolean"?s!=="__proto__":s===null}function ge(s){return!!te&&te in s}var Fe=ye(function(s){s=S(s);var f=[];return y.test(s)&&f.push(""),s.replace(C,function(w,P,D,X){f.push(D?X.replace(E,"$1"):P||w)}),f});function Re(s){if(typeof s=="string"||p(s))return s;var f=s+"";return f=="0"&&1/s==-1/0?"-0":f}function ht(s){if(s!=null){try{return de.call(s)}catch{}try{return s+""}catch{}}return""}function ye(s,f){if(typeof s!="function"||f&&typeof f!="function")throw new TypeError(e);var w=function(){var P=arguments,D=f?f.apply(this,P):P[0],X=w.cache;if(X.has(D))return X.get(D);var Ue=s.apply(this,P);return w.cache=X.set(D,Ue),Ue};return w.cache=new(ye.Cache||W),w}ye.Cache=W;function Ke(s,f){return s===f||s!==s&&f!==f}var me=Array.isArray;function Be(s){var f=we(s)?he.call(s):"";return f==o||f==i}function we(s){var f=typeof s;return!!s&&(f=="object"||f=="function")}function l(s){return!!s&&typeof s=="object"}function p(s){return typeof s=="symbol"||l(s)&&he.call(s)==c}function S(s){return s==null?"":ae(s)}function O(s,f,w){return s==null?s:pe(s,f,w)}return Vt=O,Vt}var fr=lr();const cn=kt(fr);var Ht,un;function dr(){if(un)return Ht;un=1;var e="Expected a function",t="__lodash_hash_undefined__",r="[object Function]",o="[object GeneratorFunction]",i="[object Symbol]",c=/\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,h=/^\w*$/,m=/^\./,y=/[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g,C=/[\\^$.*+?()[\]{}|]/g,_=/\\(\\)?/g,E=/^\[object .+?Constructor\]$/,T=typeof V=="object"&&V&&V.Object===Object&&V,I=typeof self=="object"&&self&&self.Object===Object&&self,A=T||I||Function("return this")();function v(l,p){return l==null?void 0:l[p]}function F(l){var p=!1;if(l!=null&&typeof l.toString!="function")try{p=!!(l+"")}catch{}return p}var le=Array.prototype,ke=Function.prototype,be=Object.prototype,ee=A["__core-js_shared__"],fe=function(){var l=/[^.]+$/.exec(ee&&ee.keys&&ee.keys.IE_PROTO||"");return l?"Symbol(src)_1."+l:""}(),K=ke.toString,te=be.hasOwnProperty,de=be.toString,ne=RegExp("^"+K.call(te).replace(C,"\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,"$1.*?")+"$"),he=A.Symbol,Ve=le.splice,Ce=ae(A,"Map"),Y=ae(Object,"create"),Ee=he?he.prototype:void 0,B=Ee?Ee.toString:void 0;function M(l){var p=-1,S=l?l.length:0;for(this.clear();++p<S;){var O=l[p];this.set(O[0],O[1])}}function He(){this.__data__=Y?Y(null):{}}function U(l){return this.has(l)&&delete this.__data__[l]}function ot(l){var p=this.__data__;if(Y){var S=p[l];return S===t?void 0:S}return te.call(p,l)?p[l]:void 0}function R(l){var p=this.__data__;return Y?p[l]!==void 0:te.call(p,l)}function at(l,p){var S=this.__data__;return S[l]=Y&&p===void 0?t:p,this}M.prototype.clear=He,M.prototype.delete=U,M.prototype.get=ot,M.prototype.has=R,M.prototype.set=at;function J(l){var p=-1,S=l?l.length:0;for(this.clear();++p<S;){var O=l[p];this.set(O[0],O[1])}}function k(){this.__data__=[]}function q(l){var p=this.__data__,S=re(p,l);if(S<0)return!1;var O=p.length-1;return S==O?p.pop():Ve.call(p,S,1),!0}function Me(l){var p=this.__data__,S=re(p,l);return S<0?void 0:p[S][1]}function it(l){return re(this.__data__,l)>-1}function st(l,p){var S=this.__data__,O=re(S,l);return O<0?S.push([l,p]):S[O][1]=p,this}J.prototype.clear=k,J.prototype.delete=q,J.prototype.get=Me,J.prototype.has=it,J.prototype.set=st;function G(l){var p=-1,S=l?l.length:0;for(this.clear();++p<S;){var O=l[p];this.set(O[0],O[1])}}function ct(){this.__data__={hash:new M,map:new(Ce||J),string:new M}}function W(l){return pe(this,l).delete(l)}function $e(l){return pe(this,l).get(l)}function ut(l){return pe(this,l).has(l)}function lt(l,p){return pe(this,l).set(l,p),this}G.prototype.clear=ct,G.prototype.delete=W,G.prototype.get=$e,G.prototype.has=ut,G.prototype.set=lt;function re(l,p){for(var S=l.length;S--;)if(Fe(l[S][0],p))return S;return-1}function De(l,p){p=Te(p,l)?[p]:ft(p);for(var S=0,O=p.length;l!=null&&S<O;)l=l[_e(p[S++])];return S&&S==O?l:void 0}function Ae(l){if(!ye(l)||Oe(l))return!1;var p=ht(l)||F(l)?ne:E;return p.test(dt(l))}function oe(l){if(typeof l=="string")return l;if(me(l))return B?B.call(l):"";var p=l+"";return p=="0"&&1/l==-1/0?"-0":p}function ft(l){return Re(l)?l:$(l)}function pe(l,p){var S=l.__data__;return ie(p)?S[typeof p=="string"?"string":"hash"]:S.map}function ae(l,p){var S=v(l,p);return Ae(S)?S:void 0}function Te(l,p){if(Re(l))return!1;var S=typeof l;return S=="number"||S=="symbol"||S=="boolean"||l==null||me(l)?!0:h.test(l)||!c.test(l)||p!=null&&l in Object(p)}function ie(l){var p=typeof l;return p=="string"||p=="number"||p=="symbol"||p=="boolean"?l!=="__proto__":l===null}function Oe(l){return!!fe&&fe in l}var $=ge(function(l){l=Be(l);var p=[];return m.test(l)&&p.push(""),l.replace(y,function(S,O,s,f){p.push(s?f.replace(_,"$1"):O||S)}),p});function _e(l){if(typeof l=="string"||me(l))return l;var p=l+"";return p=="0"&&1/l==-1/0?"-0":p}function dt(l){if(l!=null){try{return K.call(l)}catch{}try{return l+""}catch{}}return""}function ge(l,p){if(typeof l!="function"||p&&typeof p!="function")throw new TypeError(e);var S=function(){var O=arguments,s=p?p.apply(this,O):O[0],f=S.cache;if(f.has(s))return f.get(s);var w=l.apply(this,O);return S.cache=f.set(s,w),w};return S.cache=new(ge.Cache||G),S}ge.Cache=G;function Fe(l,p){return l===p||l!==l&&p!==p}var Re=Array.isArray;function ht(l){var p=ye(l)?de.call(l):"";return p==r||p==o}function ye(l){var p=typeof l;return!!l&&(p=="object"||p=="function")}function Ke(l){return!!l&&typeof l=="object"}function me(l){return typeof l=="symbol"||Ke(l)&&de.call(l)==i}function Be(l){return l==null?"":oe(l)}function we(l,p,S){var O=l==null?void 0:De(l,p);return O===void 0?S:O}return Ht=we,Ht}var hr=dr();const pr=kt(hr),Qe=Symbol("FormContext");function ln(e={},t=!1){const r=a.ref(e),o=a.ref({}),i=a.ref({}),c=a.ref(!1),h=a.ref(t);function m(_){cn(i.value,_,!0)}function y(_,E){return pr(r.value,_,E)}function C(_,E){cn(r.value,_,E)}return{data:r,errors:o,touched:i,processing:c,readonly:h,touch:m,value:y,fill:C}}function _r(e,t,r){return e&&t&&(t.touch(e),t.fill(e,r)),r}function gr(e,t,r){return e&&t?t.value(e,r):r}var et={exports:{}};et.exports;var fn;function yr(){return fn||(fn=1,function(e,t){var r=200,o="__lodash_hash_undefined__",i=9007199254740991,c="[object Arguments]",h="[object Array]",m="[object Boolean]",y="[object Date]",C="[object Error]",_="[object Function]",E="[object GeneratorFunction]",T="[object Map]",I="[object Number]",A="[object Object]",v="[object Promise]",F="[object RegExp]",le="[object Set]",ke="[object String]",be="[object Symbol]",ee="[object WeakMap]",fe="[object ArrayBuffer]",K="[object DataView]",te="[object Float32Array]",de="[object Float64Array]",ne="[object Int8Array]",he="[object Int16Array]",Ve="[object Int32Array]",Ce="[object Uint8Array]",Y="[object Uint8ClampedArray]",Ee="[object Uint16Array]",B="[object Uint32Array]",M=/[\\^$.*+?()[\]{}|]/g,He=/\w*$/,U=/^\[object .+?Constructor\]$/,ot=/^(?:0|[1-9]\d*)$/,R={};R[c]=R[h]=R[fe]=R[K]=R[m]=R[y]=R[te]=R[de]=R[ne]=R[he]=R[Ve]=R[T]=R[I]=R[A]=R[F]=R[le]=R[ke]=R[be]=R[Ce]=R[Y]=R[Ee]=R[B]=!0,R[C]=R[_]=R[ee]=!1;var at=typeof V=="object"&&V&&V.Object===Object&&V,J=typeof self=="object"&&self&&self.Object===Object&&self,k=at||J||Function("return this")(),q=t&&!t.nodeType&&t,Me=q&&!0&&e&&!e.nodeType&&e,it=Me&&Me.exports===q;function st(n,u){return n.set(u[0],u[1]),n}function G(n,u){return n.add(u),n}function ct(n,u){for(var d=-1,b=n?n.length:0;++d<b&&u(n[d],d,n)!==!1;);return n}function W(n,u){for(var d=-1,b=u.length,N=n.length;++d<b;)n[N+d]=u[d];return n}function $e(n,u,d,b){for(var N=-1,L=n?n.length:0;++N<L;)d=u(d,n[N],N,n);return d}function ut(n,u){for(var d=-1,b=Array(n);++d<n;)b[d]=u(d);return b}function lt(n,u){return n==null?void 0:n[u]}function re(n){var u=!1;if(n!=null&&typeof n.toString!="function")try{u=!!(n+"")}catch{}return u}function De(n){var u=-1,d=Array(n.size);return n.forEach(function(b,N){d[++u]=[N,b]}),d}function Ae(n,u){return function(d){return n(u(d))}}function oe(n){var u=-1,d=Array(n.size);return n.forEach(function(b){d[++u]=b}),d}var ft=Array.prototype,pe=Function.prototype,ae=Object.prototype,Te=k["__core-js_shared__"],ie=function(){var n=/[^.]+$/.exec(Te&&Te.keys&&Te.keys.IE_PROTO||"");return n?"Symbol(src)_1."+n:""}(),Oe=pe.toString,$=ae.hasOwnProperty,_e=ae.toString,dt=RegExp("^"+Oe.call($).replace(M,"\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,"$1.*?")+"$"),ge=it?k.Buffer:void 0,Fe=k.Symbol,Re=k.Uint8Array,ht=Ae(Object.getPrototypeOf,Object),ye=Object.create,Ke=ae.propertyIsEnumerable,me=ft.splice,Be=Object.getOwnPropertySymbols,we=ge?ge.isBuffer:void 0,l=Ae(Object.keys,Object),p=ze(k,"DataView"),S=ze(k,"Map"),O=ze(k,"Promise"),s=ze(k,"Set"),f=ze(k,"WeakMap"),w=ze(Object,"create"),P=Ne(p),D=Ne(S),X=Ne(O),Ue=Ne(s),Pe=Ne(f),qe=Fe?Fe.prototype:void 0,je=qe?qe.valueOf:void 0;function Z(n){var u=-1,d=n?n.length:0;for(this.clear();++u<d;){var b=n[u];this.set(b[0],b[1])}}function Jo(){this.__data__=w?w(null):{}}function Xo(n){return this.has(n)&&delete this.__data__[n]}function Zo(n){var u=this.__data__;if(w){var d=u[n];return d===o?void 0:d}return $.call(u,n)?u[n]:void 0}function Qo(n){var u=this.__data__;return w?u[n]!==void 0:$.call(u,n)}function ea(n,u){var d=this.__data__;return d[n]=w&&u===void 0?o:u,this}Z.prototype.clear=Jo,Z.prototype.delete=Xo,Z.prototype.get=Zo,Z.prototype.has=Qo,Z.prototype.set=ea;function se(n){var u=-1,d=n?n.length:0;for(this.clear();++u<d;){var b=n[u];this.set(b[0],b[1])}}function ta(){this.__data__=[]}function na(n){var u=this.__data__,d=jt(u,n);if(d<0)return!1;var b=u.length-1;return d==b?u.pop():me.call(u,d,1),!0}function ra(n){var u=this.__data__,d=jt(u,n);return d<0?void 0:u[d][1]}function oa(n){return jt(this.__data__,n)>-1}function aa(n,u){var d=this.__data__,b=jt(d,n);return b<0?d.push([n,u]):d[b][1]=u,this}se.prototype.clear=ta,se.prototype.delete=na,se.prototype.get=ra,se.prototype.has=oa,se.prototype.set=aa;function Ge(n){var u=-1,d=n?n.length:0;for(this.clear();++u<d;){var b=n[u];this.set(b[0],b[1])}}function ia(){this.__data__={hash:new Z,map:new(S||se),string:new Z}}function sa(n){return vt(this,n).delete(n)}function ca(n){return vt(this,n).get(n)}function ua(n){return vt(this,n).has(n)}function la(n,u){return vt(this,n).set(n,u),this}Ge.prototype.clear=ia,Ge.prototype.delete=sa,Ge.prototype.get=ca,Ge.prototype.has=ua,Ge.prototype.set=la;function We(n){this.__data__=new se(n)}function fa(){this.__data__=new se}function da(n){return this.__data__.delete(n)}function ha(n){return this.__data__.get(n)}function pa(n){return this.__data__.has(n)}function _a(n,u){var d=this.__data__;if(d instanceof se){var b=d.__data__;if(!S||b.length<r-1)return b.push([n,u]),this;d=this.__data__=new Ge(b)}return d.set(n,u),this}We.prototype.clear=fa,We.prototype.delete=da,We.prototype.get=ha,We.prototype.has=pa,We.prototype.set=_a;function ga(n,u){var d=Qt(n)||Da(n)?ut(n.length,String):[],b=d.length,N=!!b;for(var L in n)$.call(n,L)&&!(N&&(L=="length"||Va(L,b)))&&d.push(L);return d}function Xn(n,u,d){var b=n[u];(!($.call(n,u)&&tr(b,d))||d===void 0&&!(u in n))&&(n[u]=d)}function jt(n,u){for(var d=n.length;d--;)if(tr(n[d][0],u))return d;return-1}function ya(n,u){return n&&Zn(u,en(u),n)}function Xt(n,u,d,b,N,L,ce){var x;if(b&&(x=L?b(n,N,L,ce):b(n)),x!==void 0)return x;if(!Nt(n))return n;var or=Qt(n);if(or){if(x=La(n),!u)return va(n,x)}else{var Ye=ve(n),ar=Ye==_||Ye==E;if(Ka(n))return Ea(n,u);if(Ye==A||Ye==c||ar&&!L){if(re(n))return L?n:{};if(x=xa(ar?{}:n),!u)return Na(n,ya(x,n))}else{if(!R[Ye])return L?n:{};x=ka(n,Ye,Xt,u)}}ce||(ce=new We);var ir=ce.get(n);if(ir)return ir;if(ce.set(n,x),!or)var sr=d?Ia(n):en(n);return ct(sr||n,function(tn,It){sr&&(It=tn,tn=n[It]),Xn(x,It,Xt(tn,u,d,b,It,n,ce))}),x}function ma(n){return Nt(n)?ye(n):{}}function wa(n,u,d){var b=u(n);return Qt(n)?b:W(b,d(n))}function Sa(n){return _e.call(n)}function ba(n){if(!Nt(n)||Ma(n))return!1;var u=rr(n)||re(n)?dt:U;return u.test(Ne(n))}function Ca(n){if(!er(n))return l(n);var u=[];for(var d in Object(n))$.call(n,d)&&d!="constructor"&&u.push(d);return u}function Ea(n,u){if(u)return n.slice();var d=new n.constructor(n.length);return n.copy(d),d}function Zt(n){var u=new n.constructor(n.byteLength);return new Re(u).set(new Re(n)),u}function Aa(n,u){var d=u?Zt(n.buffer):n.buffer;return new n.constructor(d,n.byteOffset,n.byteLength)}function Ta(n,u,d){var b=u?d(De(n),!0):De(n);return $e(b,st,new n.constructor)}function Oa(n){var u=new n.constructor(n.source,He.exec(n));return u.lastIndex=n.lastIndex,u}function Ra(n,u,d){var b=u?d(oe(n),!0):oe(n);return $e(b,G,new n.constructor)}function Pa(n){return je?Object(je.call(n)):{}}function ja(n,u){var d=u?Zt(n.buffer):n.buffer;return new n.constructor(d,n.byteOffset,n.length)}function va(n,u){var d=-1,b=n.length;for(u||(u=Array(b));++d<b;)u[d]=n[d];return u}function Zn(n,u,d,b){d||(d={});for(var N=-1,L=u.length;++N<L;){var ce=u[N],x=void 0;Xn(d,ce,x===void 0?n[ce]:x)}return d}function Na(n,u){return Zn(n,Qn(n),u)}function Ia(n){return wa(n,en,Qn)}function vt(n,u){var d=n.__data__;return Ha(u)?d[typeof u=="string"?"string":"hash"]:d.map}function ze(n,u){var d=lt(n,u);return ba(d)?d:void 0}var Qn=Be?Ae(Be,Object):qa,ve=Sa;(p&&ve(new p(new ArrayBuffer(1)))!=K||S&&ve(new S)!=T||O&&ve(O.resolve())!=v||s&&ve(new s)!=le||f&&ve(new f)!=ee)&&(ve=function(n){var u=_e.call(n),d=u==A?n.constructor:void 0,b=d?Ne(d):void 0;if(b)switch(b){case P:return K;case D:return T;case X:return v;case Ue:return le;case Pe:return ee}return u});function La(n){var u=n.length,d=n.constructor(u);return u&&typeof n[0]=="string"&&$.call(n,"index")&&(d.index=n.index,d.input=n.input),d}function xa(n){return typeof n.constructor=="function"&&!er(n)?ma(ht(n)):{}}function ka(n,u,d,b){var N=n.constructor;switch(u){case fe:return Zt(n);case m:case y:return new N(+n);case K:return Aa(n,b);case te:case de:case ne:case he:case Ve:case Ce:case Y:case Ee:case B:return ja(n,b);case T:return Ta(n,b,d);case I:case ke:return new N(n);case F:return Oa(n);case le:return Ra(n,b,d);case be:return Pa(n)}}function Va(n,u){return u=u??i,!!u&&(typeof n=="number"||ot.test(n))&&n>-1&&n%1==0&&n<u}function Ha(n){var u=typeof n;return u=="string"||u=="number"||u=="symbol"||u=="boolean"?n!=="__proto__":n===null}function Ma(n){return!!ie&&ie in n}function er(n){var u=n&&n.constructor,d=typeof u=="function"&&u.prototype||ae;return n===d}function Ne(n){if(n!=null){try{return Oe.call(n)}catch{}try{return n+""}catch{}}return""}function $a(n){return Xt(n,!0,!0)}function tr(n,u){return n===u||n!==n&&u!==u}function Da(n){return Fa(n)&&$.call(n,"callee")&&(!Ke.call(n,"callee")||_e.call(n)==c)}var Qt=Array.isArray;function nr(n){return n!=null&&Ba(n.length)&&!rr(n)}function Fa(n){return Ua(n)&&nr(n)}var Ka=we||Ga;function rr(n){var u=Nt(n)?_e.call(n):"";return u==_||u==E}function Ba(n){return typeof n=="number"&&n>-1&&n%1==0&&n<=i}function Nt(n){var u=typeof n;return!!n&&(u=="object"||u=="function")}function Ua(n){return!!n&&typeof n=="object"}function en(n){return nr(n)?ga(n):Ca(n)}function qa(){return[]}function Ga(){return!1}e.exports=$a}(et,et.exports)),et.exports}var mr=yr();const dn=kt(mr),hn=a.defineComponent({name:"FormController",props:{action:{type:String,required:!1},method:{type:String,required:!1,default:"POST"},data:{type:Object,required:!1,default:{}},readonly:{type:Boolean,required:!1,default:!1},onSubmit:{type:Function,required:!1}},slots:Object,setup(e,{slots:t,expose:r}){const o=ln(dn(a.toValue(e.data)),a.toValue(e.readonly)),i=Ze(),c=a.inject(Qe,null),{data:h,processing:m,readonly:y,errors:C,touched:_}=o,E=a.computed(()=>c?"div":"form"),T=a.computed(()=>c?{"data-action":e.action,"data-method":e.method}:{action:e.action,method:e.method});function I(){if(e.onSubmit)return e.onSubmit(h.value,o);if(!e.action)throw new Error("You must either provide action or your custom form handler!");return i.dispatch(e.method,e.action,{data:h.value})}function A(){let v=y.value;m.value=!0,y.value=!0,C.value={},_.value={},a.nextTick(()=>I().catch(F=>{F instanceof Je&&(C.value=F.errors)}).finally(()=>{m.value=!1,y.value=v}))}return a.watch(()=>e.data,v=>{h.value=dn(a.toValue(v))}),a.watch(()=>e.readonly,v=>{y.value=a.toValue(v)}),r({ctx:o,submit:A}),a.provide(Qe,o),()=>a.h(E.value,{class:"form",...T.value},t.default({data:h.value,processing:m.value,errors:C.value,touched:_.value,ctx:o,submit:A}))}}),Mt=Symbol("ViewResolver"),tt=Symbol("StackedView"),nt=Symbol("StackedViewDepth"),$t=Symbol("StackedViewParent"),Dt=Symbol("StackedViewLocation"),Ft=Symbol("StackedViewQuery");function pn(e){return Array.isArray(e)?e:[e]}function _n(){const e=a.inject(Mt);if(!e)throw new Error("You're trying to get ViewResolver ouf of Router context!");return e}function gn(){const e=a.inject(tt);if(!e)throw new Error("You're trying to get stacked view out of Router context!");return e}function yn(){const e=a.inject(nt);if(!e)throw new Error("You're trying to get view depth out of Router context!");return e}const Ct=a.defineComponent({inheritAttrs:!1,name:"RouterView",props:{allowLayouts:{type:Boolean,required:!1,default:!0}},slots:Object,setup(e,{slots:t}){const r=_n(),o=yn(),i=gn(),c=a.computed(()=>{var y;return(y=i.value)==null?void 0:y.location}),h=a.computed(()=>{var y;return(y=i.value)==null?void 0:y.query}),m=a.computed(()=>{if(i.value&&i.value.child)return{...i.value.child,parent:i.value}});return a.provide(tt,m),a.provide(nt,a.computed(()=>o.value+1)),a.provide($t,a.computed(()=>{var y;return(y=i.value)==null?void 0:y.parent})),a.provide(Dt,c),a.provide(Ft,h),()=>{if(i.value&&"component"in i.value){let y=r(i.value.component),C=i.value.props;y.inheritAttrs=!!y.inheritAttrs;let _=a.h(y,C);return e.allowLayouts&&y.layout&&(_=pn(y.layout).concat(_).reverse().reduce((E,T)=>(T=typeof T=="string"?r(T):T,T.inheritAttrs=!!T.inheritAttrs,a.h(T,C,()=>E)))),_}if(t.default)return t.default()}}}),mn=a.defineComponent({name:"RouterLink",props:{method:{type:String,required:!1,default:"GET"},href:{type:String,required:!1},data:{type:[Object,Array,String,null],required:!1},preserveScroll:{type:Boolean,required:!1},replace:{type:Boolean,required:!1},target:{type:String,required:!1},disabled:{type:Boolean,required:!1},explicit:{type:Boolean,required:!1}},setup(e,{attrs:t,slots:r}){const o=Lt(),i=Ze(),c=a.ref(!1),h=a.computed(()=>{var A;let _=o.value.replace(/\/$/,""),E=(A=e.href)==null?void 0:A.replace(/\/$/,""),T=_===E,I=!e.explicit&&E&&o.value.startsWith(E);return T||I}),m=a.computed(()=>e.href?"a":"button"),y=a.computed(()=>e.href?{target:e.target}:{disabled:e.disabled});function C(_){if(!e.href||!wr(_,e.href,e.target)||(_.preventDefault(),e.disabled))return;let{method:E,href:T,data:I,preserveScroll:A,replace:v}=e;c.value=!0,a.nextTick(()=>{i.dispatch(E,T,{data:I,preserveScroll:A,replace:v}).then(()=>{c.value=!1}).catch(()=>{c.value=!1})})}return()=>a.h(m.value,{href:e.href,onClick:C,...y.value,...t,class:[{active:h.value,pending:c.value,disabled:e.disabled}]},r.default({active:h,pending:c}))}});function wr(e,t,r){return r==="_blank"||Sr(t)?!1:!(e.defaultPrevented||e.button>1||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey)}function Sr(e){try{let t=window.location.host,r=new URL(e).host;return t!==r}catch{return!1}}const rt=Symbol("ToastRegistry");function Kt(){let e=a.inject(rt);if(!e)throw new Error("Toasts are used out of router context!");return e}const wn=a.defineComponent({name:"ToastController",slots:Object,setup(e,{slots:t,attrs:r}){const o=Kt();return()=>a.h("div",r,t.default({toasts:o.value}))}}),Sn=a.defineComponent({name:"Toast",props:{toast:{type:Object,required:!0}},slots:Object,setup(e,{slots:t,attrs:r}){const o=Kt(),i=a.ref();function c(){clearTimeout(i.value),o.value=o.value.filter(h=>h.id!==e.toast.id)}return a.onMounted(()=>{i.value=setTimeout(()=>c(),e.toast.duration*1e3)}),a.onBeforeUnmount(()=>{clearTimeout(i.value)}),()=>a.h("li",r,t.default({toast:e.toast,close:c}))}}),br=a.defineComponent({name:"PasswordConfirmationController",props:{action:{type:String,required:!0}},slots:Object,setup(e,{slots:t,attrs:r}){const o=Ze(),i=a.ref(),c=a.ref(!1);function h(C){i.value=C,c.value=!0}async function m(C){let{method:_,url:E,options:T}=i.value;return await o.post(e.action,C).then(async()=>await o.dispatch(_,E,T).then(async I=>(y(),await a.nextTick(()=>I))))}function y(){c.value=!1,i.value=void 0}return a.onMounted(()=>{bt.addEventListener("password.confirm",h)}),a.onBeforeUnmount(()=>{bt.removeEventListener("password.confirm",h)}),()=>a.h("div",r,t.default({open:c.value,submit:m,cancel:y}))}});function bn(e,t){return An(En(e),t)}function Cn(e,t,r){return An(Cr(En(e),t),r)}function En(e){let t=APP_TRANSLATIONS[e];return typeof t>"u"&&(t=e),t}function Cr(e,t){let r=e.split("|"),o=Er(r,t);if(o)return o.trim();r=Tr(r);let i=Or(t);return r.length===1||r[i]==null?r[0]:r[i]}function Er(e,t){for(let r in e){let o=Ar(r,t);if(o)return o}}function Ar(e,t){const r=/^[\{\[]([^\[\]\{\}]*)[\}\]](.*)/s,o=e.match(r);if(!o||o.length!==3)return null;const i=o[1],c=o[2];if(i.includes(",")){const[h,m]=i.split(",",2);if(m==="*"&&t>=Number(h))return c;if(h==="*"&&t<=Number(m))return c;if(t>=Number(h)&&t<=Number(m))return c}return Number(i)==t?c:null}function Tr(e){return e.map(t=>t.replace(/^[\{\[]([^\[\]\{\}]*)[\}\]]/,""))}function An(e,t){return t?Object.keys(t).reduce((r,o)=>r.replace(`:${o}`,t[o].toString()),e):e}function Or(e){switch(APP_LOCALE){case"az":case"az_AZ":case"bo":case"bo_CN":case"bo_IN":case"dz":case"dz_BT":case"id":case"id_ID":case"ja":case"ja_JP":case"jv":case"ka":case"ka_GE":case"km":case"km_KH":case"kn":case"kn_IN":case"ko":case"ko_KR":case"ms":case"ms_MY":case"th":case"th_TH":case"tr":case"tr_CY":case"tr_TR":case"vi":case"vi_VN":case"zh":case"zh_CN":case"zh_HK":case"zh_SG":case"zh_TW":return 0;case"af":case"af_ZA":case"bn":case"bn_BD":case"bn_IN":case"bg":case"bg_BG":case"ca":case"ca_AD":case"ca_ES":case"ca_FR":case"ca_IT":case"da":case"da_DK":case"de":case"de_AT":case"de_BE":case"de_CH":case"de_DE":case"de_LI":case"de_LU":case"el":case"el_CY":case"el_GR":case"en":case"en_AG":case"en_AU":case"en_BW":case"en_CA":case"en_DK":case"en_GB":case"en_HK":case"en_IE":case"en_IN":case"en_NG":case"en_NZ":case"en_PH":case"en_SG":case"en_US":case"en_ZA":case"en_ZM":case"en_ZW":case"eo":case"eo_US":case"es":case"es_AR":case"es_BO":case"es_CL":case"es_CO":case"es_CR":case"es_CU":case"es_DO":case"es_EC":case"es_ES":case"es_GT":case"es_HN":case"es_MX":case"es_NI":case"es_PA":case"es_PE":case"es_PR":case"es_PY":case"es_SV":case"es_US":case"es_UY":case"es_VE":case"et":case"et_EE":case"eu":case"eu_ES":case"eu_FR":case"fa":case"fa_IR":case"fi":case"fi_FI":case"fo":case"fo_FO":case"fur":case"fur_IT":case"fy":case"fy_DE":case"fy_NL":case"gl":case"gl_ES":case"gu":case"gu_IN":case"ha":case"ha_NG":case"he":case"he_IL":case"hu":case"hu_HU":case"is":case"is_IS":case"it":case"it_CH":case"it_IT":case"ku":case"ku_TR":case"lb":case"lb_LU":case"ml":case"ml_IN":case"mn":case"mn_MN":case"mr":case"mr_IN":case"nah":case"nb":case"nb_NO":case"ne":case"ne_NP":case"nl":case"nl_AW":case"nl_BE":case"nl_NL":case"nn":case"nn_NO":case"no":case"om":case"om_ET":case"om_KE":case"or":case"or_IN":case"pa":case"pa_IN":case"pa_PK":case"pap":case"pap_AN":case"pap_AW":case"pap_CW":case"ps":case"ps_AF":case"pt":case"pt_BR":case"pt_PT":case"so":case"so_DJ":case"so_ET":case"so_KE":case"so_SO":case"sq":case"sq_AL":case"sq_MK":case"sv":case"sv_FI":case"sv_SE":case"sw":case"sw_KE":case"sw_TZ":case"ta":case"ta_IN":case"ta_LK":case"te":case"te_IN":case"tk":case"tk_TM":case"ur":case"ur_IN":case"ur_PK":case"zu":case"zu_ZA":return e==1?0:1;case"am":case"am_ET":case"bh":case"fil":case"fil_PH":case"fr":case"fr_BE":case"fr_CA":case"fr_CH":case"fr_FR":case"fr_LU":case"gun":case"hi":case"hi_IN":case"hy":case"hy_AM":case"ln":case"ln_CD":case"mg":case"mg_MG":case"nso":case"nso_ZA":case"ti":case"ti_ER":case"ti_ET":case"wa":case"wa_BE":case"xbr":return e==0||e==1?0:1;case"be":case"be_BY":case"bs":case"bs_BA":case"hr":case"hr_HR":case"ru":case"ru_RU":case"ru_UA":case"sr":case"sr_ME":case"sr_RS":case"uk":case"uk_UA":return e%10==1&&e%100!=11?0:e%10>=2&&e%10<=4&&(e%100<10||e%100>=20)?1:2;case"cs":case"cs_CZ":case"sk":case"sk_SK":return e==1?0:e>=2&&e<=4?1:2;case"ga":case"ga_IE":return e==1?0:e==2?1:2;case"lt":case"lt_LT":return e%10==1&&e%100!=11?0:e%10>=2&&(e%100<10||e%100>=20)?1:2;case"sl":case"sl_SI":return e%100==1?0:e%100==2?1:e%100==3||e%100==4?2:3;case"mk":case"mk_MK":return e%10==1?0:1;case"mt":case"mt_MT":return e==1?0:e==0||e%100>1&&e%100<11?1:e%100>10&&e%100<20?2:3;case"lv":case"lv_LV":return e==0?0:e%10==1&&e%100!=11?1:2;case"pl":case"pl_PL":return e==1?0:e%10>=2&&e%10<=4&&(e%100<12||e%100>14)?1:2;case"cy":case"cy_GB":return e==1?0:e==2?1:e==8||e==11?2:3;case"ro":case"ro_RO":return e==1?0:e==0||e%100>0&&e%100<20?1:2;case"ar":case"ar_AE":case"ar_BH":case"ar_DZ":case"ar_EG":case"ar_IN":case"ar_IQ":case"ar_JO":case"ar_KW":case"ar_LB":case"ar_LY":case"ar_MA":case"ar_OM":case"ar_QA":case"ar_SA":case"ar_SD":case"ar_SS":case"ar_SY":case"ar_TN":case"ar_YE":return e==0?0:e==1?1:e==2?2:e%100>=3&&e%100<=10?3:e%100>=11&&e%100<=99?4:5;default:return 0}}function Bt(e,t,r,o){const i=new URL(e,o||APP_URL);return t&&Rr(i.searchParams,t),r&&(i.hash=r),i.toString()}function Rr(e,t){Object.keys(t).forEach(r=>{Ut(e,r,a.toRaw(t[r]))})}function Ut(e,t,r,o){return o&&(t=o+"["+t+"]"),r==null?(e.append(t,""),e):Array.isArray(r)?(r.forEach((i,c)=>{Ut(e,c.toString(),i,t)}),e):typeof r=="object"?(Object.keys(r).forEach(i=>{Ut(e,i,r[i],t)}),e):(typeof r=="boolean"&&(r=Number(r)),r==null&&(r=""),e.append(t,r),e)}function Tn(e,t={},r){return jr(Pr(e),t,r)}function Pr(e){return e.startsWith(APP_FALLBACK_LOCALE)?e.replace(`${APP_FALLBACK_LOCALE}.`,""):APP_AVAILABLE_LOCALES.findIndex(t=>e.startsWith(t))>=0||!e.startsWith("web.")?e:APP_LOCALE!==APP_FALLBACK_LOCALE?`${APP_LOCALE}.${e}`:e}function jr(e,t,r){const o=APP_ROUTES[e];if(!o)throw new Error(`Undefined route: ${e}`);const i=vr(o,t),c=Object.keys(t).reduce((h,m)=>(o.params.includes(m)||(h[m]=a.toRaw(t[m])),h),{});return Bt(i,c,r,o.domain)}function vr(e,t){return e.params.reduce((r,o)=>{let i=e.binding[o]||"id",c=a.toRaw(t[o]);if(typeof c=="object"&&(c=c[i]),!c)throw new Error(`Parameter ${o} is required for uri ${e.uri}.`);return r.replace(new RegExp(`{${o}??}`),c)},e.uri)}const Nr=a.defineComponent({inheritAttrs:!1,name:"RouterNestedView",props:{action:{type:String,required:!0}},slots:Object,setup(e,{slots:t}){const r=Ze(),o=a.ref(!0);return a.onMounted(()=>{r.get(e.action).then(()=>a.nextTick(()=>{o.value=!1}))}),()=>{if(o.value){if(t.default)return t.default()}else return a.h(Ct)}}}),Ir=a.defineComponent({inheritAttrs:!1,name:"RouterNested",props:{action:{type:String,required:!0}},slots:Object,setup(e,{slots:t}){const r=a.ref(e.action),o=a.ref(void 0),i=a.ref(void 0),c=a.ref(void 0),h=a.inject(Xe),m=a.inject(rt);function y(){return{location:a.toRaw(a.toValue(r)),signature:a.toRaw(a.toValue(c)),stack:a.toRaw(a.toValue(i))}}async function C(_){return o.value=_.abilities,h.value=_.authenticated,_.location&&(r.value=_.location),_.signature&&(c.value=_.signature),_.stack&&(i.value=wt(a.toRaw(a.toValue(i.value)),_.stack)),_.toasts&&_.toasts.length>0&&(m.value=[...m.value,..._.toasts]),await a.nextTick(()=>y())}return a.provide(gt,o),a.provide(Xe,h),a.provide(pt,r),a.provide(_t,c),a.provide(yt,C),a.provide(nt,a.computed(()=>0)),a.provide(tt,i),a.provide(rt,m),a.provide(xt,!0),a.provide(mt,{historyPushState(_){},historyReplaceState(_){}}),()=>a.h(Nr,{action:e.action},t)}});/**
-* @vue/shared v3.5.13
-* (c) 2018-present Yuxi (Evan) You and Vue contributors
-* @license MIT
-**//*! #__NO_SIDE_EFFECTS__ */function Et(e){const t=Object.create(null);for(const r of e.split(","))t[r]=1;return r=>r in t}const Lr=process.env.NODE_ENV!=="production"?Object.freeze({}):{};process.env.NODE_ENV!=="production"&&Object.freeze([]);const At=()=>{},xr=e=>e.charCodeAt(0)===111&&e.charCodeAt(1)===110&&(e.charCodeAt(2)>122||e.charCodeAt(2)<97),qt=Array.isArray,Ie=e=>typeof e=="function",H=e=>typeof e=="string",Gt=e=>e!==null&&typeof e=="object",Tt=e=>(Gt(e)||Ie(e))&&Ie(e.then)&&Ie(e.catch),kr=e=>{const t=Object.create(null);return r=>t[r]||(t[r]=e(r))},Vr=/\B([A-Z])/g,Hr=kr(e=>e.replace(Vr,"-$1").toLowerCase());let On;const Mr=()=>On||(On=typeof globalThis<"u"?globalThis:typeof self<"u"?self:typeof window<"u"?window:typeof global<"u"?global:{});function Rn(e){if(qt(e)){const t={};for(let r=0;r<e.length;r++){const o=e[r],i=H(o)?Kr(o):Rn(o);if(i)for(const c in i)t[c]=i[c]}return t}else if(H(e)||Gt(e))return e}const $r=/;(?![^(]*\))/g,Dr=/:([^]+)/,Fr=/\/\*[^]*?\*\//g;function Kr(e){const t={};return e.replace(Fr,"").split($r).forEach(r=>{if(r){const o=r.split(Dr);o.length>1&&(t[o[0].trim()]=o[1].trim())}}),t}function Br(e){if(!e)return"";if(H(e))return e;let t="";for(const r in e){const o=e[r];if(H(o)||typeof o=="number"){const i=r.startsWith("--")?r:Hr(r);t+=`${i}:${o};`}}return t}function Pn(e){let t="";if(H(e))t=e;else if(qt(e))for(let r=0;r<e.length;r++){const o=Pn(e[r]);o&&(t+=o+" ")}else if(Gt(e))for(const r in e)e[r]&&(t+=r+" ");return t.trim()}const Ur="svg,animate,animateMotion,animateTransform,circle,clipPath,color-profile,defs,desc,discard,ellipse,feBlend,feColorMatrix,feComponentTransfer,feComposite,feConvolveMatrix,feDiffuseLighting,feDisplacementMap,feDistantLight,feDropShadow,feFlood,feFuncA,feFuncB,feFuncG,feFuncR,feGaussianBlur,feImage,feMerge,feMergeNode,feMorphology,feOffset,fePointLight,feSpecularLighting,feSpotLight,feTile,feTurbulence,filter,foreignObject,g,hatch,hatchpath,image,line,linearGradient,marker,mask,mesh,meshgradient,meshpatch,meshrow,metadata,mpath,path,pattern,polygon,polyline,radialGradient,rect,set,solidcolor,stop,switch,symbol,text,textPath,title,tspan,unknown,use,view",qr="area,base,br,col,embed,hr,img,input,link,meta,param,source,track,wbr",Gr=Et(Ur),Wr=Et(qr),zr=Et("itemscope,allowfullscreen,formnovalidate,ismap,nomodule,novalidate,readonly"+",async,autofocus,autoplay,controls,default,defer,disabled,hidden,inert,loop,open,required,reversed,scoped,seamless,checked,muted,multiple,selected");function Yr(e){return!!e||e===""}const Jr=/[>/="'\u0009\u000a\u000c\u0020]/,Wt={};function Xr(e){if(Wt.hasOwnProperty(e))return Wt[e];const t=Jr.test(e);return t&&console.error(`unsafe attribute name: ${e}`),Wt[e]=!t}const Zr={acceptCharset:"accept-charset",className:"class",htmlFor:"for",httpEquiv:"http-equiv"};function Qr(e){if(e==null)return!1;const t=typeof e;return t==="string"||t==="number"||t==="boolean"}const eo=/["'&<>]/;function ue(e){const t=""+e,r=eo.exec(t);if(!r)return t;let o="",i,c,h=0;for(c=r.index;c<t.length;c++){switch(t.charCodeAt(c)){case 34:i="&quot;";break;case 38:i="&amp;";break;case 39:i="&#39;";break;case 60:i="&lt;";break;case 62:i="&gt;";break;default:continue}h!==c&&(o+=t.slice(h,c)),h=c+1,o+=i}return h!==c?o+t.slice(h,c):o}const to=/^-?>|<!--|-->|--!>|<!-$/g;function no(e){return e.replace(to,"")}/**
-* @vue/server-renderer v3.5.13
-* (c) 2018-present Yuxi (Evan) You and Vue contributors
-* @license MIT
-**/const ro=Et(",key,ref,innerHTML,textContent,ref_key,ref_for");function oo(e,t){let r="";for(const o in e){if(ro(o)||xr(o)||t==="textarea"&&o==="value")continue;const i=e[o];o==="class"?r+=` class="${io(i)}"`:o==="style"?r+=` style="${so(i)}"`:o==="className"?r+=` class="${String(i)}"`:r+=ao(o,i,t)}return r}function ao(e,t,r){if(!Qr(t))return"";const o=r&&(r.indexOf("-")>0||Gr(r))?e:Zr[e]||e.toLowerCase();return zr(o)?Yr(t)?` ${o}`:"":Xr(o)?t===""?` ${o}`:` ${o}="${ue(t)}"`:(console.warn(`[@vue/server-renderer] Skipped rendering unsafe attribute name: ${o}`),"")}function io(e){return ue(Pn(e))}function so(e){if(!e)return"";if(H(e))return ue(e);const t=Rn(e);return ue(Br(t))}const{ensureValidVNode:Ja}=a.ssrUtils;function co(e,t,r,o,i){e("<!--teleport start-->");const c=i.appContext.provides[a.ssrContextKey],h=c.__teleportBuffers||(c.__teleportBuffers={}),m=h[r]||(h[r]=[]),y=m.length;let C;if(o)t(e),C="<!--teleport start anchor--><!--teleport anchor-->";else{const{getBuffer:_,push:E}=$n();E("<!--teleport start anchor-->"),t(E),E("<!--teleport anchor-->"),C=_()}m.splice(y,0,C),e("<!--teleport end-->")}Symbol(process.env.NODE_ENV!=="production"?"Object iterate":""),Symbol(process.env.NODE_ENV!=="production"?"Map keys iterate":""),Symbol(process.env.NODE_ENV!=="production"?"Array iterate":"");function zt(e){const t=e&&e.__v_raw;return t?zt(t):e}function uo(e){return e?e.__v_isRef===!0:!1}const Se=[];function lo(e){Se.push(e)}function fo(){Se.pop()}let Yt=!1;function jn(e,...t){if(Yt)return;Yt=!0;const r=Se.length?Se[Se.length-1].component:null,o=r&&r.appContext.config.warnHandler,i=ho();if(o)In(o,r,11,[e+t.map(c=>{var h,m;return(m=(h=c.toString)==null?void 0:h.call(c))!=null?m:JSON.stringify(c)}).join(""),r&&r.proxy,i.map(({vnode:c})=>`at <${xn(r,c.type)}>`).join(`
-`),i]);else{const c=[`[Vue warn]: ${e}`,...t];i.length&&c.push(`
-`,...po(i)),console.warn(...c)}Yt=!1}function ho(){let e=Se[Se.length-1];if(!e)return[];const t=[];for(;e;){const r=t[0];r&&r.vnode===e?r.recurseCount++:t.push({vnode:e,recurseCount:0});const o=e.component&&e.component.parent;e=o&&o.vnode}return t}function po(e){const t=[];return e.forEach((r,o)=>{t.push(...o===0?[]:[`
-`],..._o(r))}),t}function _o({vnode:e,recurseCount:t}){const r=t>0?`... (${t} recursive calls)`:"",o=e.component?e.component.parent==null:!1,i=` at <${xn(e.component,e.type,o)}`,c=">"+r;return e.props?[i,...go(e.props),c]:[i+c]}function go(e){const t=[],r=Object.keys(e);return r.slice(0,3).forEach(o=>{t.push(...vn(o,e[o]))}),r.length>3&&t.push(" ..."),t}function vn(e,t,r){return H(t)?(t=JSON.stringify(t),r?t:[`${e}=${t}`]):typeof t=="number"||typeof t=="boolean"||t==null?r?t:[`${e}=${t}`]:uo(t)?(t=vn(e,zt(t.value),!0),r?t:[`${e}=Ref<`,t,">"]):Ie(t)?[`${e}=fn${t.name?`<${t.name}>`:""}`]:(t=zt(t),r?t:[`${e}=`,t])}const Nn={sp:"serverPrefetch hook",bc:"beforeCreate hook",c:"created hook",bm:"beforeMount hook",m:"mounted hook",bu:"beforeUpdate hook",u:"updated",bum:"beforeUnmount hook",um:"unmounted hook",a:"activated hook",da:"deactivated hook",ec:"errorCaptured hook",rtc:"renderTracked hook",rtg:"renderTriggered hook",0:"setup function",1:"render function",2:"watcher getter",3:"watcher callback",4:"watcher cleanup function",5:"native event handler",6:"component event handler",7:"vnode hook",8:"directive hook",9:"transition hook",10:"app errorHandler",11:"app warnHandler",12:"ref function",13:"async component loader",14:"scheduler flush",15:"component update",16:"app unmount cleanup function"};function In(e,t,r,o){try{return o?e(...o):e()}catch(i){yo(i,t,r)}}function yo(e,t,r,o=!0){const i=t?t.vnode:null,{errorHandler:c,throwUnhandledErrorInProduction:h}=t&&t.appContext.config||Lr;if(t){let m=t.parent;const y=t.proxy,C=process.env.NODE_ENV!=="production"?Nn[r]:`https://vuejs.org/error-reference/#runtime-${r}`;for(;m;){const _=m.ec;if(_){for(let E=0;E<_.length;E++)if(_[E](e,y,C)===!1)return}m=m.parent}if(c){In(c,null,10,[e,y,C]);return}}mo(e,r,i,o,h)}function mo(e,t,r,o=!0,i=!1){if(process.env.NODE_ENV!=="production"){const c=Nn[t];if(r&&lo(r),jn(`Unhandled error${c?` during execution of ${c}`:""}`),r&&fo(),o)throw e;console.error(e)}else{if(i)throw e;console.error(e)}}let Le,Ot=[];function Ln(e,t){var r,o;Le=e,Le?(Le.enabled=!0,Ot.forEach(({event:i,args:c})=>Le.emit(i,...c)),Ot=[]):typeof window<"u"&&window.HTMLElement&&!((o=(r=window.navigator)==null?void 0:r.userAgent)!=null&&o.includes("jsdom"))?((t.__VUE_DEVTOOLS_HOOK_REPLAY__=t.__VUE_DEVTOOLS_HOOK_REPLAY__||[]).push(c=>{Ln(c,t)}),setTimeout(()=>{Le||(t.__VUE_DEVTOOLS_HOOK_REPLAY__=null,Ot=[])},3e3)):Ot=[]}{const e=Mr(),t=(r,o)=>{let i;return(i=e[r])||(i=e[r]=[]),i.push(o),c=>{i.length>1?i.forEach(h=>h(c)):i[0](c)}};t("__VUE_INSTANCE_SETTERS__",r=>r),t("__VUE_SSR_SETTERS__",r=>r)}process.env.NODE_ENV;const wo=/(?:^|[-_])(\w)/g,So=e=>e.replace(wo,t=>t.toUpperCase()).replace(/[-_]/g,"");function bo(e,t=!0){return Ie(e)?e.displayName||e.name:e.name||t&&e.__name}function xn(e,t,r=!1){let o=bo(t);if(!o&&t.__file){const i=t.__file.match(/([^/\\]+)\.\w+$/);i&&(o=i[1])}if(!o&&e&&e.parent){const i=c=>{for(const h in c)if(c[h]===t)return h};o=i(e.components||e.parent.type.components)||i(e.appContext.components)}return o?So(o):r?"App":"Anonymous"}process.env.NODE_ENV,process.env.NODE_ENV,process.env.NODE_ENV;function Co(e,t){throw new Error("On-the-fly template compilation is not supported in the ESM build of @vue/server-renderer. All templates must be pre-compiled into render functions.")}const{createComponentInstance:Eo,setCurrentRenderingInstance:kn,setupComponent:Ao,renderComponentRoot:Vn,normalizeVNode:To,pushWarningContext:Hn,popWarningContext:Mn}=a.ssrUtils;function $n(){let e=!1;const t=[];return{getBuffer(){return t},push(r){const o=H(r);if(e&&o){t[t.length-1]+=r;return}t.push(r),e=o,(Tt(r)||qt(r)&&r.hasAsync)&&(t.hasAsync=!0)}}}function Dn(e,t=null,r){const o=e.component=Eo(e,t,null);process.env.NODE_ENV!=="production"&&Hn(e);const i=Ao(o,!0);process.env.NODE_ENV!=="production"&&Mn();const c=Tt(i);let h=o.sp;return c||h?Promise.resolve(i).then(()=>{if(c&&(h=o.sp),h)return Promise.all(h.map(y=>y.call(o.proxy)))}).catch(At).then(()=>Fn(o,r)):Fn(o,r)}function Fn(e,t){process.env.NODE_ENV!=="production"&&Hn(e.vnode);const r=e.type,{getBuffer:o,push:i}=$n();if(Ie(r)){let c=Vn(e);if(!r.props)for(const h in e.attrs)h.startsWith("data-v-")&&((c.props||(c.props={}))[h]="");Rt(i,e.subTree=c,e,t)}else{(!e.render||e.render===At)&&!e.ssrRender&&!r.ssrRender&&H(r.template)&&(r.ssrRender=Co(r.template));const c=e.ssrRender||r.ssrRender;if(c){let h=e.inheritAttrs!==!1?e.attrs:void 0,m=!1,y=e;for(;;){const _=y.vnode.scopeId;_&&(m||(h={...h},m=!0),h[_]="");const E=y.parent;if(E&&E.subTree&&E.subTree===y.vnode)y=E;else break}if(t){m||(h={...h});const _=t.trim().split(" ");for(let E=0;E<_.length;E++)h[_[E]]=""}const C=kn(e);try{c(e.proxy,i,e,h,e.props,e.setupState,e.data,e.ctx)}finally{kn(C)}}else if(e.render&&e.render!==At)Rt(i,e.subTree=Vn(e),e,t);else{const h=r.name||r.__file||"<Anonymous>";a.warn(`Component ${h} is missing template or render function.`),i("<!---->")}}return process.env.NODE_ENV!=="production"&&Mn(),o()}function Rt(e,t,r,o){const{type:i,shapeFlag:c,children:h,dirs:m,props:y}=t;switch(m&&(t.props=Ro(t,y,m)),i){case a.Text:e(ue(h));break;case a.Comment:e(h?`<!--${no(h)}-->`:"<!---->");break;case a.Static:e(h);break;case a.Fragment:t.slotScopeIds&&(o=(o?o+" ":"")+t.slotScopeIds.join(" ")),e("<!--[-->"),Jt(e,h,r,o),e("<!--]-->");break;default:c&1?Oo(e,t,r,o):c&6?e(Dn(t,r,o)):c&64?Po(e,t,r,o):c&128?Rt(e,t.ssContent,r,o):a.warn("[@vue/server-renderer] Invalid VNode type:",i,`(${typeof i})`)}}function Jt(e,t,r,o){for(let i=0;i<t.length;i++)Rt(e,To(t[i]),r,o)}function Oo(e,t,r,o){const i=t.type;let{props:c,children:h,shapeFlag:m,scopeId:y}=t,C=`<${i}`;c&&(C+=oo(c,i)),y&&(C+=` ${y}`);let _=r,E=t;for(;_&&E===_.subTree;)E=_.vnode,E.scopeId&&(C+=` ${E.scopeId}`),_=_.parent;if(o&&(C+=` ${o}`),e(C+">"),!Wr(i)){let T=!1;c&&(c.innerHTML?(T=!0,e(c.innerHTML)):c.textContent?(T=!0,e(ue(c.textContent))):i==="textarea"&&c.value&&(T=!0,e(ue(c.value)))),T||(m&8?e(ue(h)):m&16&&Jt(e,h,r,o)),e(`</${i}>`)}}function Ro(e,t,r){const o=[];for(let i=0;i<r.length;i++){const c=r[i],{dir:{getSSRProps:h}}=c;if(h){const m=h(c,e);m&&o.push(m)}}return a.mergeProps(t||{},...o)}function Po(e,t,r,o){const i=t.props&&t.props.to,c=t.props&&t.props.disabled;if(!i)return c||a.warn("[@vue/server-renderer] Teleport is missing target prop."),[];if(!H(i))return a.warn("[@vue/server-renderer] Teleport target must be a query selector string."),[];co(e,h=>{Jt(h,t.children,r,o)},i,c||c==="",r)}const{isVNode:jo}=a.ssrUtils;function Pt(e,t,r){if(!e.hasAsync)return t+Bn(e);let o=t;for(let i=r;i<e.length;i+=1){const c=e[i];if(H(c)){o+=c;continue}if(Tt(c))return c.then(m=>(e[i]=m,Pt(e,o,i)));const h=Pt(c,o,0);if(Tt(h))return h.then(m=>(e[i]=m,Pt(e,"",i)));o=h}return o}function Kn(e){return Pt(e,"",0)}function Bn(e){let t="";for(let r=0;r<e.length;r++){let o=e[r];H(o)?t+=o:t+=Bn(o)}return t}async function Un(e,t={}){if(jo(e))return Un(a.createApp({render:()=>e}),t);const r=a.createVNode(e._component,e._props);r.appContext=e._context,e.provide(a.ssrContextKey,t);const o=await Dn(r),i=await Kn(o);if(await vo(t),t.__watcherHandles)for(const c of t.__watcherHandles)c();return i}async function vo(e){if(e.__teleportBuffers){e.teleports=e.teleports||{};for(const t in e.__teleportBuffers)e.teleports[t]=await Kn(await Promise.all([e.__teleportBuffers[t]]))}}const{isVNode:Xa}=a.ssrUtils;a.initDirectivesForSSR();const qn=a.defineComponent({inheritAttrs:!1,name:"Router",props:{resolver:{type:Function,required:!0},state:{type:Object,required:!0}},setup(e){const t=a.ref(e.state.abilities),r=a.ref(e.state.authenticated),o=a.ref(e.state.location),i=a.ref(e.state.stack),c=a.ref(e.state.signature),h=a.ref(e.state.toasts);function m(){return{location:a.toRaw(a.toValue(o)),signature:a.toRaw(a.toValue(c)),stack:a.toRaw(a.toValue(i))}}async function y(_){return t.value=_.abilities,r.value=_.authenticated,_.location&&(o.value=_.location),_.signature&&(c.value=_.signature),_.stack&&(i.value=wt(a.toRaw(a.toValue(i.value)),_.stack)),_.toasts&&_.toasts.length>0&&(h.value=[...h.value,..._.toasts]),await a.nextTick(()=>m())}a.provide(gt,t),a.provide(Xe,r),a.provide(pt,o),a.provide(_t,c),a.provide(yt,y),a.provide(Mt,e.resolver),a.provide(nt,a.computed(()=>0)),a.provide(tt,i),a.provide(rt,h),a.provide(mt,{historyPushState(_){window.history.pushState(_,"",_.location)},historyReplaceState(_){window.history.replaceState(_,"",_.location)}});function C(_){_.state?(o.value=_.state.location,i.value=_.state.stack,c.value=_.state.signature):(window.history.replaceState(m(),"",o.value),window.scroll(0,0))}return a.onMounted(()=>{window.history.replaceState(m(),"",o.value),window.addEventListener("popstate",C)}),a.onBeforeUnmount(()=>{window.removeEventListener("popstate",C)}),()=>a.h(Ct)}});async function No({initial:e,resolver:t,setup:r}){const o=typeof window>"u",i=e||Io(),c=r({router:qn,props:{resolver:t,state:i}});return o?await Un(c):""}function Io(){let e=document.getElementById("ias");if(!e||!e.textContent)throw new Error("Cannot find initial script element with MVC state.");return JSON.parse(e.textContent)}const xe=a.ref();async function Gn(e,t){return new Promise((r,o)=>{function i(){xe.value.processing=!0,a.nextTick(()=>{Promise.resolve(t()).then(h=>{xe.value=void 0,a.nextTick(()=>r(h))}).catch(h=>{xe.value=void 0,a.nextTick(()=>o(h))})})}function c(){xe.value=void 0,a.nextTick(()=>o())}xe.value={...e,processing:!1,confirm:i,cancel:c}})}async function Lo(e,t){return t!==void 0?Gn(e,t):Gn({},e)}function xo(){return xe}function ko(){return Lo}function Vo(){return a.ref()}function Ho(){return a.inject(Qe,null)}function Mo(){let e=a.inject(Qe);if(!e)throw new Error("Accessing form outside of context.");return e}function $o(){const e=a.inject(Dt);if(!e)throw new Error("You're trying to get stacked view parent out of Router context!");return e}function Wn(){const e=a.inject($t);if(!e)throw new Error("You're trying to get parent view out of Router context!");return e}function Do(){const e=Wn();return a.computed(()=>{if(e&&e.value&&e.value.location)return Bt(e.value.location,e.value.query)})}function Fo(){const e=a.inject(Ft);if(!e)throw new Error("You're trying to get stacked view query params out of Router context!");return e}function zn(e){return e?APP_COUNTRIES_IMPLICITLY_ADDRESSES.includes(e):!1}function Ko(e){return!zn(e)}function Yn(e){return e==null?!0:typeof e=="number"||typeof e=="boolean"?!1:typeof e=="string"?e.trim()==="":e instanceof Array?e.length>0:e instanceof Set||e instanceof Map?e.size>0:!e}function Bo(e){return!Yn(e)}function Uo(e=16){return Array.from(window.crypto.getRandomValues(new Uint8Array(Math.ceil(e/2))),t=>("0"+(t&255).toString(16)).slice(-2)).join("")}function qo(e){return e.filter(t=>t.parentId===null)}function Go(e,t){return e.filter(r=>r.left>t.left&&r.right<t.right&&r.parentId===t.id)}function Wo(e,t){return e.filter(r=>r.left<t.left&&r.right>t.right)}function zo(e,t){return e.filter(r=>r.left>t.left&&r.right<t.right)}var Jn=(e=>(e.SUCCESS="success",e.DANGER="danger",e.INFO="info",e.WARNING="warning",e))(Jn||{});function Yo(){return{install(e){e.component("RouterNested",Ir),e.component("RouterView",Ct),e.component("RouterLink",mn),e.component("FormController",hn),e.component("ToastController",wn),e.component("PasswordConfirmationController",br),e.component("Toast",Sn),e.config.globalProperties.$t=bn,e.config.globalProperties.$tc=Cn,e.config.globalProperties.$route=Tn}}}g.CompleteResponse=Je,g.ErrorModal=an,g.EventBus=bt,g.FormContextInjectionKey=Qe,g.FormControllerComponent=hn,g.HttpClientForceScrollPreservation=xt,g.Request=St,g.Response=Q,g.RouterComponent=qn,g.RouterLinkComponent=mn,g.RouterViewComponent=Ct,g.StackedViewDepthInjectionKey=nt,g.StackedViewInjectionKey=tt,g.StackedViewLocationInjectionKey=Dt,g.StackedViewParentInjectionKey=$t,g.StackedViewQueryInjectionKey=Ft,g.StackedViewResolverInjectionKey=Mt,g.StateAbilities=gt,g.StateAuthenticated=Xe,g.StateHistoryInjectionKey=mt,g.StateLocationInjectionKey=pt,g.StateManagerInjectionKey=yt,g.StateStackSignatureInjectionKey=_t,g.ToastComponent=Sn,g.ToastControllerComponent=wn,g.ToastKind=Jn,g.ToastRegistryInjectionKey=rt,g.blank=Yn,g.createFormContext=ln,g.createFoundationController=No,g.createOtherSoftwareFoundation=Yo,g.filled=Bo,g.getModelFromContext=gr,g.hash=Uo,g.isCountryExplicit=Ko,g.isCountryImplicit=zn,g.nestedSetAncestors=Wo,g.nestedSetChildren=Go,g.nestedSetDescendants=zo,g.nestedSetRoot=qo,g.route=Tn,g.setModelWithContext=_r,g.trans=bn,g.transChoice=Cn,g.updateStack=wt,g.url=Bt,g.useAbilities=cr,g.useAuthenticated=ur,g.useConfirmation=ko,g.useCurrentConfirmation=xo,g.useFormApi=Vo,g.useFormContext=Ho,g.useHttpClient=Ze,g.useLocation=Lt,g.usePersistentFormContext=Mo,g.useStackSignature=nn,g.useStateHistory=on,g.useStateManager=rn,g.useToasts=Kt,g.useViewDepth=yn,g.useViewLocation=$o,g.useViewParent=Wn,g.useViewParentLocation=Do,g.useViewQuery=Fo,g.useViewResolver=_n,g.useViewStack=gn,g.wrap=pn,Object.defineProperty(g,Symbol.toStringTag,{value:"Module"})});
+(function(global2, factory) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("vue")) : typeof define === "function" && define.amd ? define(["exports", "vue"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.OtherSoftwareFoundation = {}, global2.Vue));
+})(this, function(exports2, vue) {
+  "use strict";var __defProp = Object.defineProperty;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
+
+  class Response {
+    constructor(xhr) {
+      __publicField(this, "xhr");
+      __publicField(this, "status");
+      __publicField(this, "success");
+      __publicField(this, "fail");
+      __publicField(this, "partial");
+      __publicField(this, "raw");
+      __publicField(this, "message");
+      __publicField(this, "content");
+      this.xhr = xhr;
+      if (this.xhr.getResponseHeader("x-stack-router")) {
+        throw new Error("Invalid response for MVC HTTP client.");
+      }
+      this.status = this.xhr.status;
+      this.success = this.xhr.status >= 200 && this.xhr.status < 300;
+      this.fail = !this.success;
+      this.content = this.xhr.response;
+      this.message = this.xhr.statusText;
+      this.partial = !!this.xhr.getResponseHeader("x-partial");
+      this.raw = !!this.xhr.getResponseHeader("x-raw");
+    }
+  }
+  class CompleteResponse extends Response {
+    constructor(xhr) {
+      super(xhr);
+      __publicField(this, "abilities");
+      __publicField(this, "authenticated");
+      __publicField(this, "location");
+      __publicField(this, "signature");
+      __publicField(this, "redirect");
+      __publicField(this, "stack");
+      __publicField(this, "toasts");
+      __publicField(this, "errors");
+      __publicField(this, "data");
+      let data = JSON.parse(this.xhr.response);
+      this.abilities = data.abilities;
+      this.authenticated = data.authenticated;
+      this.location = data.location;
+      this.signature = data.signature;
+      this.redirect = data.redirect;
+      this.stack = data.stack;
+      this.errors = data.errors;
+      this.toasts = data.toasts;
+      this.data = data.raw;
+    }
+  }
+  const StateLocationInjectionKey = Symbol("StateLocation");
+  const StateStackSignatureInjectionKey = Symbol("StateStackSignature");
+  const StateAuthenticated = Symbol("StateAuthenticated");
+  const StateAbilities = Symbol("StateAbilities");
+  const StateManagerInjectionKey = Symbol("StateManager");
+  const StateHistoryInjectionKey = Symbol("StateHistory");
+  function useAbilities() {
+    let abilities = vue.inject(StateAbilities);
+    if (!abilities) {
+      throw new Error("Abilities are used out of router context!");
+    }
+    return abilities;
+  }
+  function useAuthenticated() {
+    let authenticated = vue.inject(StateAuthenticated);
+    if (!authenticated) {
+      throw new Error("Authenticated is used out of router context!");
+    }
+    return authenticated;
+  }
+  function useLocation() {
+    let location = vue.inject(StateLocationInjectionKey);
+    if (!location) {
+      throw new Error("Location is used out of router context!");
+    }
+    return location;
+  }
+  function useStackSignature() {
+    let signature = vue.inject(StateStackSignatureInjectionKey);
+    if (!signature) {
+      throw new Error("Stack signature is used out of router context!");
+    }
+    return signature;
+  }
+  function useStateManager() {
+    let manager = vue.inject(StateManagerInjectionKey);
+    if (!manager) {
+      throw new Error("State manager is used out of router context!");
+    }
+    return { update: manager };
+  }
+  function useStateHistory() {
+    let history = vue.inject(StateHistoryInjectionKey);
+    if (!history) {
+      throw new Error("State history is used out of router context!");
+    }
+    return history;
+  }
+  function updateStack(current, fresh) {
+    if ("keep" in fresh) {
+      if (fresh.child) {
+        if (current.child) {
+          current.child = updateStack(current.child, fresh.child);
+        } else {
+          current.child = fresh.child;
+        }
+        return { ...current };
+      }
+      return { ...current };
+    }
+    return { ...fresh };
+  }
+  class Request {
+    constructor(method, url2, body = void 0, signature = void 0, refreshStack = false, referer = void 0) {
+      __publicField(this, "method");
+      __publicField(this, "url");
+      __publicField(this, "xhr");
+      __publicField(this, "body");
+      __publicField(this, "signature");
+      __publicField(this, "refreshStack");
+      __publicField(this, "referer");
+      this.xhr = new XMLHttpRequest();
+      this.method = method;
+      this.url = url2;
+      this.body = body;
+      this.signature = signature;
+      this.refreshStack = refreshStack;
+      this.referer = referer;
+    }
+    static send(method, url2, body = void 0, signature = void 0, refreshStack = false, referer = void 0) {
+      return new Request(method, url2, body, signature, refreshStack, referer).send();
+    }
+    send() {
+      return new Promise((resolve, reject) => {
+        this.xhr.open(this.method, this.url, true);
+        this.xhr.setRequestHeader("Language", APP_LOCALE);
+        this.xhr.setRequestHeader("X-Stack-Router", "true");
+        this.xhr.setRequestHeader("X-XSRF-TOKEN", this.readCookie("XSRF-TOKEN"));
+        if (this.referer) {
+          this.xhr.setRequestHeader("X-Stack-Referer", this.referer);
+        }
+        if (this.refreshStack) {
+          this.xhr.setRequestHeader("X-Stack-Refresh", "true");
+        }
+        if (this.signature) {
+          this.xhr.setRequestHeader("X-Stack-Signature", this.signature);
+        }
+        this.xhr.onload = () => {
+          if (this.xhr.readyState === XMLHttpRequest.DONE && this.xhr.status) {
+            if (this.xhr.status < 200 || this.xhr.status >= 300) {
+              if (this.xhr.status === 422) {
+                reject(new CompleteResponse(this.xhr));
+              } else {
+                reject(new Response(this.xhr));
+              }
+            } else {
+              resolve(new CompleteResponse(this.xhr));
+            }
+          }
+        };
+        this.xhr.onerror = () => {
+          reject(new Response(this.xhr));
+        };
+        this.xhr.send(this.transform(this.body));
+      });
+    }
+    transform(body) {
+      if (body instanceof Blob || body instanceof ArrayBuffer || body instanceof FormData || body instanceof URLSearchParams) {
+        return body;
+      }
+      if (typeof body === "string") {
+        return body;
+      }
+      if (body === null) {
+        return null;
+      }
+      this.xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      return JSON.stringify(body);
+    }
+    readCookie(name) {
+      const match = document.cookie.match(new RegExp("(^|;\\s*)(" + name + ")=([^;]*)"));
+      return match ? decodeURIComponent(match[3]) : "";
+    }
+  }
+  const ErrorModal = {
+    modal: void 0,
+    listener: void 0,
+    show(html) {
+      if (typeof html === "object") {
+        html = `All requests must receive a valid MVC response, however a plain JSON response was received.<hr>${JSON.stringify(html)}`;
+      }
+      const page = document.createElement("html");
+      page.innerHTML = html;
+      page.querySelectorAll("a").forEach((a) => a.setAttribute("target", "_top"));
+      this.modal = document.createElement("dialog");
+      this.modal.style.display = "flex";
+      this.modal.style.width = "100%";
+      this.modal.style.height = "100dvh";
+      this.modal.style.maxWidth = "100%";
+      this.modal.style.maxHeight = "100dvh";
+      this.modal.style.padding = "2rem";
+      this.modal.style.boxSizing = "border-box";
+      this.modal.style.border = "none";
+      this.modal.style.backgroundColor = "rgba(0, 0, 0, 0.6)";
+      this.modal.style.backdropFilter = "blur(0.125rem)";
+      this.modal.addEventListener("click", () => this.hide());
+      const iframe = document.createElement("iframe");
+      iframe.style.backgroundColor = "white";
+      iframe.style.borderRadius = "0.5rem";
+      iframe.style.border = "none";
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
+      this.modal.appendChild(iframe);
+      document.body.prepend(this.modal);
+      document.body.style.overflow = "hidden";
+      if (!iframe.contentWindow) {
+        throw new Error("iframe not yet ready.");
+      }
+      iframe.contentWindow.document.open();
+      iframe.contentWindow.document.write(page.outerHTML);
+      iframe.contentWindow.document.close();
+      this.listener = this.hideOnEscape.bind(this);
+      this.modal.showModal();
+      document.addEventListener("keydown", this.listener);
+    },
+    hide() {
+      this.modal.outerHTML = "";
+      this.modal = void 0;
+      document.body.style.overflow = "visible";
+      document.removeEventListener("keydown", this.listener);
+    },
+    hideOnEscape(event) {
+      if (event.key === "Escape") {
+        this.hide();
+      }
+    }
+  };
+  const subscriptions = {};
+  const EventBus = {
+    addEventListener(name, callback) {
+      if (subscriptions[name]) {
+        subscriptions[name].push(callback);
+      } else {
+        subscriptions[name] = [callback];
+      }
+    },
+    removeEventListener(name, callback) {
+      if (!subscriptions[name]) {
+        return;
+      }
+      subscriptions[name] = subscriptions[name].filter((handler) => {
+        return handler !== callback;
+      });
+      if (subscriptions[name].length === 0) {
+        delete subscriptions[name];
+      }
+    },
+    dispatch(name, event) {
+      if (subscriptions[name]) {
+        subscriptions[name].forEach((handler) => handler(event));
+      }
+      return event;
+    }
+  };
+  const HttpClientForceScrollPreservation = Symbol("HttpClientForceScrollPreservation");
+  function useHttpClient() {
+    const state = useStateManager();
+    const signature = useStackSignature();
+    const history = useStateHistory();
+    const location = useLocation();
+    const forceScrollPreserve = vue.inject(HttpClientForceScrollPreservation, false);
+    async function dispatch(method, url2, { data = void 0, preserveScroll = false, replace = false, refreshStack = false } = {}) {
+      document.body.classList.add("osf-loading");
+      return await Request.send(method, url2, data, signature.value, refreshStack, location.value).then(async (response) => {
+        return await state.update(response).then(async (fresh) => {
+          if (response.redirect) {
+            return await handleRedirectResponse(response.redirect);
+          }
+          if (response.raw) {
+            return Promise.resolve(response.data);
+          }
+          if (!forceScrollPreserve && !preserveScroll) {
+            resetScrollPosition();
+          }
+          if (replace) {
+            history.historyReplaceState(fresh);
+          } else {
+            history.historyPushState(fresh);
+          }
+          return Promise.resolve(response);
+        });
+      }).catch(async (error) => {
+        if (error instanceof CompleteResponse) {
+          return await state.update(error).then(() => Promise.reject(error));
+        }
+        if (error.status === 423) {
+          EventBus.dispatch("password.confirm", { method, url: url2, options: { data, preserveScroll, replace } });
+          return Promise.reject(error);
+        }
+        console.error(error);
+        if (APP_DEBUG && error.content) {
+          ErrorModal.show(error.content);
+        }
+        return Promise.reject(error);
+      }).finally(() => {
+        document.body.classList.remove("osf-loading");
+      });
+    }
+    function resetScrollPosition() {
+      window.scroll(0, 0);
+    }
+    async function handleRedirectResponse(redirect) {
+      if (redirect.reload) {
+        return await new Promise(() => {
+          window.location.href = redirect.target;
+        });
+      }
+      return await dispatch("GET", redirect.target, {
+        preserveScroll: true,
+        replace: false,
+        refreshStack: true
+      });
+    }
+    return {
+      dispatch,
+      get: async function(url2) {
+        return await dispatch("GET", url2);
+      },
+      post: async function(url2, data = void 0) {
+        return await dispatch("POST", url2, { data, preserveScroll: true });
+      },
+      patch: async function(url2, data = void 0) {
+        return await dispatch("PATCH", url2, { data, preserveScroll: true });
+      },
+      put: async function(url2, data = void 0) {
+        return await dispatch("PUT", url2, { data, preserveScroll: true });
+      },
+      delete: async function(url2, data = void 0) {
+        return await dispatch("DELETE", url2, { data, preserveScroll: true });
+      }
+    };
+  }
+  var commonjsGlobal = typeof globalThis !== "undefined" ? globalThis : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : {};
+  function getDefaultExportFromCjs(x) {
+    return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
+  }
+  var lodash_set;
+  var hasRequiredLodash_set;
+  function requireLodash_set() {
+    if (hasRequiredLodash_set) return lodash_set;
+    hasRequiredLodash_set = 1;
+    var FUNC_ERROR_TEXT = "Expected a function";
+    var HASH_UNDEFINED = "__lodash_hash_undefined__";
+    var MAX_SAFE_INTEGER = 9007199254740991;
+    var funcTag = "[object Function]", genTag = "[object GeneratorFunction]", symbolTag = "[object Symbol]";
+    var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, reIsPlainProp = /^\w*$/, reLeadingDot = /^\./, rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+    var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+    var reEscapeChar = /\\(\\)?/g;
+    var reIsHostCtor = /^\[object .+?Constructor\]$/;
+    var reIsUint = /^(?:0|[1-9]\d*)$/;
+    var freeGlobal = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+    var freeSelf = typeof self == "object" && self && self.Object === Object && self;
+    var root = freeGlobal || freeSelf || Function("return this")();
+    function getValue(object, key) {
+      return object == null ? void 0 : object[key];
+    }
+    function isHostObject(value) {
+      var result = false;
+      if (value != null && typeof value.toString != "function") {
+        try {
+          result = !!(value + "");
+        } catch (e) {
+        }
+      }
+      return result;
+    }
+    var arrayProto = Array.prototype, funcProto = Function.prototype, objectProto = Object.prototype;
+    var coreJsData = root["__core-js_shared__"];
+    var maskSrcKey = function() {
+      var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || "");
+      return uid ? "Symbol(src)_1." + uid : "";
+    }();
+    var funcToString = funcProto.toString;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    var objectToString = objectProto.toString;
+    var reIsNative = RegExp(
+      "^" + funcToString.call(hasOwnProperty).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
+    );
+    var Symbol2 = root.Symbol, splice = arrayProto.splice;
+    var Map2 = getNative(root, "Map"), nativeCreate = getNative(Object, "create");
+    var symbolProto = Symbol2 ? Symbol2.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0;
+    function Hash(entries) {
+      var index = -1, length = entries ? entries.length : 0;
+      this.clear();
+      while (++index < length) {
+        var entry = entries[index];
+        this.set(entry[0], entry[1]);
+      }
+    }
+    function hashClear() {
+      this.__data__ = nativeCreate ? nativeCreate(null) : {};
+    }
+    function hashDelete(key) {
+      return this.has(key) && delete this.__data__[key];
+    }
+    function hashGet(key) {
+      var data = this.__data__;
+      if (nativeCreate) {
+        var result = data[key];
+        return result === HASH_UNDEFINED ? void 0 : result;
+      }
+      return hasOwnProperty.call(data, key) ? data[key] : void 0;
+    }
+    function hashHas(key) {
+      var data = this.__data__;
+      return nativeCreate ? data[key] !== void 0 : hasOwnProperty.call(data, key);
+    }
+    function hashSet(key, value) {
+      var data = this.__data__;
+      data[key] = nativeCreate && value === void 0 ? HASH_UNDEFINED : value;
+      return this;
+    }
+    Hash.prototype.clear = hashClear;
+    Hash.prototype["delete"] = hashDelete;
+    Hash.prototype.get = hashGet;
+    Hash.prototype.has = hashHas;
+    Hash.prototype.set = hashSet;
+    function ListCache(entries) {
+      var index = -1, length = entries ? entries.length : 0;
+      this.clear();
+      while (++index < length) {
+        var entry = entries[index];
+        this.set(entry[0], entry[1]);
+      }
+    }
+    function listCacheClear() {
+      this.__data__ = [];
+    }
+    function listCacheDelete(key) {
+      var data = this.__data__, index = assocIndexOf(data, key);
+      if (index < 0) {
+        return false;
+      }
+      var lastIndex = data.length - 1;
+      if (index == lastIndex) {
+        data.pop();
+      } else {
+        splice.call(data, index, 1);
+      }
+      return true;
+    }
+    function listCacheGet(key) {
+      var data = this.__data__, index = assocIndexOf(data, key);
+      return index < 0 ? void 0 : data[index][1];
+    }
+    function listCacheHas(key) {
+      return assocIndexOf(this.__data__, key) > -1;
+    }
+    function listCacheSet(key, value) {
+      var data = this.__data__, index = assocIndexOf(data, key);
+      if (index < 0) {
+        data.push([key, value]);
+      } else {
+        data[index][1] = value;
+      }
+      return this;
+    }
+    ListCache.prototype.clear = listCacheClear;
+    ListCache.prototype["delete"] = listCacheDelete;
+    ListCache.prototype.get = listCacheGet;
+    ListCache.prototype.has = listCacheHas;
+    ListCache.prototype.set = listCacheSet;
+    function MapCache(entries) {
+      var index = -1, length = entries ? entries.length : 0;
+      this.clear();
+      while (++index < length) {
+        var entry = entries[index];
+        this.set(entry[0], entry[1]);
+      }
+    }
+    function mapCacheClear() {
+      this.__data__ = {
+        "hash": new Hash(),
+        "map": new (Map2 || ListCache)(),
+        "string": new Hash()
+      };
+    }
+    function mapCacheDelete(key) {
+      return getMapData(this, key)["delete"](key);
+    }
+    function mapCacheGet(key) {
+      return getMapData(this, key).get(key);
+    }
+    function mapCacheHas(key) {
+      return getMapData(this, key).has(key);
+    }
+    function mapCacheSet(key, value) {
+      getMapData(this, key).set(key, value);
+      return this;
+    }
+    MapCache.prototype.clear = mapCacheClear;
+    MapCache.prototype["delete"] = mapCacheDelete;
+    MapCache.prototype.get = mapCacheGet;
+    MapCache.prototype.has = mapCacheHas;
+    MapCache.prototype.set = mapCacheSet;
+    function assignValue(object, key, value) {
+      var objValue = object[key];
+      if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) || value === void 0 && !(key in object)) {
+        object[key] = value;
+      }
+    }
+    function assocIndexOf(array, key) {
+      var length = array.length;
+      while (length--) {
+        if (eq(array[length][0], key)) {
+          return length;
+        }
+      }
+      return -1;
+    }
+    function baseIsNative(value) {
+      if (!isObject2(value) || isMasked(value)) {
+        return false;
+      }
+      var pattern = isFunction2(value) || isHostObject(value) ? reIsNative : reIsHostCtor;
+      return pattern.test(toSource(value));
+    }
+    function baseSet(object, path, value, customizer) {
+      if (!isObject2(object)) {
+        return object;
+      }
+      path = isKey(path, object) ? [path] : castPath(path);
+      var index = -1, length = path.length, lastIndex = length - 1, nested = object;
+      while (nested != null && ++index < length) {
+        var key = toKey(path[index]), newValue = value;
+        if (index != lastIndex) {
+          var objValue = nested[key];
+          newValue = void 0;
+          if (newValue === void 0) {
+            newValue = isObject2(objValue) ? objValue : isIndex(path[index + 1]) ? [] : {};
+          }
+        }
+        assignValue(nested, key, newValue);
+        nested = nested[key];
+      }
+      return object;
+    }
+    function baseToString(value) {
+      if (typeof value == "string") {
+        return value;
+      }
+      if (isSymbol(value)) {
+        return symbolToString ? symbolToString.call(value) : "";
+      }
+      var result = value + "";
+      return result == "0" && 1 / value == -Infinity ? "-0" : result;
+    }
+    function castPath(value) {
+      return isArray2(value) ? value : stringToPath(value);
+    }
+    function getMapData(map, key) {
+      var data = map.__data__;
+      return isKeyable(key) ? data[typeof key == "string" ? "string" : "hash"] : data.map;
+    }
+    function getNative(object, key) {
+      var value = getValue(object, key);
+      return baseIsNative(value) ? value : void 0;
+    }
+    function isIndex(value, length) {
+      length = length == null ? MAX_SAFE_INTEGER : length;
+      return !!length && (typeof value == "number" || reIsUint.test(value)) && (value > -1 && value % 1 == 0 && value < length);
+    }
+    function isKey(value, object) {
+      if (isArray2(value)) {
+        return false;
+      }
+      var type = typeof value;
+      if (type == "number" || type == "symbol" || type == "boolean" || value == null || isSymbol(value)) {
+        return true;
+      }
+      return reIsPlainProp.test(value) || !reIsDeepProp.test(value) || object != null && value in Object(object);
+    }
+    function isKeyable(value) {
+      var type = typeof value;
+      return type == "string" || type == "number" || type == "symbol" || type == "boolean" ? value !== "__proto__" : value === null;
+    }
+    function isMasked(func) {
+      return !!maskSrcKey && maskSrcKey in func;
+    }
+    var stringToPath = memoize(function(string) {
+      string = toString(string);
+      var result = [];
+      if (reLeadingDot.test(string)) {
+        result.push("");
+      }
+      string.replace(rePropName, function(match, number, quote, string2) {
+        result.push(quote ? string2.replace(reEscapeChar, "$1") : number || match);
+      });
+      return result;
+    });
+    function toKey(value) {
+      if (typeof value == "string" || isSymbol(value)) {
+        return value;
+      }
+      var result = value + "";
+      return result == "0" && 1 / value == -Infinity ? "-0" : result;
+    }
+    function toSource(func) {
+      if (func != null) {
+        try {
+          return funcToString.call(func);
+        } catch (e) {
+        }
+        try {
+          return func + "";
+        } catch (e) {
+        }
+      }
+      return "";
+    }
+    function memoize(func, resolver) {
+      if (typeof func != "function" || resolver && typeof resolver != "function") {
+        throw new TypeError(FUNC_ERROR_TEXT);
+      }
+      var memoized = function() {
+        var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache = memoized.cache;
+        if (cache.has(key)) {
+          return cache.get(key);
+        }
+        var result = func.apply(this, args);
+        memoized.cache = cache.set(key, result);
+        return result;
+      };
+      memoized.cache = new (memoize.Cache || MapCache)();
+      return memoized;
+    }
+    memoize.Cache = MapCache;
+    function eq(value, other) {
+      return value === other || value !== value && other !== other;
+    }
+    var isArray2 = Array.isArray;
+    function isFunction2(value) {
+      var tag = isObject2(value) ? objectToString.call(value) : "";
+      return tag == funcTag || tag == genTag;
+    }
+    function isObject2(value) {
+      var type = typeof value;
+      return !!value && (type == "object" || type == "function");
+    }
+    function isObjectLike(value) {
+      return !!value && typeof value == "object";
+    }
+    function isSymbol(value) {
+      return typeof value == "symbol" || isObjectLike(value) && objectToString.call(value) == symbolTag;
+    }
+    function toString(value) {
+      return value == null ? "" : baseToString(value);
+    }
+    function set(object, path, value) {
+      return object == null ? object : baseSet(object, path, value);
+    }
+    lodash_set = set;
+    return lodash_set;
+  }
+  var lodash_setExports = requireLodash_set();
+  const lodashSet = /* @__PURE__ */ getDefaultExportFromCjs(lodash_setExports);
+  var lodash_get;
+  var hasRequiredLodash_get;
+  function requireLodash_get() {
+    if (hasRequiredLodash_get) return lodash_get;
+    hasRequiredLodash_get = 1;
+    var FUNC_ERROR_TEXT = "Expected a function";
+    var HASH_UNDEFINED = "__lodash_hash_undefined__";
+    var funcTag = "[object Function]", genTag = "[object GeneratorFunction]", symbolTag = "[object Symbol]";
+    var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, reIsPlainProp = /^\w*$/, reLeadingDot = /^\./, rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
+    var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+    var reEscapeChar = /\\(\\)?/g;
+    var reIsHostCtor = /^\[object .+?Constructor\]$/;
+    var freeGlobal = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+    var freeSelf = typeof self == "object" && self && self.Object === Object && self;
+    var root = freeGlobal || freeSelf || Function("return this")();
+    function getValue(object, key) {
+      return object == null ? void 0 : object[key];
+    }
+    function isHostObject(value) {
+      var result = false;
+      if (value != null && typeof value.toString != "function") {
+        try {
+          result = !!(value + "");
+        } catch (e) {
+        }
+      }
+      return result;
+    }
+    var arrayProto = Array.prototype, funcProto = Function.prototype, objectProto = Object.prototype;
+    var coreJsData = root["__core-js_shared__"];
+    var maskSrcKey = function() {
+      var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || "");
+      return uid ? "Symbol(src)_1." + uid : "";
+    }();
+    var funcToString = funcProto.toString;
+    var hasOwnProperty = objectProto.hasOwnProperty;
+    var objectToString = objectProto.toString;
+    var reIsNative = RegExp(
+      "^" + funcToString.call(hasOwnProperty).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
+    );
+    var Symbol2 = root.Symbol, splice = arrayProto.splice;
+    var Map2 = getNative(root, "Map"), nativeCreate = getNative(Object, "create");
+    var symbolProto = Symbol2 ? Symbol2.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0;
+    function Hash(entries) {
+      var index = -1, length = entries ? entries.length : 0;
+      this.clear();
+      while (++index < length) {
+        var entry = entries[index];
+        this.set(entry[0], entry[1]);
+      }
+    }
+    function hashClear() {
+      this.__data__ = nativeCreate ? nativeCreate(null) : {};
+    }
+    function hashDelete(key) {
+      return this.has(key) && delete this.__data__[key];
+    }
+    function hashGet(key) {
+      var data = this.__data__;
+      if (nativeCreate) {
+        var result = data[key];
+        return result === HASH_UNDEFINED ? void 0 : result;
+      }
+      return hasOwnProperty.call(data, key) ? data[key] : void 0;
+    }
+    function hashHas(key) {
+      var data = this.__data__;
+      return nativeCreate ? data[key] !== void 0 : hasOwnProperty.call(data, key);
+    }
+    function hashSet(key, value) {
+      var data = this.__data__;
+      data[key] = nativeCreate && value === void 0 ? HASH_UNDEFINED : value;
+      return this;
+    }
+    Hash.prototype.clear = hashClear;
+    Hash.prototype["delete"] = hashDelete;
+    Hash.prototype.get = hashGet;
+    Hash.prototype.has = hashHas;
+    Hash.prototype.set = hashSet;
+    function ListCache(entries) {
+      var index = -1, length = entries ? entries.length : 0;
+      this.clear();
+      while (++index < length) {
+        var entry = entries[index];
+        this.set(entry[0], entry[1]);
+      }
+    }
+    function listCacheClear() {
+      this.__data__ = [];
+    }
+    function listCacheDelete(key) {
+      var data = this.__data__, index = assocIndexOf(data, key);
+      if (index < 0) {
+        return false;
+      }
+      var lastIndex = data.length - 1;
+      if (index == lastIndex) {
+        data.pop();
+      } else {
+        splice.call(data, index, 1);
+      }
+      return true;
+    }
+    function listCacheGet(key) {
+      var data = this.__data__, index = assocIndexOf(data, key);
+      return index < 0 ? void 0 : data[index][1];
+    }
+    function listCacheHas(key) {
+      return assocIndexOf(this.__data__, key) > -1;
+    }
+    function listCacheSet(key, value) {
+      var data = this.__data__, index = assocIndexOf(data, key);
+      if (index < 0) {
+        data.push([key, value]);
+      } else {
+        data[index][1] = value;
+      }
+      return this;
+    }
+    ListCache.prototype.clear = listCacheClear;
+    ListCache.prototype["delete"] = listCacheDelete;
+    ListCache.prototype.get = listCacheGet;
+    ListCache.prototype.has = listCacheHas;
+    ListCache.prototype.set = listCacheSet;
+    function MapCache(entries) {
+      var index = -1, length = entries ? entries.length : 0;
+      this.clear();
+      while (++index < length) {
+        var entry = entries[index];
+        this.set(entry[0], entry[1]);
+      }
+    }
+    function mapCacheClear() {
+      this.__data__ = {
+        "hash": new Hash(),
+        "map": new (Map2 || ListCache)(),
+        "string": new Hash()
+      };
+    }
+    function mapCacheDelete(key) {
+      return getMapData(this, key)["delete"](key);
+    }
+    function mapCacheGet(key) {
+      return getMapData(this, key).get(key);
+    }
+    function mapCacheHas(key) {
+      return getMapData(this, key).has(key);
+    }
+    function mapCacheSet(key, value) {
+      getMapData(this, key).set(key, value);
+      return this;
+    }
+    MapCache.prototype.clear = mapCacheClear;
+    MapCache.prototype["delete"] = mapCacheDelete;
+    MapCache.prototype.get = mapCacheGet;
+    MapCache.prototype.has = mapCacheHas;
+    MapCache.prototype.set = mapCacheSet;
+    function assocIndexOf(array, key) {
+      var length = array.length;
+      while (length--) {
+        if (eq(array[length][0], key)) {
+          return length;
+        }
+      }
+      return -1;
+    }
+    function baseGet(object, path) {
+      path = isKey(path, object) ? [path] : castPath(path);
+      var index = 0, length = path.length;
+      while (object != null && index < length) {
+        object = object[toKey(path[index++])];
+      }
+      return index && index == length ? object : void 0;
+    }
+    function baseIsNative(value) {
+      if (!isObject2(value) || isMasked(value)) {
+        return false;
+      }
+      var pattern = isFunction2(value) || isHostObject(value) ? reIsNative : reIsHostCtor;
+      return pattern.test(toSource(value));
+    }
+    function baseToString(value) {
+      if (typeof value == "string") {
+        return value;
+      }
+      if (isSymbol(value)) {
+        return symbolToString ? symbolToString.call(value) : "";
+      }
+      var result = value + "";
+      return result == "0" && 1 / value == -Infinity ? "-0" : result;
+    }
+    function castPath(value) {
+      return isArray2(value) ? value : stringToPath(value);
+    }
+    function getMapData(map, key) {
+      var data = map.__data__;
+      return isKeyable(key) ? data[typeof key == "string" ? "string" : "hash"] : data.map;
+    }
+    function getNative(object, key) {
+      var value = getValue(object, key);
+      return baseIsNative(value) ? value : void 0;
+    }
+    function isKey(value, object) {
+      if (isArray2(value)) {
+        return false;
+      }
+      var type = typeof value;
+      if (type == "number" || type == "symbol" || type == "boolean" || value == null || isSymbol(value)) {
+        return true;
+      }
+      return reIsPlainProp.test(value) || !reIsDeepProp.test(value) || object != null && value in Object(object);
+    }
+    function isKeyable(value) {
+      var type = typeof value;
+      return type == "string" || type == "number" || type == "symbol" || type == "boolean" ? value !== "__proto__" : value === null;
+    }
+    function isMasked(func) {
+      return !!maskSrcKey && maskSrcKey in func;
+    }
+    var stringToPath = memoize(function(string) {
+      string = toString(string);
+      var result = [];
+      if (reLeadingDot.test(string)) {
+        result.push("");
+      }
+      string.replace(rePropName, function(match, number, quote, string2) {
+        result.push(quote ? string2.replace(reEscapeChar, "$1") : number || match);
+      });
+      return result;
+    });
+    function toKey(value) {
+      if (typeof value == "string" || isSymbol(value)) {
+        return value;
+      }
+      var result = value + "";
+      return result == "0" && 1 / value == -Infinity ? "-0" : result;
+    }
+    function toSource(func) {
+      if (func != null) {
+        try {
+          return funcToString.call(func);
+        } catch (e) {
+        }
+        try {
+          return func + "";
+        } catch (e) {
+        }
+      }
+      return "";
+    }
+    function memoize(func, resolver) {
+      if (typeof func != "function" || resolver && typeof resolver != "function") {
+        throw new TypeError(FUNC_ERROR_TEXT);
+      }
+      var memoized = function() {
+        var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache = memoized.cache;
+        if (cache.has(key)) {
+          return cache.get(key);
+        }
+        var result = func.apply(this, args);
+        memoized.cache = cache.set(key, result);
+        return result;
+      };
+      memoized.cache = new (memoize.Cache || MapCache)();
+      return memoized;
+    }
+    memoize.Cache = MapCache;
+    function eq(value, other) {
+      return value === other || value !== value && other !== other;
+    }
+    var isArray2 = Array.isArray;
+    function isFunction2(value) {
+      var tag = isObject2(value) ? objectToString.call(value) : "";
+      return tag == funcTag || tag == genTag;
+    }
+    function isObject2(value) {
+      var type = typeof value;
+      return !!value && (type == "object" || type == "function");
+    }
+    function isObjectLike(value) {
+      return !!value && typeof value == "object";
+    }
+    function isSymbol(value) {
+      return typeof value == "symbol" || isObjectLike(value) && objectToString.call(value) == symbolTag;
+    }
+    function toString(value) {
+      return value == null ? "" : baseToString(value);
+    }
+    function get2(object, path, defaultValue) {
+      var result = object == null ? void 0 : baseGet(object, path);
+      return result === void 0 ? defaultValue : result;
+    }
+    lodash_get = get2;
+    return lodash_get;
+  }
+  var lodash_getExports = requireLodash_get();
+  const lodashGet = /* @__PURE__ */ getDefaultExportFromCjs(lodash_getExports);
+  const FormContextInjectionKey = Symbol("FormContext");
+  function createFormContext(initial = {}, initialReadonly = false) {
+    const data = vue.ref(initial);
+    const errors = vue.ref({});
+    const touched = vue.ref({});
+    const processing = vue.ref(false);
+    const readonly = vue.ref(initialReadonly);
+    function touch(name) {
+      lodashSet(touched.value, name, true);
+    }
+    function value(name, value2) {
+      return lodashGet(data.value, name, value2);
+    }
+    function fill(name, value2) {
+      lodashSet(data.value, name, value2);
+    }
+    return {
+      data,
+      errors,
+      touched,
+      processing,
+      readonly,
+      touch,
+      value,
+      fill
+    };
+  }
+  function setModelWithContext(name, ctx, value) {
+    if (name && ctx) {
+      ctx.touch(name);
+      ctx.fill(name, value);
+    }
+    return value;
+  }
+  function getModelFromContext(name, ctx, value) {
+    if (name && ctx) {
+      return ctx.value(name, value);
+    }
+    return value;
+  }
+  var lodash_clonedeep = { exports: {} };
+  lodash_clonedeep.exports;
+  var hasRequiredLodash_clonedeep;
+  function requireLodash_clonedeep() {
+    if (hasRequiredLodash_clonedeep) return lodash_clonedeep.exports;
+    hasRequiredLodash_clonedeep = 1;
+    (function(module2, exports3) {
+      var LARGE_ARRAY_SIZE = 200;
+      var HASH_UNDEFINED = "__lodash_hash_undefined__";
+      var MAX_SAFE_INTEGER = 9007199254740991;
+      var argsTag = "[object Arguments]", arrayTag = "[object Array]", boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", mapTag = "[object Map]", numberTag = "[object Number]", objectTag = "[object Object]", promiseTag = "[object Promise]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", symbolTag = "[object Symbol]", weakMapTag = "[object WeakMap]";
+      var arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]", float32Tag = "[object Float32Array]", float64Tag = "[object Float64Array]", int8Tag = "[object Int8Array]", int16Tag = "[object Int16Array]", int32Tag = "[object Int32Array]", uint8Tag = "[object Uint8Array]", uint8ClampedTag = "[object Uint8ClampedArray]", uint16Tag = "[object Uint16Array]", uint32Tag = "[object Uint32Array]";
+      var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+      var reFlags = /\w*$/;
+      var reIsHostCtor = /^\[object .+?Constructor\]$/;
+      var reIsUint = /^(?:0|[1-9]\d*)$/;
+      var cloneableTags = {};
+      cloneableTags[argsTag] = cloneableTags[arrayTag] = cloneableTags[arrayBufferTag] = cloneableTags[dataViewTag] = cloneableTags[boolTag] = cloneableTags[dateTag] = cloneableTags[float32Tag] = cloneableTags[float64Tag] = cloneableTags[int8Tag] = cloneableTags[int16Tag] = cloneableTags[int32Tag] = cloneableTags[mapTag] = cloneableTags[numberTag] = cloneableTags[objectTag] = cloneableTags[regexpTag] = cloneableTags[setTag] = cloneableTags[stringTag] = cloneableTags[symbolTag] = cloneableTags[uint8Tag] = cloneableTags[uint8ClampedTag] = cloneableTags[uint16Tag] = cloneableTags[uint32Tag] = true;
+      cloneableTags[errorTag] = cloneableTags[funcTag] = cloneableTags[weakMapTag] = false;
+      var freeGlobal = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+      var freeSelf = typeof self == "object" && self && self.Object === Object && self;
+      var root = freeGlobal || freeSelf || Function("return this")();
+      var freeExports = exports3 && !exports3.nodeType && exports3;
+      var freeModule = freeExports && true && module2 && !module2.nodeType && module2;
+      var moduleExports = freeModule && freeModule.exports === freeExports;
+      function addMapEntry(map, pair) {
+        map.set(pair[0], pair[1]);
+        return map;
+      }
+      function addSetEntry(set, value) {
+        set.add(value);
+        return set;
+      }
+      function arrayEach(array, iteratee) {
+        var index = -1, length = array ? array.length : 0;
+        while (++index < length) {
+          if (iteratee(array[index], index, array) === false) {
+            break;
+          }
+        }
+        return array;
+      }
+      function arrayPush(array, values) {
+        var index = -1, length = values.length, offset = array.length;
+        while (++index < length) {
+          array[offset + index] = values[index];
+        }
+        return array;
+      }
+      function arrayReduce(array, iteratee, accumulator, initAccum) {
+        var index = -1, length = array ? array.length : 0;
+        while (++index < length) {
+          accumulator = iteratee(accumulator, array[index], index, array);
+        }
+        return accumulator;
+      }
+      function baseTimes(n, iteratee) {
+        var index = -1, result = Array(n);
+        while (++index < n) {
+          result[index] = iteratee(index);
+        }
+        return result;
+      }
+      function getValue(object, key) {
+        return object == null ? void 0 : object[key];
+      }
+      function isHostObject(value) {
+        var result = false;
+        if (value != null && typeof value.toString != "function") {
+          try {
+            result = !!(value + "");
+          } catch (e) {
+          }
+        }
+        return result;
+      }
+      function mapToArray(map) {
+        var index = -1, result = Array(map.size);
+        map.forEach(function(value, key) {
+          result[++index] = [key, value];
+        });
+        return result;
+      }
+      function overArg(func, transform) {
+        return function(arg) {
+          return func(transform(arg));
+        };
+      }
+      function setToArray(set) {
+        var index = -1, result = Array(set.size);
+        set.forEach(function(value) {
+          result[++index] = value;
+        });
+        return result;
+      }
+      var arrayProto = Array.prototype, funcProto = Function.prototype, objectProto = Object.prototype;
+      var coreJsData = root["__core-js_shared__"];
+      var maskSrcKey = function() {
+        var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || "");
+        return uid ? "Symbol(src)_1." + uid : "";
+      }();
+      var funcToString = funcProto.toString;
+      var hasOwnProperty = objectProto.hasOwnProperty;
+      var objectToString = objectProto.toString;
+      var reIsNative = RegExp(
+        "^" + funcToString.call(hasOwnProperty).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
+      );
+      var Buffer2 = moduleExports ? root.Buffer : void 0, Symbol2 = root.Symbol, Uint8Array2 = root.Uint8Array, getPrototype = overArg(Object.getPrototypeOf, Object), objectCreate = Object.create, propertyIsEnumerable = objectProto.propertyIsEnumerable, splice = arrayProto.splice;
+      var nativeGetSymbols = Object.getOwnPropertySymbols, nativeIsBuffer = Buffer2 ? Buffer2.isBuffer : void 0, nativeKeys = overArg(Object.keys, Object);
+      var DataView = getNative(root, "DataView"), Map2 = getNative(root, "Map"), Promise2 = getNative(root, "Promise"), Set2 = getNative(root, "Set"), WeakMap = getNative(root, "WeakMap"), nativeCreate = getNative(Object, "create");
+      var dataViewCtorString = toSource(DataView), mapCtorString = toSource(Map2), promiseCtorString = toSource(Promise2), setCtorString = toSource(Set2), weakMapCtorString = toSource(WeakMap);
+      var symbolProto = Symbol2 ? Symbol2.prototype : void 0, symbolValueOf = symbolProto ? symbolProto.valueOf : void 0;
+      function Hash(entries) {
+        var index = -1, length = entries ? entries.length : 0;
+        this.clear();
+        while (++index < length) {
+          var entry = entries[index];
+          this.set(entry[0], entry[1]);
+        }
+      }
+      function hashClear() {
+        this.__data__ = nativeCreate ? nativeCreate(null) : {};
+      }
+      function hashDelete(key) {
+        return this.has(key) && delete this.__data__[key];
+      }
+      function hashGet(key) {
+        var data = this.__data__;
+        if (nativeCreate) {
+          var result = data[key];
+          return result === HASH_UNDEFINED ? void 0 : result;
+        }
+        return hasOwnProperty.call(data, key) ? data[key] : void 0;
+      }
+      function hashHas(key) {
+        var data = this.__data__;
+        return nativeCreate ? data[key] !== void 0 : hasOwnProperty.call(data, key);
+      }
+      function hashSet(key, value) {
+        var data = this.__data__;
+        data[key] = nativeCreate && value === void 0 ? HASH_UNDEFINED : value;
+        return this;
+      }
+      Hash.prototype.clear = hashClear;
+      Hash.prototype["delete"] = hashDelete;
+      Hash.prototype.get = hashGet;
+      Hash.prototype.has = hashHas;
+      Hash.prototype.set = hashSet;
+      function ListCache(entries) {
+        var index = -1, length = entries ? entries.length : 0;
+        this.clear();
+        while (++index < length) {
+          var entry = entries[index];
+          this.set(entry[0], entry[1]);
+        }
+      }
+      function listCacheClear() {
+        this.__data__ = [];
+      }
+      function listCacheDelete(key) {
+        var data = this.__data__, index = assocIndexOf(data, key);
+        if (index < 0) {
+          return false;
+        }
+        var lastIndex = data.length - 1;
+        if (index == lastIndex) {
+          data.pop();
+        } else {
+          splice.call(data, index, 1);
+        }
+        return true;
+      }
+      function listCacheGet(key) {
+        var data = this.__data__, index = assocIndexOf(data, key);
+        return index < 0 ? void 0 : data[index][1];
+      }
+      function listCacheHas(key) {
+        return assocIndexOf(this.__data__, key) > -1;
+      }
+      function listCacheSet(key, value) {
+        var data = this.__data__, index = assocIndexOf(data, key);
+        if (index < 0) {
+          data.push([key, value]);
+        } else {
+          data[index][1] = value;
+        }
+        return this;
+      }
+      ListCache.prototype.clear = listCacheClear;
+      ListCache.prototype["delete"] = listCacheDelete;
+      ListCache.prototype.get = listCacheGet;
+      ListCache.prototype.has = listCacheHas;
+      ListCache.prototype.set = listCacheSet;
+      function MapCache(entries) {
+        var index = -1, length = entries ? entries.length : 0;
+        this.clear();
+        while (++index < length) {
+          var entry = entries[index];
+          this.set(entry[0], entry[1]);
+        }
+      }
+      function mapCacheClear() {
+        this.__data__ = {
+          "hash": new Hash(),
+          "map": new (Map2 || ListCache)(),
+          "string": new Hash()
+        };
+      }
+      function mapCacheDelete(key) {
+        return getMapData(this, key)["delete"](key);
+      }
+      function mapCacheGet(key) {
+        return getMapData(this, key).get(key);
+      }
+      function mapCacheHas(key) {
+        return getMapData(this, key).has(key);
+      }
+      function mapCacheSet(key, value) {
+        getMapData(this, key).set(key, value);
+        return this;
+      }
+      MapCache.prototype.clear = mapCacheClear;
+      MapCache.prototype["delete"] = mapCacheDelete;
+      MapCache.prototype.get = mapCacheGet;
+      MapCache.prototype.has = mapCacheHas;
+      MapCache.prototype.set = mapCacheSet;
+      function Stack(entries) {
+        this.__data__ = new ListCache(entries);
+      }
+      function stackClear() {
+        this.__data__ = new ListCache();
+      }
+      function stackDelete(key) {
+        return this.__data__["delete"](key);
+      }
+      function stackGet(key) {
+        return this.__data__.get(key);
+      }
+      function stackHas(key) {
+        return this.__data__.has(key);
+      }
+      function stackSet(key, value) {
+        var cache = this.__data__;
+        if (cache instanceof ListCache) {
+          var pairs = cache.__data__;
+          if (!Map2 || pairs.length < LARGE_ARRAY_SIZE - 1) {
+            pairs.push([key, value]);
+            return this;
+          }
+          cache = this.__data__ = new MapCache(pairs);
+        }
+        cache.set(key, value);
+        return this;
+      }
+      Stack.prototype.clear = stackClear;
+      Stack.prototype["delete"] = stackDelete;
+      Stack.prototype.get = stackGet;
+      Stack.prototype.has = stackHas;
+      Stack.prototype.set = stackSet;
+      function arrayLikeKeys(value, inherited) {
+        var result = isArray2(value) || isArguments(value) ? baseTimes(value.length, String) : [];
+        var length = result.length, skipIndexes = !!length;
+        for (var key in value) {
+          if (hasOwnProperty.call(value, key) && !(skipIndexes && (key == "length" || isIndex(key, length)))) {
+            result.push(key);
+          }
+        }
+        return result;
+      }
+      function assignValue(object, key, value) {
+        var objValue = object[key];
+        if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) || value === void 0 && !(key in object)) {
+          object[key] = value;
+        }
+      }
+      function assocIndexOf(array, key) {
+        var length = array.length;
+        while (length--) {
+          if (eq(array[length][0], key)) {
+            return length;
+          }
+        }
+        return -1;
+      }
+      function baseAssign(object, source) {
+        return object && copyObject(source, keys(source), object);
+      }
+      function baseClone(value, isDeep, isFull, customizer, key, object, stack2) {
+        var result;
+        if (customizer) {
+          result = object ? customizer(value, key, object, stack2) : customizer(value);
+        }
+        if (result !== void 0) {
+          return result;
+        }
+        if (!isObject2(value)) {
+          return value;
+        }
+        var isArr = isArray2(value);
+        if (isArr) {
+          result = initCloneArray(value);
+          if (!isDeep) {
+            return copyArray(value, result);
+          }
+        } else {
+          var tag = getTag(value), isFunc = tag == funcTag || tag == genTag;
+          if (isBuffer(value)) {
+            return cloneBuffer(value, isDeep);
+          }
+          if (tag == objectTag || tag == argsTag || isFunc && !object) {
+            if (isHostObject(value)) {
+              return object ? value : {};
+            }
+            result = initCloneObject(isFunc ? {} : value);
+            if (!isDeep) {
+              return copySymbols(value, baseAssign(result, value));
+            }
+          } else {
+            if (!cloneableTags[tag]) {
+              return object ? value : {};
+            }
+            result = initCloneByTag(value, tag, baseClone, isDeep);
+          }
+        }
+        stack2 || (stack2 = new Stack());
+        var stacked = stack2.get(value);
+        if (stacked) {
+          return stacked;
+        }
+        stack2.set(value, result);
+        if (!isArr) {
+          var props = isFull ? getAllKeys(value) : keys(value);
+        }
+        arrayEach(props || value, function(subValue, key2) {
+          if (props) {
+            key2 = subValue;
+            subValue = value[key2];
+          }
+          assignValue(result, key2, baseClone(subValue, isDeep, isFull, customizer, key2, value, stack2));
+        });
+        return result;
+      }
+      function baseCreate(proto) {
+        return isObject2(proto) ? objectCreate(proto) : {};
+      }
+      function baseGetAllKeys(object, keysFunc, symbolsFunc) {
+        var result = keysFunc(object);
+        return isArray2(object) ? result : arrayPush(result, symbolsFunc(object));
+      }
+      function baseGetTag(value) {
+        return objectToString.call(value);
+      }
+      function baseIsNative(value) {
+        if (!isObject2(value) || isMasked(value)) {
+          return false;
+        }
+        var pattern = isFunction2(value) || isHostObject(value) ? reIsNative : reIsHostCtor;
+        return pattern.test(toSource(value));
+      }
+      function baseKeys(object) {
+        if (!isPrototype(object)) {
+          return nativeKeys(object);
+        }
+        var result = [];
+        for (var key in Object(object)) {
+          if (hasOwnProperty.call(object, key) && key != "constructor") {
+            result.push(key);
+          }
+        }
+        return result;
+      }
+      function cloneBuffer(buffer2, isDeep) {
+        if (isDeep) {
+          return buffer2.slice();
+        }
+        var result = new buffer2.constructor(buffer2.length);
+        buffer2.copy(result);
+        return result;
+      }
+      function cloneArrayBuffer(arrayBuffer) {
+        var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
+        new Uint8Array2(result).set(new Uint8Array2(arrayBuffer));
+        return result;
+      }
+      function cloneDataView(dataView, isDeep) {
+        var buffer2 = isDeep ? cloneArrayBuffer(dataView.buffer) : dataView.buffer;
+        return new dataView.constructor(buffer2, dataView.byteOffset, dataView.byteLength);
+      }
+      function cloneMap(map, isDeep, cloneFunc) {
+        var array = isDeep ? cloneFunc(mapToArray(map), true) : mapToArray(map);
+        return arrayReduce(array, addMapEntry, new map.constructor());
+      }
+      function cloneRegExp(regexp) {
+        var result = new regexp.constructor(regexp.source, reFlags.exec(regexp));
+        result.lastIndex = regexp.lastIndex;
+        return result;
+      }
+      function cloneSet(set, isDeep, cloneFunc) {
+        var array = isDeep ? cloneFunc(setToArray(set), true) : setToArray(set);
+        return arrayReduce(array, addSetEntry, new set.constructor());
+      }
+      function cloneSymbol(symbol) {
+        return symbolValueOf ? Object(symbolValueOf.call(symbol)) : {};
+      }
+      function cloneTypedArray(typedArray, isDeep) {
+        var buffer2 = isDeep ? cloneArrayBuffer(typedArray.buffer) : typedArray.buffer;
+        return new typedArray.constructor(buffer2, typedArray.byteOffset, typedArray.length);
+      }
+      function copyArray(source, array) {
+        var index = -1, length = source.length;
+        array || (array = Array(length));
+        while (++index < length) {
+          array[index] = source[index];
+        }
+        return array;
+      }
+      function copyObject(source, props, object, customizer) {
+        object || (object = {});
+        var index = -1, length = props.length;
+        while (++index < length) {
+          var key = props[index];
+          var newValue = void 0;
+          assignValue(object, key, newValue === void 0 ? source[key] : newValue);
+        }
+        return object;
+      }
+      function copySymbols(source, object) {
+        return copyObject(source, getSymbols(source), object);
+      }
+      function getAllKeys(object) {
+        return baseGetAllKeys(object, keys, getSymbols);
+      }
+      function getMapData(map, key) {
+        var data = map.__data__;
+        return isKeyable(key) ? data[typeof key == "string" ? "string" : "hash"] : data.map;
+      }
+      function getNative(object, key) {
+        var value = getValue(object, key);
+        return baseIsNative(value) ? value : void 0;
+      }
+      var getSymbols = nativeGetSymbols ? overArg(nativeGetSymbols, Object) : stubArray;
+      var getTag = baseGetTag;
+      if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap && getTag(new WeakMap()) != weakMapTag) {
+        getTag = function(value) {
+          var result = objectToString.call(value), Ctor = result == objectTag ? value.constructor : void 0, ctorString = Ctor ? toSource(Ctor) : void 0;
+          if (ctorString) {
+            switch (ctorString) {
+              case dataViewCtorString:
+                return dataViewTag;
+              case mapCtorString:
+                return mapTag;
+              case promiseCtorString:
+                return promiseTag;
+              case setCtorString:
+                return setTag;
+              case weakMapCtorString:
+                return weakMapTag;
+            }
+          }
+          return result;
+        };
+      }
+      function initCloneArray(array) {
+        var length = array.length, result = array.constructor(length);
+        if (length && typeof array[0] == "string" && hasOwnProperty.call(array, "index")) {
+          result.index = array.index;
+          result.input = array.input;
+        }
+        return result;
+      }
+      function initCloneObject(object) {
+        return typeof object.constructor == "function" && !isPrototype(object) ? baseCreate(getPrototype(object)) : {};
+      }
+      function initCloneByTag(object, tag, cloneFunc, isDeep) {
+        var Ctor = object.constructor;
+        switch (tag) {
+          case arrayBufferTag:
+            return cloneArrayBuffer(object);
+          case boolTag:
+          case dateTag:
+            return new Ctor(+object);
+          case dataViewTag:
+            return cloneDataView(object, isDeep);
+          case float32Tag:
+          case float64Tag:
+          case int8Tag:
+          case int16Tag:
+          case int32Tag:
+          case uint8Tag:
+          case uint8ClampedTag:
+          case uint16Tag:
+          case uint32Tag:
+            return cloneTypedArray(object, isDeep);
+          case mapTag:
+            return cloneMap(object, isDeep, cloneFunc);
+          case numberTag:
+          case stringTag:
+            return new Ctor(object);
+          case regexpTag:
+            return cloneRegExp(object);
+          case setTag:
+            return cloneSet(object, isDeep, cloneFunc);
+          case symbolTag:
+            return cloneSymbol(object);
+        }
+      }
+      function isIndex(value, length) {
+        length = length == null ? MAX_SAFE_INTEGER : length;
+        return !!length && (typeof value == "number" || reIsUint.test(value)) && (value > -1 && value % 1 == 0 && value < length);
+      }
+      function isKeyable(value) {
+        var type = typeof value;
+        return type == "string" || type == "number" || type == "symbol" || type == "boolean" ? value !== "__proto__" : value === null;
+      }
+      function isMasked(func) {
+        return !!maskSrcKey && maskSrcKey in func;
+      }
+      function isPrototype(value) {
+        var Ctor = value && value.constructor, proto = typeof Ctor == "function" && Ctor.prototype || objectProto;
+        return value === proto;
+      }
+      function toSource(func) {
+        if (func != null) {
+          try {
+            return funcToString.call(func);
+          } catch (e) {
+          }
+          try {
+            return func + "";
+          } catch (e) {
+          }
+        }
+        return "";
+      }
+      function cloneDeep(value) {
+        return baseClone(value, true, true);
+      }
+      function eq(value, other) {
+        return value === other || value !== value && other !== other;
+      }
+      function isArguments(value) {
+        return isArrayLikeObject(value) && hasOwnProperty.call(value, "callee") && (!propertyIsEnumerable.call(value, "callee") || objectToString.call(value) == argsTag);
+      }
+      var isArray2 = Array.isArray;
+      function isArrayLike(value) {
+        return value != null && isLength(value.length) && !isFunction2(value);
+      }
+      function isArrayLikeObject(value) {
+        return isObjectLike(value) && isArrayLike(value);
+      }
+      var isBuffer = nativeIsBuffer || stubFalse;
+      function isFunction2(value) {
+        var tag = isObject2(value) ? objectToString.call(value) : "";
+        return tag == funcTag || tag == genTag;
+      }
+      function isLength(value) {
+        return typeof value == "number" && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+      }
+      function isObject2(value) {
+        var type = typeof value;
+        return !!value && (type == "object" || type == "function");
+      }
+      function isObjectLike(value) {
+        return !!value && typeof value == "object";
+      }
+      function keys(object) {
+        return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+      }
+      function stubArray() {
+        return [];
+      }
+      function stubFalse() {
+        return false;
+      }
+      module2.exports = cloneDeep;
+    })(lodash_clonedeep, lodash_clonedeep.exports);
+    return lodash_clonedeep.exports;
+  }
+  var lodash_clonedeepExports = requireLodash_clonedeep();
+  const lodashCloneDeep = /* @__PURE__ */ getDefaultExportFromCjs(lodash_clonedeepExports);
+  const FormControllerComponent = vue.defineComponent({
+    name: "FormController",
+    props: {
+      action: {
+        type: String,
+        required: false
+      },
+      method: {
+        type: String,
+        required: false,
+        default: "POST"
+      },
+      data: {
+        type: Object,
+        required: false,
+        default: {}
+      },
+      readonly: {
+        type: Boolean,
+        required: false,
+        default: false
+      },
+      onSubmit: {
+        type: Function,
+        required: false
+      }
+    },
+    slots: Object,
+    setup(props, { slots, expose }) {
+      const ctx = createFormContext(lodashCloneDeep(vue.toValue(props.data)), vue.toValue(props.readonly));
+      const http = useHttpClient();
+      const parent = vue.inject(FormContextInjectionKey, null);
+      const { data, processing, readonly, errors, touched } = ctx;
+      const element = vue.computed(() => {
+        return parent ? "div" : "form";
+      });
+      const specific = vue.computed(() => {
+        return parent ? {
+          ["data-action"]: props.action,
+          ["data-method"]: props.method
+        } : {
+          ["action"]: props.action,
+          ["method"]: props.method
+        };
+      });
+      function dispatch() {
+        if (props.onSubmit) {
+          return props.onSubmit(data.value, ctx);
+        }
+        if (!props.action) {
+          throw new Error("You must either provide action or your custom form handler!");
+        }
+        return http.dispatch(props.method, props.action, { data: data.value });
+      }
+      function submit() {
+        let beforeReadonly = readonly.value;
+        processing.value = true;
+        readonly.value = true;
+        errors.value = {};
+        touched.value = {};
+        vue.nextTick(() => dispatch().catch((error) => {
+          if (error instanceof CompleteResponse) {
+            errors.value = error.errors;
+          }
+        }).finally(() => {
+          processing.value = false;
+          readonly.value = beforeReadonly;
+        }));
+      }
+      vue.watch(() => props.data, (values) => {
+        data.value = lodashCloneDeep(vue.toValue(values));
+      });
+      vue.watch(() => props.readonly, (value) => {
+        readonly.value = vue.toValue(value);
+      });
+      expose({
+        ctx,
+        submit
+      });
+      vue.provide(FormContextInjectionKey, ctx);
+      return () => vue.h(element.value, { class: "form", ...specific.value }, slots.default({
+        data: data.value,
+        processing: processing.value,
+        errors: errors.value,
+        touched: touched.value,
+        ctx,
+        submit
+      }));
+    }
+  });
+  const StackedViewResolverInjectionKey = Symbol("ViewResolver");
+  const StackedViewInjectionKey = Symbol("StackedView");
+  const StackedViewDepthInjectionKey = Symbol("StackedViewDepth");
+  const StackedViewParentInjectionKey = Symbol("StackedViewParent");
+  const StackedViewLocationInjectionKey = Symbol("StackedViewLocation");
+  const StackedViewQueryInjectionKey = Symbol("StackedViewQuery");
+  function wrap(item) {
+    return Array.isArray(item) ? item : [item];
+  }
+  function useViewResolver() {
+    const resolver = vue.inject(StackedViewResolverInjectionKey);
+    if (!resolver) {
+      throw new Error("You're trying to get ViewResolver ouf of Router context!");
+    }
+    return resolver;
+  }
+  function useViewStack() {
+    const view = vue.inject(StackedViewInjectionKey);
+    if (!view) {
+      throw new Error("You're trying to get stacked view out of Router context!");
+    }
+    return view;
+  }
+  function useViewDepth() {
+    const view = vue.inject(StackedViewDepthInjectionKey);
+    if (!view) {
+      throw new Error("You're trying to get view depth out of Router context!");
+    }
+    return view;
+  }
+  const RouterViewComponent = vue.defineComponent({
+    inheritAttrs: false,
+    name: "RouterView",
+    props: {
+      allowLayouts: {
+        type: Boolean,
+        required: false,
+        default: true
+      }
+    },
+    slots: Object,
+    setup(props, { slots }) {
+      const resolver = useViewResolver();
+      const depth = useViewDepth();
+      const view = useViewStack();
+      const location = vue.computed(() => {
+        var _a;
+        return (_a = view.value) == null ? void 0 : _a.location;
+      });
+      const query = vue.computed(() => {
+        var _a;
+        return (_a = view.value) == null ? void 0 : _a.query;
+      });
+      const stack2 = vue.computed(() => {
+        if (view.value && view.value.child) {
+          return { ...view.value.child, parent: view.value };
+        } else {
+          return void 0;
+        }
+      });
+      vue.provide(StackedViewInjectionKey, stack2);
+      vue.provide(StackedViewDepthInjectionKey, vue.computed(() => depth.value + 1));
+      vue.provide(StackedViewParentInjectionKey, vue.computed(() => {
+        var _a;
+        return (_a = view.value) == null ? void 0 : _a.parent;
+      }));
+      vue.provide(StackedViewLocationInjectionKey, location);
+      vue.provide(StackedViewQueryInjectionKey, query);
+      return () => {
+        if (view.value && "component" in view.value) {
+          let component = resolver(view.value.component);
+          let viewProps = view.value.props;
+          component.inheritAttrs = !!component.inheritAttrs;
+          let children = vue.h(component, viewProps);
+          if (props.allowLayouts && component.layout) {
+            children = wrap(component.layout).concat(children).reverse().reduce((child, layout) => {
+              layout = typeof layout === "string" ? resolver(layout) : layout;
+              layout.inheritAttrs = !!layout.inheritAttrs;
+              return vue.h(layout, viewProps, () => child);
+            });
+          }
+          return children;
+        }
+        if (slots.default) {
+          return slots.default();
+        }
+      };
+    }
+  });
+  const RouterLinkComponent = vue.defineComponent({
+    name: "RouterLink",
+    props: {
+      method: { type: String, required: false, default: "GET" },
+      href: { type: String, required: false },
+      data: { type: [Object, Array, String, null], required: false },
+      preserveScroll: { type: Boolean, required: false },
+      replace: { type: Boolean, required: false },
+      target: { type: String, required: false },
+      disabled: { type: Boolean, required: false },
+      explicit: { type: Boolean, required: false }
+    },
+    setup(props, { attrs, slots }) {
+      const location = useLocation();
+      const http = useHttpClient();
+      const pending = vue.ref(false);
+      const active = vue.computed(() => {
+        var _a;
+        let current = location.value.replace(/\/$/, "");
+        let target = (_a = props.href) == null ? void 0 : _a.replace(/\/$/, "");
+        let explicit = current === target;
+        let implicit = !props.explicit && target && location.value.startsWith(target);
+        return explicit || implicit;
+      });
+      const as = vue.computed(() => props.href ? "a" : "button");
+      const specific = vue.computed(() => props.href ? { target: props.target } : { disabled: props.disabled });
+      function onClick(event) {
+        if (!props.href || !shouldInterceptEvent(event, props.href, props.target)) {
+          return;
+        }
+        event.preventDefault();
+        if (props.disabled) {
+          return;
+        }
+        let { method, href, data, preserveScroll, replace } = props;
+        pending.value = true;
+        vue.nextTick(() => {
+          http.dispatch(method, href, { data, preserveScroll, replace }).then(() => {
+            pending.value = false;
+          }).catch(() => {
+            pending.value = false;
+          });
+        });
+      }
+      return () => vue.h(
+        as.value,
+        {
+          href: props.href,
+          onClick,
+          ...specific.value,
+          ...attrs,
+          class: [{ active: active.value, pending: pending.value, disabled: props.disabled }]
+        },
+        // @ts-ignore
+        slots.default({ active, pending })
+      );
+    }
+  });
+  function shouldInterceptEvent(event, href, target) {
+    if (target === "_blank" || isCrossOriginHref(href)) {
+      return false;
+    }
+    return !(event.defaultPrevented || event.button > 1 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey);
+  }
+  function isCrossOriginHref(href) {
+    try {
+      let currentOrigin = window.location.host;
+      let targetOrigin = new URL(href).host;
+      return currentOrigin !== targetOrigin;
+    } catch (e) {
+      return false;
+    }
+  }
+  const ToastRegistryInjectionKey = Symbol("ToastRegistry");
+  function useToasts() {
+    let toasts = vue.inject(ToastRegistryInjectionKey);
+    if (!toasts) {
+      throw new Error("Toasts are used out of router context!");
+    }
+    return toasts;
+  }
+  const RouterNestedViewComponent = vue.defineComponent({
+    inheritAttrs: false,
+    name: "RouterNestedView",
+    props: {
+      action: { type: String, required: true }
+    },
+    slots: Object,
+    setup(props, { slots }) {
+      const http = useHttpClient();
+      const loading = vue.ref(true);
+      vue.onMounted(() => {
+        http.get(props.action).then(() => vue.nextTick(() => {
+          loading.value = false;
+        }));
+      });
+      return () => {
+        if (loading.value) {
+          if (slots.default) {
+            return slots.default();
+          }
+        } else {
+          return vue.h(RouterViewComponent);
+        }
+      };
+    }
+  });
+  const RouterNestedComponent = vue.defineComponent({
+    inheritAttrs: false,
+    name: "RouterNested",
+    props: {
+      action: { type: String, required: true }
+    },
+    slots: Object,
+    setup(props, { slots }) {
+      const location = vue.ref(props.action);
+      const abilities = vue.ref(void 0);
+      const stack2 = vue.ref(void 0);
+      const signature = vue.ref(void 0);
+      const authenticated = vue.inject(StateAuthenticated);
+      const toasts = vue.inject(ToastRegistryInjectionKey);
+      function buildState() {
+        return {
+          location: vue.toRaw(vue.toValue(location)),
+          signature: vue.toRaw(vue.toValue(signature)),
+          stack: vue.toRaw(vue.toValue(stack2))
+        };
+      }
+      async function update(fresh) {
+        abilities.value = fresh.abilities;
+        authenticated.value = fresh.authenticated;
+        if (fresh.location) {
+          location.value = fresh.location;
+        }
+        if (fresh.signature) {
+          signature.value = fresh.signature;
+        }
+        if (fresh.stack) {
+          stack2.value = updateStack(vue.toRaw(vue.toValue(stack2.value)), fresh.stack);
+        }
+        if (fresh.toasts && fresh.toasts.length > 0) {
+          toasts.value = [...toasts.value, ...fresh.toasts];
+        }
+        return await vue.nextTick(() => buildState());
+      }
+      vue.provide(StateAbilities, abilities);
+      vue.provide(StateAuthenticated, authenticated);
+      vue.provide(StateLocationInjectionKey, location);
+      vue.provide(StateStackSignatureInjectionKey, signature);
+      vue.provide(StateManagerInjectionKey, update);
+      vue.provide(StackedViewDepthInjectionKey, vue.computed(() => 0));
+      vue.provide(StackedViewInjectionKey, stack2);
+      vue.provide(ToastRegistryInjectionKey, toasts);
+      vue.provide(HttpClientForceScrollPreservation, true);
+      vue.provide(StateHistoryInjectionKey, {
+        historyPushState(state) {
+        },
+        historyReplaceState(state) {
+        }
+      });
+      return () => {
+        return vue.h(RouterNestedViewComponent, { action: props.action }, slots);
+      };
+    }
+  });
+  const ToastControllerComponent = vue.defineComponent({
+    name: "ToastController",
+    slots: Object,
+    setup(props, { slots, attrs }) {
+      const toasts = useToasts();
+      return () => vue.h("div", attrs, slots.default({ toasts: toasts.value }));
+    }
+  });
+  const ToastComponent = vue.defineComponent({
+    name: "Toast",
+    props: {
+      toast: { type: Object, required: true }
+    },
+    slots: Object,
+    setup(props, { slots, attrs }) {
+      const toasts = useToasts();
+      const timeout = vue.ref();
+      function close() {
+        clearTimeout(timeout.value);
+        toasts.value = toasts.value.filter((toast) => toast.id !== props.toast.id);
+      }
+      vue.onMounted(() => {
+        timeout.value = setTimeout(() => close(), props.toast.duration * 1e3);
+      });
+      vue.onBeforeUnmount(() => {
+        clearTimeout(timeout.value);
+      });
+      return () => vue.h("li", attrs, slots.default({ toast: props.toast, close }));
+    }
+  });
+  const PasswordConfirmationControllerComponent = vue.defineComponent({
+    name: "PasswordConfirmationController",
+    props: {
+      action: { type: String, required: true }
+    },
+    slots: Object,
+    setup(props, { slots, attrs }) {
+      const http = useHttpClient();
+      const original = vue.ref();
+      const open = vue.ref(false);
+      function onPasswordConfirm(event) {
+        original.value = event;
+        open.value = true;
+      }
+      async function submit(data) {
+        let { method, url: url2, options } = original.value;
+        return await http.post(props.action, data).then(async () => {
+          return await http.dispatch(method, url2, options).then(async (res) => {
+            cancel();
+            return await vue.nextTick(() => res);
+          });
+        });
+      }
+      function cancel() {
+        open.value = false;
+        original.value = void 0;
+      }
+      vue.onMounted(() => {
+        EventBus.addEventListener("password.confirm", onPasswordConfirm);
+      });
+      vue.onBeforeUnmount(() => {
+        EventBus.removeEventListener("password.confirm", onPasswordConfirm);
+      });
+      return () => vue.h("div", attrs, slots.default({ open: open.value, submit, cancel }));
+    }
+  });
+  function trans(key, replace) {
+    return makeReplacements(get(key), replace);
+  }
+  function transChoice(key, number, replace) {
+    return makeReplacements(choose(get(key), number), replace);
+  }
+  function get(key) {
+    let translation = APP_TRANSLATIONS[key];
+    if (typeof translation === "undefined") {
+      translation = key;
+    }
+    return translation;
+  }
+  function choose(line, number) {
+    let segments = line.split("|");
+    let value = extract(segments, number);
+    if (value) {
+      return value.trim();
+    }
+    segments = stripConditions(segments);
+    let pluralIndex = getPluralIndex(number);
+    if (segments.length === 1 || segments[pluralIndex] == void 0) {
+      return segments[0];
+    }
+    return segments[pluralIndex];
+  }
+  function extract(segments, number) {
+    for (let part in segments) {
+      let line = extractFromString(part, number);
+      if (line) {
+        return line;
+      }
+    }
+  }
+  function extractFromString(part, number) {
+    const regex = /^[\{\[]([^\[\]\{\}]*)[\}\]](.*)/s;
+    const matches = part.match(regex);
+    if (!matches || matches.length !== 3) {
+      return null;
+    }
+    const condition = matches[1];
+    const value = matches[2];
+    if (condition.includes(",")) {
+      const [from, to] = condition.split(",", 2);
+      if (to === "*" && number >= Number(from)) {
+        return value;
+      } else if (from === "*" && number <= Number(to)) {
+        return value;
+      } else if (number >= Number(from) && number <= Number(to)) {
+        return value;
+      }
+    }
+    return Number(condition) == number ? value : null;
+  }
+  function stripConditions(segments) {
+    return segments.map((part) => part.replace(/^[\{\[]([^\[\]\{\}]*)[\}\]]/, ""));
+  }
+  function makeReplacements(line, replace) {
+    if (replace) {
+      return Object.keys(replace).reduce((prev, key) => prev.replace(`:${key}`, replace[key].toString()), line);
+    }
+    return line;
+  }
+  function getPluralIndex(number) {
+    switch (APP_LOCALE) {
+      case "az":
+      case "az_AZ":
+      case "bo":
+      case "bo_CN":
+      case "bo_IN":
+      case "dz":
+      case "dz_BT":
+      case "id":
+      case "id_ID":
+      case "ja":
+      case "ja_JP":
+      case "jv":
+      case "ka":
+      case "ka_GE":
+      case "km":
+      case "km_KH":
+      case "kn":
+      case "kn_IN":
+      case "ko":
+      case "ko_KR":
+      case "ms":
+      case "ms_MY":
+      case "th":
+      case "th_TH":
+      case "tr":
+      case "tr_CY":
+      case "tr_TR":
+      case "vi":
+      case "vi_VN":
+      case "zh":
+      case "zh_CN":
+      case "zh_HK":
+      case "zh_SG":
+      case "zh_TW":
+        return 0;
+      case "af":
+      case "af_ZA":
+      case "bn":
+      case "bn_BD":
+      case "bn_IN":
+      case "bg":
+      case "bg_BG":
+      case "ca":
+      case "ca_AD":
+      case "ca_ES":
+      case "ca_FR":
+      case "ca_IT":
+      case "da":
+      case "da_DK":
+      case "de":
+      case "de_AT":
+      case "de_BE":
+      case "de_CH":
+      case "de_DE":
+      case "de_LI":
+      case "de_LU":
+      case "el":
+      case "el_CY":
+      case "el_GR":
+      case "en":
+      case "en_AG":
+      case "en_AU":
+      case "en_BW":
+      case "en_CA":
+      case "en_DK":
+      case "en_GB":
+      case "en_HK":
+      case "en_IE":
+      case "en_IN":
+      case "en_NG":
+      case "en_NZ":
+      case "en_PH":
+      case "en_SG":
+      case "en_US":
+      case "en_ZA":
+      case "en_ZM":
+      case "en_ZW":
+      case "eo":
+      case "eo_US":
+      case "es":
+      case "es_AR":
+      case "es_BO":
+      case "es_CL":
+      case "es_CO":
+      case "es_CR":
+      case "es_CU":
+      case "es_DO":
+      case "es_EC":
+      case "es_ES":
+      case "es_GT":
+      case "es_HN":
+      case "es_MX":
+      case "es_NI":
+      case "es_PA":
+      case "es_PE":
+      case "es_PR":
+      case "es_PY":
+      case "es_SV":
+      case "es_US":
+      case "es_UY":
+      case "es_VE":
+      case "et":
+      case "et_EE":
+      case "eu":
+      case "eu_ES":
+      case "eu_FR":
+      case "fa":
+      case "fa_IR":
+      case "fi":
+      case "fi_FI":
+      case "fo":
+      case "fo_FO":
+      case "fur":
+      case "fur_IT":
+      case "fy":
+      case "fy_DE":
+      case "fy_NL":
+      case "gl":
+      case "gl_ES":
+      case "gu":
+      case "gu_IN":
+      case "ha":
+      case "ha_NG":
+      case "he":
+      case "he_IL":
+      case "hu":
+      case "hu_HU":
+      case "is":
+      case "is_IS":
+      case "it":
+      case "it_CH":
+      case "it_IT":
+      case "ku":
+      case "ku_TR":
+      case "lb":
+      case "lb_LU":
+      case "ml":
+      case "ml_IN":
+      case "mn":
+      case "mn_MN":
+      case "mr":
+      case "mr_IN":
+      case "nah":
+      case "nb":
+      case "nb_NO":
+      case "ne":
+      case "ne_NP":
+      case "nl":
+      case "nl_AW":
+      case "nl_BE":
+      case "nl_NL":
+      case "nn":
+      case "nn_NO":
+      case "no":
+      case "om":
+      case "om_ET":
+      case "om_KE":
+      case "or":
+      case "or_IN":
+      case "pa":
+      case "pa_IN":
+      case "pa_PK":
+      case "pap":
+      case "pap_AN":
+      case "pap_AW":
+      case "pap_CW":
+      case "ps":
+      case "ps_AF":
+      case "pt":
+      case "pt_BR":
+      case "pt_PT":
+      case "so":
+      case "so_DJ":
+      case "so_ET":
+      case "so_KE":
+      case "so_SO":
+      case "sq":
+      case "sq_AL":
+      case "sq_MK":
+      case "sv":
+      case "sv_FI":
+      case "sv_SE":
+      case "sw":
+      case "sw_KE":
+      case "sw_TZ":
+      case "ta":
+      case "ta_IN":
+      case "ta_LK":
+      case "te":
+      case "te_IN":
+      case "tk":
+      case "tk_TM":
+      case "ur":
+      case "ur_IN":
+      case "ur_PK":
+      case "zu":
+      case "zu_ZA":
+        return number == 1 ? 0 : 1;
+      case "am":
+      case "am_ET":
+      case "bh":
+      case "fil":
+      case "fil_PH":
+      case "fr":
+      case "fr_BE":
+      case "fr_CA":
+      case "fr_CH":
+      case "fr_FR":
+      case "fr_LU":
+      case "gun":
+      case "hi":
+      case "hi_IN":
+      case "hy":
+      case "hy_AM":
+      case "ln":
+      case "ln_CD":
+      case "mg":
+      case "mg_MG":
+      case "nso":
+      case "nso_ZA":
+      case "ti":
+      case "ti_ER":
+      case "ti_ET":
+      case "wa":
+      case "wa_BE":
+      case "xbr":
+        return number == 0 || number == 1 ? 0 : 1;
+      case "be":
+      case "be_BY":
+      case "bs":
+      case "bs_BA":
+      case "hr":
+      case "hr_HR":
+      case "ru":
+      case "ru_RU":
+      case "ru_UA":
+      case "sr":
+      case "sr_ME":
+      case "sr_RS":
+      case "uk":
+      case "uk_UA":
+        return number % 10 == 1 && number % 100 != 11 ? 0 : number % 10 >= 2 && number % 10 <= 4 && (number % 100 < 10 || number % 100 >= 20) ? 1 : 2;
+      case "cs":
+      case "cs_CZ":
+      case "sk":
+      case "sk_SK":
+        return number == 1 ? 0 : number >= 2 && number <= 4 ? 1 : 2;
+      case "ga":
+      case "ga_IE":
+        return number == 1 ? 0 : number == 2 ? 1 : 2;
+      case "lt":
+      case "lt_LT":
+        return number % 10 == 1 && number % 100 != 11 ? 0 : number % 10 >= 2 && (number % 100 < 10 || number % 100 >= 20) ? 1 : 2;
+      case "sl":
+      case "sl_SI":
+        return number % 100 == 1 ? 0 : number % 100 == 2 ? 1 : number % 100 == 3 || number % 100 == 4 ? 2 : 3;
+      case "mk":
+      case "mk_MK":
+        return number % 10 == 1 ? 0 : 1;
+      case "mt":
+      case "mt_MT":
+        return number == 1 ? 0 : number == 0 || number % 100 > 1 && number % 100 < 11 ? 1 : number % 100 > 10 && number % 100 < 20 ? 2 : 3;
+      case "lv":
+      case "lv_LV":
+        return number == 0 ? 0 : number % 10 == 1 && number % 100 != 11 ? 1 : 2;
+      case "pl":
+      case "pl_PL":
+        return number == 1 ? 0 : number % 10 >= 2 && number % 10 <= 4 && (number % 100 < 12 || number % 100 > 14) ? 1 : 2;
+      case "cy":
+      case "cy_GB":
+        return number == 1 ? 0 : number == 2 ? 1 : number == 8 || number == 11 ? 2 : 3;
+      case "ro":
+      case "ro_RO":
+        return number == 1 ? 0 : number == 0 || number % 100 > 0 && number % 100 < 20 ? 1 : 2;
+      case "ar":
+      case "ar_AE":
+      case "ar_BH":
+      case "ar_DZ":
+      case "ar_EG":
+      case "ar_IN":
+      case "ar_IQ":
+      case "ar_JO":
+      case "ar_KW":
+      case "ar_LB":
+      case "ar_LY":
+      case "ar_MA":
+      case "ar_OM":
+      case "ar_QA":
+      case "ar_SA":
+      case "ar_SD":
+      case "ar_SS":
+      case "ar_SY":
+      case "ar_TN":
+      case "ar_YE":
+        return number == 0 ? 0 : number == 1 ? 1 : number == 2 ? 2 : number % 100 >= 3 && number % 100 <= 10 ? 3 : number % 100 >= 11 && number % 100 <= 99 ? 4 : 5;
+      default:
+        return 0;
+    }
+  }
+  function url(uri, params, hash2, base) {
+    const url2 = new URL(uri, base || APP_URL);
+    if (params) {
+      attachSearchParameters(url2.searchParams, params);
+    }
+    if (hash2) {
+      url2.hash = hash2;
+    }
+    return url2.toString();
+  }
+  function attachSearchParameters(search, params) {
+    Object.keys(params).forEach((key) => {
+      appendSearchParameter(search, key, vue.toRaw(params[key]));
+    });
+  }
+  function appendSearchParameter(search, name, value, prev) {
+    if (prev) {
+      name = prev + "[" + name + "]";
+    }
+    if (value == null) {
+      search.set(name, "");
+      return search;
+    }
+    if (Array.isArray(value)) {
+      value.forEach((arrValue, arrIndex) => {
+        appendSearchParameter(search, arrIndex.toString(), arrValue, name);
+      });
+      return search;
+    }
+    if (typeof value === "object") {
+      Object.keys(value).forEach((key) => {
+        appendSearchParameter(search, key, value[key], name);
+      });
+      return search;
+    }
+    if (typeof value === "boolean") {
+      value = Number(value);
+    }
+    if (value == null) {
+      value = "";
+    }
+    search.set(name, value);
+    return search;
+  }
+  function route(name, params = {}, hash2) {
+    return build(localizeName(name), params, hash2);
+  }
+  function localizeName(name) {
+    if (name.startsWith(APP_FALLBACK_LOCALE)) {
+      return name.replace(`${APP_FALLBACK_LOCALE}.`, "");
+    }
+    if (APP_AVAILABLE_LOCALES.findIndex((lang) => name.startsWith(lang)) >= 0) {
+      return name;
+    }
+    if (!name.startsWith("web.")) {
+      return name;
+    }
+    if (APP_LOCALE !== APP_FALLBACK_LOCALE) {
+      return `${APP_LOCALE}.${name}`;
+    }
+    return name;
+  }
+  function build(name, params, hash2) {
+    const route2 = APP_ROUTES[name];
+    if (!route2) {
+      throw new Error(`Undefined route: ${name}`);
+    }
+    const uri = replaceRouteParameters(route2, params);
+    const search = Object.keys(params).reduce((prev, key) => {
+      if (!route2.params.includes(key)) {
+        prev[key] = vue.toRaw(params[key]);
+      }
+      return prev;
+    }, {});
+    return url(uri, search, hash2, route2.domain);
+  }
+  function replaceRouteParameters(route2, params) {
+    return route2.params.reduce((uri, param) => {
+      let binding = route2.binding[param] || "id";
+      let value = vue.toRaw(params[param]);
+      if (typeof value === "object") {
+        value = value[binding];
+      }
+      if (!value) {
+        throw new Error(`Parameter ${param} is required for uri ${route2.uri}.`);
+      }
+      return uri.replace(new RegExp(`{${param}??}`), value);
+    }, route2.uri);
+  }
+  /**
+  * @vue/shared v3.5.13
+  * (c) 2018-present Yuxi (Evan) You and Vue contributors
+  * @license MIT
+  **/
+  /*! #__NO_SIDE_EFFECTS__ */
+  // @__NO_SIDE_EFFECTS__
+  function makeMap(str) {
+    const map = /* @__PURE__ */ Object.create(null);
+    for (const key of str.split(",")) map[key] = 1;
+    return (val) => val in map;
+  }
+  const EMPTY_OBJ = !!(process.env.NODE_ENV !== "production") ? Object.freeze({}) : {};
+  !!(process.env.NODE_ENV !== "production") ? Object.freeze([]) : [];
+  const NOOP = () => {
+  };
+  const isOn = (key) => key.charCodeAt(0) === 111 && key.charCodeAt(1) === 110 && // uppercase letter
+  (key.charCodeAt(2) > 122 || key.charCodeAt(2) < 97);
+  const isArray = Array.isArray;
+  const isFunction = (val) => typeof val === "function";
+  const isString = (val) => typeof val === "string";
+  const isObject = (val) => val !== null && typeof val === "object";
+  const isPromise = (val) => {
+    return (isObject(val) || isFunction(val)) && isFunction(val.then) && isFunction(val.catch);
+  };
+  const cacheStringFunction = (fn) => {
+    const cache = /* @__PURE__ */ Object.create(null);
+    return (str) => {
+      const hit = cache[str];
+      return hit || (cache[str] = fn(str));
+    };
+  };
+  const hyphenateRE = /\B([A-Z])/g;
+  const hyphenate = cacheStringFunction(
+    (str) => str.replace(hyphenateRE, "-$1").toLowerCase()
+  );
+  let _globalThis;
+  const getGlobalThis = () => {
+    return _globalThis || (_globalThis = typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : {});
+  };
+  function normalizeStyle(value) {
+    if (isArray(value)) {
+      const res = {};
+      for (let i = 0; i < value.length; i++) {
+        const item = value[i];
+        const normalized = isString(item) ? parseStringStyle(item) : normalizeStyle(item);
+        if (normalized) {
+          for (const key in normalized) {
+            res[key] = normalized[key];
+          }
+        }
+      }
+      return res;
+    } else if (isString(value) || isObject(value)) {
+      return value;
+    }
+  }
+  const listDelimiterRE = /;(?![^(]*\))/g;
+  const propertyDelimiterRE = /:([^]+)/;
+  const styleCommentRE = /\/\*[^]*?\*\//g;
+  function parseStringStyle(cssText) {
+    const ret = {};
+    cssText.replace(styleCommentRE, "").split(listDelimiterRE).forEach((item) => {
+      if (item) {
+        const tmp = item.split(propertyDelimiterRE);
+        tmp.length > 1 && (ret[tmp[0].trim()] = tmp[1].trim());
+      }
+    });
+    return ret;
+  }
+  function stringifyStyle(styles) {
+    if (!styles) return "";
+    if (isString(styles)) return styles;
+    let ret = "";
+    for (const key in styles) {
+      const value = styles[key];
+      if (isString(value) || typeof value === "number") {
+        const normalizedKey = key.startsWith(`--`) ? key : hyphenate(key);
+        ret += `${normalizedKey}:${value};`;
+      }
+    }
+    return ret;
+  }
+  function normalizeClass(value) {
+    let res = "";
+    if (isString(value)) {
+      res = value;
+    } else if (isArray(value)) {
+      for (let i = 0; i < value.length; i++) {
+        const normalized = normalizeClass(value[i]);
+        if (normalized) {
+          res += normalized + " ";
+        }
+      }
+    } else if (isObject(value)) {
+      for (const name in value) {
+        if (value[name]) {
+          res += name + " ";
+        }
+      }
+    }
+    return res.trim();
+  }
+  const SVG_TAGS = "svg,animate,animateMotion,animateTransform,circle,clipPath,color-profile,defs,desc,discard,ellipse,feBlend,feColorMatrix,feComponentTransfer,feComposite,feConvolveMatrix,feDiffuseLighting,feDisplacementMap,feDistantLight,feDropShadow,feFlood,feFuncA,feFuncB,feFuncG,feFuncR,feGaussianBlur,feImage,feMerge,feMergeNode,feMorphology,feOffset,fePointLight,feSpecularLighting,feSpotLight,feTile,feTurbulence,filter,foreignObject,g,hatch,hatchpath,image,line,linearGradient,marker,mask,mesh,meshgradient,meshpatch,meshrow,metadata,mpath,path,pattern,polygon,polyline,radialGradient,rect,set,solidcolor,stop,switch,symbol,text,textPath,title,tspan,unknown,use,view";
+  const VOID_TAGS = "area,base,br,col,embed,hr,img,input,link,meta,param,source,track,wbr";
+  const isSVGTag = /* @__PURE__ */ makeMap(SVG_TAGS);
+  const isVoidTag = /* @__PURE__ */ makeMap(VOID_TAGS);
+  const specialBooleanAttrs = `itemscope,allowfullscreen,formnovalidate,ismap,nomodule,novalidate,readonly`;
+  const isBooleanAttr = /* @__PURE__ */ makeMap(
+    specialBooleanAttrs + `,async,autofocus,autoplay,controls,default,defer,disabled,hidden,inert,loop,open,required,reversed,scoped,seamless,checked,muted,multiple,selected`
+  );
+  function includeBooleanAttr(value) {
+    return !!value || value === "";
+  }
+  const unsafeAttrCharRE = /[>/="'\u0009\u000a\u000c\u0020]/;
+  const attrValidationCache = {};
+  function isSSRSafeAttrName(name) {
+    if (attrValidationCache.hasOwnProperty(name)) {
+      return attrValidationCache[name];
+    }
+    const isUnsafe = unsafeAttrCharRE.test(name);
+    if (isUnsafe) {
+      console.error(`unsafe attribute name: ${name}`);
+    }
+    return attrValidationCache[name] = !isUnsafe;
+  }
+  const propsToAttrMap = {
+    acceptCharset: "accept-charset",
+    className: "class",
+    htmlFor: "for",
+    httpEquiv: "http-equiv"
+  };
+  function isRenderableAttrValue(value) {
+    if (value == null) {
+      return false;
+    }
+    const type = typeof value;
+    return type === "string" || type === "number" || type === "boolean";
+  }
+  const escapeRE = /["'&<>]/;
+  function escapeHtml(string) {
+    const str = "" + string;
+    const match = escapeRE.exec(str);
+    if (!match) {
+      return str;
+    }
+    let html = "";
+    let escaped;
+    let index;
+    let lastIndex = 0;
+    for (index = match.index; index < str.length; index++) {
+      switch (str.charCodeAt(index)) {
+        case 34:
+          escaped = "&quot;";
+          break;
+        case 38:
+          escaped = "&amp;";
+          break;
+        case 39:
+          escaped = "&#39;";
+          break;
+        case 60:
+          escaped = "&lt;";
+          break;
+        case 62:
+          escaped = "&gt;";
+          break;
+        default:
+          continue;
+      }
+      if (lastIndex !== index) {
+        html += str.slice(lastIndex, index);
+      }
+      lastIndex = index + 1;
+      html += escaped;
+    }
+    return lastIndex !== index ? html + str.slice(lastIndex, index) : html;
+  }
+  const commentStripRE = /^-?>|<!--|-->|--!>|<!-$/g;
+  function escapeHtmlComment(src) {
+    return src.replace(commentStripRE, "");
+  }
+  /**
+  * @vue/server-renderer v3.5.13
+  * (c) 2018-present Yuxi (Evan) You and Vue contributors
+  * @license MIT
+  **/
+  const shouldIgnoreProp = /* @__PURE__ */ makeMap(
+    `,key,ref,innerHTML,textContent,ref_key,ref_for`
+  );
+  function ssrRenderAttrs(props, tag) {
+    let ret = "";
+    for (const key in props) {
+      if (shouldIgnoreProp(key) || isOn(key) || tag === "textarea" && key === "value") {
+        continue;
+      }
+      const value = props[key];
+      if (key === "class") {
+        ret += ` class="${ssrRenderClass(value)}"`;
+      } else if (key === "style") {
+        ret += ` style="${ssrRenderStyle(value)}"`;
+      } else if (key === "className") {
+        ret += ` class="${String(value)}"`;
+      } else {
+        ret += ssrRenderDynamicAttr(key, value, tag);
+      }
+    }
+    return ret;
+  }
+  function ssrRenderDynamicAttr(key, value, tag) {
+    if (!isRenderableAttrValue(value)) {
+      return ``;
+    }
+    const attrKey = tag && (tag.indexOf("-") > 0 || isSVGTag(tag)) ? key : propsToAttrMap[key] || key.toLowerCase();
+    if (isBooleanAttr(attrKey)) {
+      return includeBooleanAttr(value) ? ` ${attrKey}` : ``;
+    } else if (isSSRSafeAttrName(attrKey)) {
+      return value === "" ? ` ${attrKey}` : ` ${attrKey}="${escapeHtml(value)}"`;
+    } else {
+      console.warn(
+        `[@vue/server-renderer] Skipped rendering unsafe attribute name: ${attrKey}`
+      );
+      return ``;
+    }
+  }
+  function ssrRenderClass(raw) {
+    return escapeHtml(normalizeClass(raw));
+  }
+  function ssrRenderStyle(raw) {
+    if (!raw) {
+      return "";
+    }
+    if (isString(raw)) {
+      return escapeHtml(raw);
+    }
+    const styles = normalizeStyle(raw);
+    return escapeHtml(stringifyStyle(styles));
+  }
+  const { ensureValidVNode } = vue.ssrUtils;
+  function ssrRenderTeleport(parentPush, contentRenderFn, target, disabled, parentComponent) {
+    parentPush("<!--teleport start-->");
+    const context = parentComponent.appContext.provides[vue.ssrContextKey];
+    const teleportBuffers = context.__teleportBuffers || (context.__teleportBuffers = {});
+    const targetBuffer = teleportBuffers[target] || (teleportBuffers[target] = []);
+    const bufferIndex = targetBuffer.length;
+    let teleportContent;
+    if (disabled) {
+      contentRenderFn(parentPush);
+      teleportContent = `<!--teleport start anchor--><!--teleport anchor-->`;
+    } else {
+      const { getBuffer, push } = createBuffer();
+      push(`<!--teleport start anchor-->`);
+      contentRenderFn(push);
+      push(`<!--teleport anchor-->`);
+      teleportContent = getBuffer();
+    }
+    targetBuffer.splice(bufferIndex, 0, teleportContent);
+    parentPush("<!--teleport end-->");
+  }
+  Symbol(
+    !!(process.env.NODE_ENV !== "production") ? "Object iterate" : ""
+  );
+  Symbol(
+    !!(process.env.NODE_ENV !== "production") ? "Map keys iterate" : ""
+  );
+  Symbol(
+    !!(process.env.NODE_ENV !== "production") ? "Array iterate" : ""
+  );
+  function toRaw(observed) {
+    const raw = observed && observed["__v_raw"];
+    return raw ? toRaw(raw) : observed;
+  }
+  function isRef(r) {
+    return r ? r["__v_isRef"] === true : false;
+  }
+  const stack = [];
+  function pushWarningContext$1(vnode) {
+    stack.push(vnode);
+  }
+  function popWarningContext$1() {
+    stack.pop();
+  }
+  let isWarning = false;
+  function warn$1(msg, ...args) {
+    if (isWarning) return;
+    isWarning = true;
+    const instance = stack.length ? stack[stack.length - 1].component : null;
+    const appWarnHandler = instance && instance.appContext.config.warnHandler;
+    const trace = getComponentTrace();
+    if (appWarnHandler) {
+      callWithErrorHandling(
+        appWarnHandler,
+        instance,
+        11,
+        [
+          // eslint-disable-next-line no-restricted-syntax
+          msg + args.map((a) => {
+            var _a, _b;
+            return (_b = (_a = a.toString) == null ? void 0 : _a.call(a)) != null ? _b : JSON.stringify(a);
+          }).join(""),
+          instance && instance.proxy,
+          trace.map(
+            ({ vnode }) => `at <${formatComponentName(instance, vnode.type)}>`
+          ).join("\n"),
+          trace
+        ]
+      );
+    } else {
+      const warnArgs = [`[Vue warn]: ${msg}`, ...args];
+      if (trace.length && // avoid spamming console during tests
+      true) {
+        warnArgs.push(`
+`, ...formatTrace(trace));
+      }
+      console.warn(...warnArgs);
+    }
+    isWarning = false;
+  }
+  function getComponentTrace() {
+    let currentVNode = stack[stack.length - 1];
+    if (!currentVNode) {
+      return [];
+    }
+    const normalizedStack = [];
+    while (currentVNode) {
+      const last = normalizedStack[0];
+      if (last && last.vnode === currentVNode) {
+        last.recurseCount++;
+      } else {
+        normalizedStack.push({
+          vnode: currentVNode,
+          recurseCount: 0
+        });
+      }
+      const parentInstance = currentVNode.component && currentVNode.component.parent;
+      currentVNode = parentInstance && parentInstance.vnode;
+    }
+    return normalizedStack;
+  }
+  function formatTrace(trace) {
+    const logs = [];
+    trace.forEach((entry, i) => {
+      logs.push(...i === 0 ? [] : [`
+`], ...formatTraceEntry(entry));
+    });
+    return logs;
+  }
+  function formatTraceEntry({ vnode, recurseCount }) {
+    const postfix = recurseCount > 0 ? `... (${recurseCount} recursive calls)` : ``;
+    const isRoot = vnode.component ? vnode.component.parent == null : false;
+    const open = ` at <${formatComponentName(
+      vnode.component,
+      vnode.type,
+      isRoot
+    )}`;
+    const close = `>` + postfix;
+    return vnode.props ? [open, ...formatProps(vnode.props), close] : [open + close];
+  }
+  function formatProps(props) {
+    const res = [];
+    const keys = Object.keys(props);
+    keys.slice(0, 3).forEach((key) => {
+      res.push(...formatProp(key, props[key]));
+    });
+    if (keys.length > 3) {
+      res.push(` ...`);
+    }
+    return res;
+  }
+  function formatProp(key, value, raw) {
+    if (isString(value)) {
+      value = JSON.stringify(value);
+      return raw ? value : [`${key}=${value}`];
+    } else if (typeof value === "number" || typeof value === "boolean" || value == null) {
+      return raw ? value : [`${key}=${value}`];
+    } else if (isRef(value)) {
+      value = formatProp(key, toRaw(value.value), true);
+      return raw ? value : [`${key}=Ref<`, value, `>`];
+    } else if (isFunction(value)) {
+      return [`${key}=fn${value.name ? `<${value.name}>` : ``}`];
+    } else {
+      value = toRaw(value);
+      return raw ? value : [`${key}=`, value];
+    }
+  }
+  const ErrorTypeStrings = {
+    ["sp"]: "serverPrefetch hook",
+    ["bc"]: "beforeCreate hook",
+    ["c"]: "created hook",
+    ["bm"]: "beforeMount hook",
+    ["m"]: "mounted hook",
+    ["bu"]: "beforeUpdate hook",
+    ["u"]: "updated",
+    ["bum"]: "beforeUnmount hook",
+    ["um"]: "unmounted hook",
+    ["a"]: "activated hook",
+    ["da"]: "deactivated hook",
+    ["ec"]: "errorCaptured hook",
+    ["rtc"]: "renderTracked hook",
+    ["rtg"]: "renderTriggered hook",
+    [0]: "setup function",
+    [1]: "render function",
+    [2]: "watcher getter",
+    [3]: "watcher callback",
+    [4]: "watcher cleanup function",
+    [5]: "native event handler",
+    [6]: "component event handler",
+    [7]: "vnode hook",
+    [8]: "directive hook",
+    [9]: "transition hook",
+    [10]: "app errorHandler",
+    [11]: "app warnHandler",
+    [12]: "ref function",
+    [13]: "async component loader",
+    [14]: "scheduler flush",
+    [15]: "component update",
+    [16]: "app unmount cleanup function"
+  };
+  function callWithErrorHandling(fn, instance, type, args) {
+    try {
+      return args ? fn(...args) : fn();
+    } catch (err) {
+      handleError(err, instance, type);
+    }
+  }
+  function handleError(err, instance, type, throwInDev = true) {
+    const contextVNode = instance ? instance.vnode : null;
+    const { errorHandler, throwUnhandledErrorInProduction } = instance && instance.appContext.config || EMPTY_OBJ;
+    if (instance) {
+      let cur = instance.parent;
+      const exposedInstance = instance.proxy;
+      const errorInfo = !!(process.env.NODE_ENV !== "production") ? ErrorTypeStrings[type] : `https://vuejs.org/error-reference/#runtime-${type}`;
+      while (cur) {
+        const errorCapturedHooks = cur.ec;
+        if (errorCapturedHooks) {
+          for (let i = 0; i < errorCapturedHooks.length; i++) {
+            if (errorCapturedHooks[i](err, exposedInstance, errorInfo) === false) {
+              return;
+            }
+          }
+        }
+        cur = cur.parent;
+      }
+      if (errorHandler) {
+        callWithErrorHandling(errorHandler, null, 10, [
+          err,
+          exposedInstance,
+          errorInfo
+        ]);
+        return;
+      }
+    }
+    logError(err, type, contextVNode, throwInDev, throwUnhandledErrorInProduction);
+  }
+  function logError(err, type, contextVNode, throwInDev = true, throwInProd = false) {
+    if (!!(process.env.NODE_ENV !== "production")) {
+      const info = ErrorTypeStrings[type];
+      if (contextVNode) {
+        pushWarningContext$1(contextVNode);
+      }
+      warn$1(`Unhandled error${info ? ` during execution of ${info}` : ``}`);
+      if (contextVNode) {
+        popWarningContext$1();
+      }
+      if (throwInDev) {
+        throw err;
+      } else {
+        console.error(err);
+      }
+    } else if (throwInProd) {
+      throw err;
+    } else {
+      console.error(err);
+    }
+  }
+  let devtools;
+  let buffer = [];
+  function setDevtoolsHook(hook, target) {
+    var _a, _b;
+    devtools = hook;
+    if (devtools) {
+      devtools.enabled = true;
+      buffer.forEach(({ event, args }) => devtools.emit(event, ...args));
+      buffer = [];
+    } else if (
+      // handle late devtools injection - only do this if we are in an actual
+      // browser environment to avoid the timer handle stalling test runner exit
+      // (#4815)
+      typeof window !== "undefined" && // some envs mock window but not fully
+      window.HTMLElement && // also exclude jsdom
+      // eslint-disable-next-line no-restricted-syntax
+      !((_b = (_a = window.navigator) == null ? void 0 : _a.userAgent) == null ? void 0 : _b.includes("jsdom"))
+    ) {
+      const replay = target.__VUE_DEVTOOLS_HOOK_REPLAY__ = target.__VUE_DEVTOOLS_HOOK_REPLAY__ || [];
+      replay.push((newHook) => {
+        setDevtoolsHook(newHook, target);
+      });
+      setTimeout(() => {
+        if (!devtools) {
+          target.__VUE_DEVTOOLS_HOOK_REPLAY__ = null;
+          buffer = [];
+        }
+      }, 3e3);
+    } else {
+      buffer = [];
+    }
+  }
+  {
+    const g = getGlobalThis();
+    const registerGlobalSetter = (key, setter) => {
+      let setters;
+      if (!(setters = g[key])) setters = g[key] = [];
+      setters.push(setter);
+      return (v) => {
+        if (setters.length > 1) setters.forEach((set) => set(v));
+        else setters[0](v);
+      };
+    };
+    registerGlobalSetter(
+      `__VUE_INSTANCE_SETTERS__`,
+      (v) => v
+    );
+    registerGlobalSetter(
+      `__VUE_SSR_SETTERS__`,
+      (v) => v
+    );
+  }
+  !!(process.env.NODE_ENV !== "production") ? {} : {};
+  const classifyRE = /(?:^|[-_])(\w)/g;
+  const classify = (str) => str.replace(classifyRE, (c) => c.toUpperCase()).replace(/[-_]/g, "");
+  function getComponentName(Component, includeInferred = true) {
+    return isFunction(Component) ? Component.displayName || Component.name : Component.name || includeInferred && Component.__name;
+  }
+  function formatComponentName(instance, Component, isRoot = false) {
+    let name = getComponentName(Component);
+    if (!name && Component.__file) {
+      const match = Component.__file.match(/([^/\\]+)\.\w+$/);
+      if (match) {
+        name = match[1];
+      }
+    }
+    if (!name && instance && instance.parent) {
+      const inferFromRegistry = (registry) => {
+        for (const key in registry) {
+          if (registry[key] === Component) {
+            return key;
+          }
+        }
+      };
+      name = inferFromRegistry(
+        instance.components || instance.parent.type.components
+      ) || inferFromRegistry(instance.appContext.components);
+    }
+    return name ? classify(name) : isRoot ? `App` : `Anonymous`;
+  }
+  !!(process.env.NODE_ENV !== "production") ? warn$1 : NOOP;
+  !!(process.env.NODE_ENV !== "production") || true ? devtools : void 0;
+  !!(process.env.NODE_ENV !== "production") || true ? setDevtoolsHook : NOOP;
+  function ssrCompile(template, instance) {
+    {
+      throw new Error(
+        `On-the-fly template compilation is not supported in the ESM build of @vue/server-renderer. All templates must be pre-compiled into render functions.`
+      );
+    }
+  }
+  const {
+    createComponentInstance,
+    setCurrentRenderingInstance,
+    setupComponent,
+    renderComponentRoot,
+    normalizeVNode,
+    pushWarningContext,
+    popWarningContext
+  } = vue.ssrUtils;
+  function createBuffer() {
+    let appendable = false;
+    const buffer2 = [];
+    return {
+      getBuffer() {
+        return buffer2;
+      },
+      push(item) {
+        const isStringItem = isString(item);
+        if (appendable && isStringItem) {
+          buffer2[buffer2.length - 1] += item;
+          return;
+        }
+        buffer2.push(item);
+        appendable = isStringItem;
+        if (isPromise(item) || isArray(item) && item.hasAsync) {
+          buffer2.hasAsync = true;
+        }
+      }
+    };
+  }
+  function renderComponentVNode(vnode, parentComponent = null, slotScopeId) {
+    const instance = vnode.component = createComponentInstance(
+      vnode,
+      parentComponent,
+      null
+    );
+    if (!!(process.env.NODE_ENV !== "production")) pushWarningContext(vnode);
+    const res = setupComponent(
+      instance,
+      true
+      /* isSSR */
+    );
+    if (!!(process.env.NODE_ENV !== "production")) popWarningContext();
+    const hasAsyncSetup = isPromise(res);
+    let prefetches = instance.sp;
+    if (hasAsyncSetup || prefetches) {
+      const p = Promise.resolve(res).then(() => {
+        if (hasAsyncSetup) prefetches = instance.sp;
+        if (prefetches) {
+          return Promise.all(
+            prefetches.map((prefetch) => prefetch.call(instance.proxy))
+          );
+        }
+      }).catch(NOOP);
+      return p.then(() => renderComponentSubTree(instance, slotScopeId));
+    } else {
+      return renderComponentSubTree(instance, slotScopeId);
+    }
+  }
+  function renderComponentSubTree(instance, slotScopeId) {
+    if (!!(process.env.NODE_ENV !== "production")) pushWarningContext(instance.vnode);
+    const comp = instance.type;
+    const { getBuffer, push } = createBuffer();
+    if (isFunction(comp)) {
+      let root = renderComponentRoot(instance);
+      if (!comp.props) {
+        for (const key in instance.attrs) {
+          if (key.startsWith(`data-v-`)) {
+            (root.props || (root.props = {}))[key] = ``;
+          }
+        }
+      }
+      renderVNode(push, instance.subTree = root, instance, slotScopeId);
+    } else {
+      if ((!instance.render || instance.render === NOOP) && !instance.ssrRender && !comp.ssrRender && isString(comp.template)) {
+        comp.ssrRender = ssrCompile(comp.template);
+      }
+      const ssrRender = instance.ssrRender || comp.ssrRender;
+      if (ssrRender) {
+        let attrs = instance.inheritAttrs !== false ? instance.attrs : void 0;
+        let hasCloned = false;
+        let cur = instance;
+        while (true) {
+          const scopeId = cur.vnode.scopeId;
+          if (scopeId) {
+            if (!hasCloned) {
+              attrs = { ...attrs };
+              hasCloned = true;
+            }
+            attrs[scopeId] = "";
+          }
+          const parent = cur.parent;
+          if (parent && parent.subTree && parent.subTree === cur.vnode) {
+            cur = parent;
+          } else {
+            break;
+          }
+        }
+        if (slotScopeId) {
+          if (!hasCloned) attrs = { ...attrs };
+          const slotScopeIdList = slotScopeId.trim().split(" ");
+          for (let i = 0; i < slotScopeIdList.length; i++) {
+            attrs[slotScopeIdList[i]] = "";
+          }
+        }
+        const prev = setCurrentRenderingInstance(instance);
+        try {
+          ssrRender(
+            instance.proxy,
+            push,
+            instance,
+            attrs,
+            // compiler-optimized bindings
+            instance.props,
+            instance.setupState,
+            instance.data,
+            instance.ctx
+          );
+        } finally {
+          setCurrentRenderingInstance(prev);
+        }
+      } else if (instance.render && instance.render !== NOOP) {
+        renderVNode(
+          push,
+          instance.subTree = renderComponentRoot(instance),
+          instance,
+          slotScopeId
+        );
+      } else {
+        const componentName = comp.name || comp.__file || `<Anonymous>`;
+        vue.warn(`Component ${componentName} is missing template or render function.`);
+        push(`<!---->`);
+      }
+    }
+    if (!!(process.env.NODE_ENV !== "production")) popWarningContext();
+    return getBuffer();
+  }
+  function renderVNode(push, vnode, parentComponent, slotScopeId) {
+    const { type, shapeFlag, children, dirs, props } = vnode;
+    if (dirs) {
+      vnode.props = applySSRDirectives(vnode, props, dirs);
+    }
+    switch (type) {
+      case vue.Text:
+        push(escapeHtml(children));
+        break;
+      case vue.Comment:
+        push(
+          children ? `<!--${escapeHtmlComment(children)}-->` : `<!---->`
+        );
+        break;
+      case vue.Static:
+        push(children);
+        break;
+      case vue.Fragment:
+        if (vnode.slotScopeIds) {
+          slotScopeId = (slotScopeId ? slotScopeId + " " : "") + vnode.slotScopeIds.join(" ");
+        }
+        push(`<!--[-->`);
+        renderVNodeChildren(
+          push,
+          children,
+          parentComponent,
+          slotScopeId
+        );
+        push(`<!--]-->`);
+        break;
+      default:
+        if (shapeFlag & 1) {
+          renderElementVNode(push, vnode, parentComponent, slotScopeId);
+        } else if (shapeFlag & 6) {
+          push(renderComponentVNode(vnode, parentComponent, slotScopeId));
+        } else if (shapeFlag & 64) {
+          renderTeleportVNode(push, vnode, parentComponent, slotScopeId);
+        } else if (shapeFlag & 128) {
+          renderVNode(push, vnode.ssContent, parentComponent, slotScopeId);
+        } else {
+          vue.warn(
+            "[@vue/server-renderer] Invalid VNode type:",
+            type,
+            `(${typeof type})`
+          );
+        }
+    }
+  }
+  function renderVNodeChildren(push, children, parentComponent, slotScopeId) {
+    for (let i = 0; i < children.length; i++) {
+      renderVNode(push, normalizeVNode(children[i]), parentComponent, slotScopeId);
+    }
+  }
+  function renderElementVNode(push, vnode, parentComponent, slotScopeId) {
+    const tag = vnode.type;
+    let { props, children, shapeFlag, scopeId } = vnode;
+    let openTag = `<${tag}`;
+    if (props) {
+      openTag += ssrRenderAttrs(props, tag);
+    }
+    if (scopeId) {
+      openTag += ` ${scopeId}`;
+    }
+    let curParent = parentComponent;
+    let curVnode = vnode;
+    while (curParent && curVnode === curParent.subTree) {
+      curVnode = curParent.vnode;
+      if (curVnode.scopeId) {
+        openTag += ` ${curVnode.scopeId}`;
+      }
+      curParent = curParent.parent;
+    }
+    if (slotScopeId) {
+      openTag += ` ${slotScopeId}`;
+    }
+    push(openTag + `>`);
+    if (!isVoidTag(tag)) {
+      let hasChildrenOverride = false;
+      if (props) {
+        if (props.innerHTML) {
+          hasChildrenOverride = true;
+          push(props.innerHTML);
+        } else if (props.textContent) {
+          hasChildrenOverride = true;
+          push(escapeHtml(props.textContent));
+        } else if (tag === "textarea" && props.value) {
+          hasChildrenOverride = true;
+          push(escapeHtml(props.value));
+        }
+      }
+      if (!hasChildrenOverride) {
+        if (shapeFlag & 8) {
+          push(escapeHtml(children));
+        } else if (shapeFlag & 16) {
+          renderVNodeChildren(
+            push,
+            children,
+            parentComponent,
+            slotScopeId
+          );
+        }
+      }
+      push(`</${tag}>`);
+    }
+  }
+  function applySSRDirectives(vnode, rawProps, dirs) {
+    const toMerge = [];
+    for (let i = 0; i < dirs.length; i++) {
+      const binding = dirs[i];
+      const {
+        dir: { getSSRProps }
+      } = binding;
+      if (getSSRProps) {
+        const props = getSSRProps(binding, vnode);
+        if (props) toMerge.push(props);
+      }
+    }
+    return vue.mergeProps(rawProps || {}, ...toMerge);
+  }
+  function renderTeleportVNode(push, vnode, parentComponent, slotScopeId) {
+    const target = vnode.props && vnode.props.to;
+    const disabled = vnode.props && vnode.props.disabled;
+    if (!target) {
+      if (!disabled) {
+        vue.warn(`[@vue/server-renderer] Teleport is missing target prop.`);
+      }
+      return [];
+    }
+    if (!isString(target)) {
+      vue.warn(
+        `[@vue/server-renderer] Teleport target must be a query selector string.`
+      );
+      return [];
+    }
+    ssrRenderTeleport(
+      push,
+      (push2) => {
+        renderVNodeChildren(
+          push2,
+          vnode.children,
+          parentComponent,
+          slotScopeId
+        );
+      },
+      target,
+      disabled || disabled === "",
+      parentComponent
+    );
+  }
+  const { isVNode: isVNode$1 } = vue.ssrUtils;
+  function nestedUnrollBuffer(buffer2, parentRet, startIndex) {
+    if (!buffer2.hasAsync) {
+      return parentRet + unrollBufferSync$1(buffer2);
+    }
+    let ret = parentRet;
+    for (let i = startIndex; i < buffer2.length; i += 1) {
+      const item = buffer2[i];
+      if (isString(item)) {
+        ret += item;
+        continue;
+      }
+      if (isPromise(item)) {
+        return item.then((nestedItem) => {
+          buffer2[i] = nestedItem;
+          return nestedUnrollBuffer(buffer2, ret, i);
+        });
+      }
+      const result = nestedUnrollBuffer(item, ret, 0);
+      if (isPromise(result)) {
+        return result.then((nestedItem) => {
+          buffer2[i] = nestedItem;
+          return nestedUnrollBuffer(buffer2, "", i);
+        });
+      }
+      ret = result;
+    }
+    return ret;
+  }
+  function unrollBuffer$1(buffer2) {
+    return nestedUnrollBuffer(buffer2, "", 0);
+  }
+  function unrollBufferSync$1(buffer2) {
+    let ret = "";
+    for (let i = 0; i < buffer2.length; i++) {
+      let item = buffer2[i];
+      if (isString(item)) {
+        ret += item;
+      } else {
+        ret += unrollBufferSync$1(item);
+      }
+    }
+    return ret;
+  }
+  async function renderToString(input, context = {}) {
+    if (isVNode$1(input)) {
+      return renderToString(vue.createApp({ render: () => input }), context);
+    }
+    const vnode = vue.createVNode(input._component, input._props);
+    vnode.appContext = input._context;
+    input.provide(vue.ssrContextKey, context);
+    const buffer2 = await renderComponentVNode(vnode);
+    const result = await unrollBuffer$1(buffer2);
+    await resolveTeleports(context);
+    if (context.__watcherHandles) {
+      for (const unwatch of context.__watcherHandles) {
+        unwatch();
+      }
+    }
+    return result;
+  }
+  async function resolveTeleports(context) {
+    if (context.__teleportBuffers) {
+      context.teleports = context.teleports || {};
+      for (const key in context.__teleportBuffers) {
+        context.teleports[key] = await unrollBuffer$1(
+          await Promise.all([context.__teleportBuffers[key]])
+        );
+      }
+    }
+  }
+  const { isVNode } = vue.ssrUtils;
+  vue.initDirectivesForSSR();
+  const RouterComponent = vue.defineComponent({
+    inheritAttrs: false,
+    name: "Router",
+    props: {
+      resolver: {
+        type: Function,
+        required: true
+      },
+      state: {
+        type: Object,
+        required: true
+      }
+    },
+    setup(props) {
+      const abilities = vue.ref(props.state.abilities);
+      const authenticated = vue.ref(props.state.authenticated);
+      const location = vue.ref(props.state.location);
+      const stack2 = vue.ref(props.state.stack);
+      const signature = vue.ref(props.state.signature);
+      const toasts = vue.ref(props.state.toasts);
+      function buildState() {
+        return {
+          location: vue.toRaw(vue.toValue(location)),
+          signature: vue.toRaw(vue.toValue(signature)),
+          stack: vue.toRaw(vue.toValue(stack2))
+        };
+      }
+      async function update(fresh) {
+        abilities.value = fresh.abilities;
+        authenticated.value = fresh.authenticated;
+        if (fresh.location) {
+          location.value = fresh.location;
+        }
+        if (fresh.signature) {
+          signature.value = fresh.signature;
+        }
+        if (fresh.stack) {
+          stack2.value = updateStack(vue.toRaw(vue.toValue(stack2.value)), fresh.stack);
+        }
+        if (fresh.toasts && fresh.toasts.length > 0) {
+          toasts.value = [...toasts.value, ...fresh.toasts];
+        }
+        return await vue.nextTick(() => buildState());
+      }
+      vue.provide(StateAbilities, abilities);
+      vue.provide(StateAuthenticated, authenticated);
+      vue.provide(StateLocationInjectionKey, location);
+      vue.provide(StateStackSignatureInjectionKey, signature);
+      vue.provide(StateManagerInjectionKey, update);
+      vue.provide(StackedViewResolverInjectionKey, props.resolver);
+      vue.provide(StackedViewDepthInjectionKey, vue.computed(() => 0));
+      vue.provide(StackedViewInjectionKey, stack2);
+      vue.provide(ToastRegistryInjectionKey, toasts);
+      vue.provide(StateHistoryInjectionKey, {
+        historyPushState(state) {
+          window.history.pushState(state, "", state.location);
+        },
+        historyReplaceState(state) {
+          window.history.replaceState(state, "", state.location);
+        }
+      });
+      function handlePopStateEvent(event) {
+        if (event.state) {
+          location.value = event.state.location;
+          stack2.value = event.state.stack;
+          signature.value = event.state.signature;
+        } else {
+          window.history.replaceState(buildState(), "", location.value);
+          window.scroll(0, 0);
+        }
+      }
+      vue.onMounted(() => {
+        window.history.replaceState(buildState(), "", location.value);
+        window.addEventListener("popstate", handlePopStateEvent);
+      });
+      vue.onBeforeUnmount(() => {
+        window.removeEventListener("popstate", handlePopStateEvent);
+      });
+      return () => {
+        return vue.h(RouterViewComponent);
+      };
+    }
+  });
+  async function createFoundationController({ initial, resolver, setup }) {
+    const isServer = typeof window === "undefined";
+    const state = initial || readInitialState();
+    const app = setup({ router: RouterComponent, props: { resolver, state } });
+    if (isServer) {
+      return await renderToString(app);
+    }
+    return "";
+  }
+  function readInitialState() {
+    let element = document.getElementById("ias");
+    if (!element || !element.textContent) {
+      throw new Error("Cannot find initial script element with MVC state.");
+    }
+    return JSON.parse(element.textContent);
+  }
+  const confirmation = vue.ref();
+  async function createConfirmation(config, callback) {
+    return new Promise((resolve, reject) => {
+      function confirm() {
+        confirmation.value.processing = true;
+        vue.nextTick(() => {
+          Promise.resolve(callback()).then((value) => {
+            confirmation.value = void 0;
+            vue.nextTick(() => resolve(value));
+          }).catch((error) => {
+            confirmation.value = void 0;
+            vue.nextTick(() => reject(error));
+          });
+        });
+      }
+      function cancel() {
+        confirmation.value = void 0;
+        vue.nextTick(() => reject());
+      }
+      confirmation.value = { ...config, processing: false, confirm, cancel };
+    });
+  }
+  async function factory(configOrCallback, callback) {
+    if (callback !== void 0) {
+      return createConfirmation(configOrCallback, callback);
+    } else {
+      return createConfirmation({}, configOrCallback);
+    }
+  }
+  function useCurrentConfirmation() {
+    return confirmation;
+  }
+  function useConfirmation() {
+    return factory;
+  }
+  function useFormApi() {
+    return vue.ref();
+  }
+  function useFormContext() {
+    return vue.inject(FormContextInjectionKey, null);
+  }
+  function usePersistentFormContext() {
+    let context = vue.inject(FormContextInjectionKey);
+    if (!context) {
+      throw new Error("Accessing form outside of context.");
+    }
+    return context;
+  }
+  function useViewLocation() {
+    const view = vue.inject(StackedViewLocationInjectionKey);
+    if (!view) {
+      throw new Error("You're trying to get stacked view parent out of Router context!");
+    }
+    return view;
+  }
+  function useViewParent() {
+    const view = vue.inject(StackedViewParentInjectionKey);
+    if (!view) {
+      throw new Error("You're trying to get parent view out of Router context!");
+    }
+    return view;
+  }
+  function useViewParentLocation() {
+    const parent = useViewParent();
+    return vue.computed(() => {
+      if (parent && parent.value && parent.value.location) {
+        return url(parent.value.location, parent.value.query);
+      }
+    });
+  }
+  function useViewQuery() {
+    const view = vue.inject(StackedViewQueryInjectionKey);
+    if (!view) {
+      throw new Error("You're trying to get stacked view query params out of Router context!");
+    }
+    return view;
+  }
+  function isCountryImplicit(country) {
+    if (country) {
+      return APP_COUNTRIES_IMPLICITLY_ADDRESSES.includes(country);
+    }
+    return false;
+  }
+  function isCountryExplicit(country) {
+    return !isCountryImplicit(country);
+  }
+  function blank(value) {
+    if (value === void 0 || value === null) {
+      return true;
+    }
+    if (typeof value === "number" || typeof value === "boolean") {
+      return false;
+    }
+    if (typeof value === "string") {
+      return value.trim() === "";
+    }
+    if (value instanceof Array) {
+      return value.length > 0;
+    }
+    if (value instanceof Set || value instanceof Map) {
+      return value.size > 0;
+    }
+    return !value;
+  }
+  function filled(value) {
+    return !blank(value);
+  }
+  function hash(length = 16) {
+    return Array.from(window.crypto.getRandomValues(new Uint8Array(Math.ceil(length / 2))), (b) => ("0" + (b & 255).toString(16)).slice(-2)).join("");
+  }
+  function nestedSetRoot(data) {
+    return data.filter((node) => node.parentId === null);
+  }
+  function nestedSetChildren(data, item) {
+    return data.filter((node) => node.left > item.left && node.right < item.right && node.parentId === item.id);
+  }
+  function nestedSetAncestors(data, item) {
+    return data.filter((node) => node.left < item.left && node.right > item.right);
+  }
+  function nestedSetDescendants(data, item) {
+    return data.filter((node) => node.left > item.left && node.right < item.right);
+  }
+  var ToastKind = /* @__PURE__ */ ((ToastKind2) => {
+    ToastKind2["SUCCESS"] = "success";
+    ToastKind2["DANGER"] = "danger";
+    ToastKind2["INFO"] = "info";
+    ToastKind2["WARNING"] = "warning";
+    return ToastKind2;
+  })(ToastKind || {});
+  function createOtherSoftwareFoundation() {
+    return {
+      install(app) {
+        app.component("RouterNested", RouterNestedComponent);
+        app.component("RouterView", RouterViewComponent);
+        app.component("RouterLink", RouterLinkComponent);
+        app.component("FormController", FormControllerComponent);
+        app.component("ToastController", ToastControllerComponent);
+        app.component("PasswordConfirmationController", PasswordConfirmationControllerComponent);
+        app.component("Toast", ToastComponent);
+        app.config.globalProperties.$t = trans;
+        app.config.globalProperties.$tc = transChoice;
+        app.config.globalProperties.$route = route;
+      }
+    };
+  }
+  exports2.CompleteResponse = CompleteResponse;
+  exports2.ErrorModal = ErrorModal;
+  exports2.EventBus = EventBus;
+  exports2.FormContextInjectionKey = FormContextInjectionKey;
+  exports2.FormControllerComponent = FormControllerComponent;
+  exports2.HttpClientForceScrollPreservation = HttpClientForceScrollPreservation;
+  exports2.Request = Request;
+  exports2.Response = Response;
+  exports2.RouterComponent = RouterComponent;
+  exports2.RouterLinkComponent = RouterLinkComponent;
+  exports2.RouterNestedComponent = RouterNestedComponent;
+  exports2.RouterViewComponent = RouterViewComponent;
+  exports2.StackedViewDepthInjectionKey = StackedViewDepthInjectionKey;
+  exports2.StackedViewInjectionKey = StackedViewInjectionKey;
+  exports2.StackedViewLocationInjectionKey = StackedViewLocationInjectionKey;
+  exports2.StackedViewParentInjectionKey = StackedViewParentInjectionKey;
+  exports2.StackedViewQueryInjectionKey = StackedViewQueryInjectionKey;
+  exports2.StackedViewResolverInjectionKey = StackedViewResolverInjectionKey;
+  exports2.StateAbilities = StateAbilities;
+  exports2.StateAuthenticated = StateAuthenticated;
+  exports2.StateHistoryInjectionKey = StateHistoryInjectionKey;
+  exports2.StateLocationInjectionKey = StateLocationInjectionKey;
+  exports2.StateManagerInjectionKey = StateManagerInjectionKey;
+  exports2.StateStackSignatureInjectionKey = StateStackSignatureInjectionKey;
+  exports2.ToastComponent = ToastComponent;
+  exports2.ToastControllerComponent = ToastControllerComponent;
+  exports2.ToastKind = ToastKind;
+  exports2.ToastRegistryInjectionKey = ToastRegistryInjectionKey;
+  exports2.blank = blank;
+  exports2.createFormContext = createFormContext;
+  exports2.createFoundationController = createFoundationController;
+  exports2.createOtherSoftwareFoundation = createOtherSoftwareFoundation;
+  exports2.filled = filled;
+  exports2.getModelFromContext = getModelFromContext;
+  exports2.hash = hash;
+  exports2.isCountryExplicit = isCountryExplicit;
+  exports2.isCountryImplicit = isCountryImplicit;
+  exports2.nestedSetAncestors = nestedSetAncestors;
+  exports2.nestedSetChildren = nestedSetChildren;
+  exports2.nestedSetDescendants = nestedSetDescendants;
+  exports2.nestedSetRoot = nestedSetRoot;
+  exports2.route = route;
+  exports2.setModelWithContext = setModelWithContext;
+  exports2.trans = trans;
+  exports2.transChoice = transChoice;
+  exports2.updateStack = updateStack;
+  exports2.url = url;
+  exports2.useAbilities = useAbilities;
+  exports2.useAuthenticated = useAuthenticated;
+  exports2.useConfirmation = useConfirmation;
+  exports2.useCurrentConfirmation = useCurrentConfirmation;
+  exports2.useFormApi = useFormApi;
+  exports2.useFormContext = useFormContext;
+  exports2.useHttpClient = useHttpClient;
+  exports2.useLocation = useLocation;
+  exports2.usePersistentFormContext = usePersistentFormContext;
+  exports2.useStackSignature = useStackSignature;
+  exports2.useStateHistory = useStateHistory;
+  exports2.useStateManager = useStateManager;
+  exports2.useToasts = useToasts;
+  exports2.useViewDepth = useViewDepth;
+  exports2.useViewLocation = useViewLocation;
+  exports2.useViewParent = useViewParent;
+  exports2.useViewParentLocation = useViewParentLocation;
+  exports2.useViewQuery = useViewQuery;
+  exports2.useViewResolver = useViewResolver;
+  exports2.useViewStack = useViewStack;
+  exports2.wrap = wrap;
+  Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
+});
 //# sourceMappingURL=other-software-foundation.umd.cjs.map

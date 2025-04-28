@@ -2,11 +2,11 @@ import type { App, Plugin } from 'vue';
 import { FormControllerComponent } from './Components/Controllers/FormControllerComponent';
 import { RouterViewComponent } from './Components/Routing/RouterViewComponent';
 import { RouterLinkComponent } from './Components/Routing/RouterLinkComponent';
+import { RouterNestedComponent } from './Components/Routing/RouterNestedComponent';
 import { ToastControllerComponent, ToastComponent } from './Components/Controllers/ToastControllerComponent';
 import { PasswordConfirmationControllerComponent } from './Components/Controllers/PasswordConfirmationControllerComponent';
 import { trans, transChoice } from './Support/Translator';
 import { route } from './Support/Route';
-import { RouterNestedComponent } from './Components/Routing/RouterNestedComponent.ts';
 
 export * from './Application/Factory';
 
@@ -16,6 +16,7 @@ export * from './Components/Controllers/ToastControllerComponent';
 export * from './Components/Routing/RouterComponent';
 export * from './Components/Routing/RouterLinkComponent';
 export * from './Components/Routing/RouterViewComponent';
+export * from './Components/Routing/RouterNestedComponent';
 
 export * from './Composables/UseConfirmation';
 export * from './Composables/UseFormApi';

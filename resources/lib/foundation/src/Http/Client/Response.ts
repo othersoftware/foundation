@@ -41,6 +41,7 @@ export class CompleteResponse extends Response {
   public readonly stack: StackedView;
   public readonly toasts: ToastRegistry;
   public readonly errors: Record<string, string[]>;
+  public readonly data: any;
 
   constructor(xhr: XMLHttpRequest) {
     super(xhr);
@@ -55,5 +56,6 @@ export class CompleteResponse extends Response {
     this.stack = data.stack;
     this.errors = data.errors;
     this.toasts = data.toasts;
+    this.data = data.raw;
   }
 }

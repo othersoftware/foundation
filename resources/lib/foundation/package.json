@@ -21,7 +21,7 @@
     },
     "scripts": {
         "dev": "vite build -m development --watch",
-        "build": "vite build && tail -n +8 types/globals.d.ts >> dist/other-software-foundation.d.ts"
+        "build": "vite build && tail -n +9 types/globals.d.ts >> dist/other-software-foundation.d.ts"
     },
     "peerDependencies": {
         "vue": "^3.5.0"
