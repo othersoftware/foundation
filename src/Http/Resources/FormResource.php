@@ -49,7 +49,7 @@ class FormResource extends JsonResource
             }
         }
 
-        // Meta section we want without the form render mode.
+        // Meta-section we want without the form render mode.
         static::$rendersForForm = false;
 
         $data['meta'] = [];
@@ -63,7 +63,7 @@ class FormResource extends JsonResource
             }
         }
 
-        // Finally return to previous render mode.
+        // Finally, return to the previous render mode.
         static::$rendersForForm = $previousState;
 
         return $data;

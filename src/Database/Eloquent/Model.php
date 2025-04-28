@@ -23,6 +23,15 @@ use Override;
 
 abstract class Model extends EloquentModel
 {
+    /**
+     * List of relations that should be loaded and serialized as an array of
+     * keys for form resources.
+     *
+     * @var array
+     */
+    protected array $formRelations = [];
+
+
     #[Override]
     public function asDateTime($value)
     {
@@ -116,15 +125,23 @@ abstract class Model extends EloquentModel
         if (FormResource::rendersForForm()) {
             $attributes = [];
 
+            foreach ($this->formRelations as $name) {
+                $this->loadMissing($name);
+            }
+
             foreach ($this->getArrayableRelations() as $key => $value) {
                 // Skip translations, as this relation is processed separately
-                // in FormResource class.
+                // in the FormResource class.
                 if ($this instanceof Translatable && $key === 'translations') {
                     continue;
                 }
 
                 if ($value instanceof Collection) {
-                    $relation = $value->map(fn($related) => FormResource::make($related))->toArray();
+                    if (in_array($key, $this->formRelations)) {
+                        $relation = $value->map(fn(EloquentModel $related) => $related->getKey())->toArray();
+                    } else {
+                        $relation = $value->map(fn(EloquentModel $related) => FormResource::make($related))->toArray();
+                    }
                 } elseif ($value instanceof EloquentModel) {
                     $relation = FormResource::make($value);
                 } elseif (is_null($value)) {
