@@ -99,7 +99,10 @@ if (! function_exists('str_encode_url')) {
         $parts = parse_url($url);
 
         if (isset($parts['path'])) {
-            $parts['path'] = implode('/', array_map('rawurlencode', explode('/', $parts['path'])));
+            $decoded = array_map('rawurldecode', explode('/', $parts['path']));
+            $encoded = array_map('rawurlencode', $decoded);
+
+            $parts['path'] = implode('/', $encoded);
         }
 
         $scheme = $parts['scheme'] ?? 'https';
@@ -114,7 +117,7 @@ if (! function_exists('str_encode_url')) {
         }
 
         if (isset($parts['fragment'])) {
-            $rebuild .= '#' . rawurlencode($parts['fragment']);
+            $rebuild .= '#' . rawurlencode(rawurldecode($parts['fragment']));
         }
 
         return $rebuild;
