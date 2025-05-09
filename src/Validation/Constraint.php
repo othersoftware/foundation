@@ -255,15 +255,17 @@ final readonly class Constraint
      * not both. This validation rule supports all formats supported by
      * PHP's DateTime class.
      *
+     * For time validation see {@see Constraint::time()} method.
+     *
      * @see https://laravel.com/docs/11.x/validation#rule-date-format
      *
      * @param string $format
      *
-     * @return Date
+     * @return string
      */
-    public static function dateFormat(string $format): Date
+    public static function dateFormat(string $format): string
     {
-        return Rule::date()->format($format);
+        return sprintf('date_format:%s', $format);
     }
 
 
@@ -852,6 +854,22 @@ final readonly class Constraint
     public static function string(): string
     {
         return 'string';
+    }
+
+
+    /**
+     * This method is an alias for {@see Constraint::dateFormat()} rule,
+     * and it provides a standard time format for validation.
+     *
+     * @see https://laravel.com/docs/11.x/validation#rule-date-format
+     *
+     * @param string $format
+     *
+     * @return string
+     */
+    public static function time(string $format = 'H:i'): string
+    {
+        return self::dateFormat($format);
     }
 
 
