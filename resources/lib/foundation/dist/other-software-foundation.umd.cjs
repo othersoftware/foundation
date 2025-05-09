@@ -1794,6 +1794,10 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
         if (!props.href || !shouldInterceptEvent(event, props.href, props.target)) {
           return;
         }
+        if (event.defaultPrevented) {
+          event.preventDefault();
+          return;
+        }
         event.preventDefault();
         if (props.disabled) {
           return;
@@ -1810,13 +1814,11 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       }
       return () => vue.h(
         as.value,
-        {
+        vue.mergeProps(attrs, specific.value, {
           href: props.href,
-          onClick,
-          ...specific.value,
-          ...attrs,
-          class: [{ active: active.value, pending: pending.value, disabled: props.disabled }]
-        },
+          class: [{ active: active.value, pending: pending.value, disabled: props.disabled }],
+          onClick
+        }),
         // @ts-ignore
         slots.default({ active, pending })
       );
@@ -1826,7 +1828,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
     if (target === "_blank" || isCrossOriginHref(href)) {
       return false;
     }
-    return !(event.defaultPrevented || event.button > 1 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey);
+    return !(event.button > 1 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey);
   }
   function isCrossOriginHref(href) {
     try {

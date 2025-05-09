@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { inject, ref, defineComponent, toValue, computed, watch, provide, h, nextTick, onMounted, toRaw as toRaw$1, onBeforeUnmount, ssrUtils, initDirectivesForSSR, createApp, createVNode, ssrContextKey, warn, Fragment, Static, Comment, Text, mergeProps } from "vue";
+import { inject, ref, defineComponent, toValue, computed, watch, provide, h, nextTick, mergeProps, onMounted, toRaw as toRaw$1, onBeforeUnmount, ssrUtils, initDirectivesForSSR, createApp, createVNode, ssrContextKey, warn, Fragment, Static, Comment, Text } from "vue";
 class Response {
   constructor(xhr) {
     __publicField(this, "xhr");
@@ -1791,6 +1791,10 @@ const RouterLinkComponent = defineComponent({
       if (!props.href || !shouldInterceptEvent(event, props.href, props.target)) {
         return;
       }
+      if (event.defaultPrevented) {
+        event.preventDefault();
+        return;
+      }
       event.preventDefault();
       if (props.disabled) {
         return;
@@ -1807,13 +1811,11 @@ const RouterLinkComponent = defineComponent({
     }
     return () => h(
       as.value,
-      {
+      mergeProps(attrs, specific.value, {
         href: props.href,
-        onClick,
-        ...specific.value,
-        ...attrs,
-        class: [{ active: active.value, pending: pending.value, disabled: props.disabled }]
-      },
+        class: [{ active: active.value, pending: pending.value, disabled: props.disabled }],
+        onClick
+      }),
       // @ts-ignore
       slots.default({ active, pending })
     );
@@ -1823,7 +1825,7 @@ function shouldInterceptEvent(event, href, target) {
   if (target === "_blank" || isCrossOriginHref(href)) {
     return false;
   }
-  return !(event.defaultPrevented || event.button > 1 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey);
+  return !(event.button > 1 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey);
 }
 function isCrossOriginHref(href) {
   try {

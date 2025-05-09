@@ -1,4 +1,4 @@
-import { defineComponent, ref, computed, h, type PropType, nextTick } from 'vue';
+import { defineComponent, ref, computed, h, type PropType, nextTick, mergeProps } from 'vue';
 import { type Body, type Method } from '../../Http/Client/Request';
 import { useLocation } from '../../Services/StateManager';
 import { useHttpClient } from '../../Composables/UseHttpClient';
@@ -37,6 +37,11 @@ export const RouterLinkComponent = defineComponent({
         return;
       }
 
+      if (event.defaultPrevented) {
+        event.preventDefault();
+        return;
+      }
+
       event.preventDefault();
 
       if (props.disabled) {
@@ -59,13 +64,11 @@ export const RouterLinkComponent = defineComponent({
 
     return () => h(
       as.value,
-      {
+      mergeProps(attrs, specific.value, {
         href: props.href,
-        onClick,
-        ...specific.value,
-        ...attrs,
         class: [{ active: active.value, pending: pending.value, disabled: props.disabled }],
-      },
+        onClick,
+      }),
       // @ts-ignore
       slots.default({ active, pending }),
     );
@@ -78,7 +81,6 @@ function shouldInterceptEvent(event: MouseEvent, href: string, target?: string) 
   }
 
   return !(
-    event.defaultPrevented ||
     event.button > 1 ||
     event.altKey ||
     event.ctrlKey ||
