@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Fluent;
 use Illuminate\Validation\ConditionalRules;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Date;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\Validation\Rules\ExcludeIf;
 use Illuminate\Validation\Rules\Exists;
@@ -240,11 +241,29 @@ final readonly class Constraint
      *
      * @see https://laravel.com/docs/11.x/validation#rule-date
      *
-     * @return string
+     * @return Date
      */
-    public static function date(): string
+    public static function date(): Date
     {
-        return 'date';
+        return Rule::date();
+    }
+
+
+    /**
+     * The field under validation must match one of the given formats.
+     * You should use either date or date_format when validating a field,
+     * not both. This validation rule supports all formats supported by
+     * PHP's DateTime class.
+     *
+     * @see https://laravel.com/docs/11.x/validation#rule-date-format
+     *
+     * @param string $format
+     *
+     * @return Date
+     */
+    public static function dateFormat(string $format): Date
+    {
+        return Rule::date()->format($format);
     }
 
 
