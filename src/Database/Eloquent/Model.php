@@ -55,6 +55,10 @@ abstract class Model extends EloquentModel
             return null;
         }
 
+        if (is_array($key)) {
+            return join('-', array_map(fn($k) => $this->getAttribute($k), $key));
+        }
+
         if ($this->isRelation($key)) {
             return parent::getAttribute($key);
         }
