@@ -3402,7 +3402,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
         };
       }
       async function update(fresh) {
-        abilities.value = fresh.abilities;
+        abilities.value = { ...abilities.value, ...fresh.abilities };
         authenticated.value = fresh.authenticated;
         if (fresh.location) {
           location.value = fresh.location;

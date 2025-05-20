@@ -3399,7 +3399,7 @@ const RouterComponent = defineComponent({
       };
     }
     async function update(fresh) {
-      abilities.value = fresh.abilities;
+      abilities.value = { ...abilities.value, ...fresh.abilities };
       authenticated.value = fresh.authenticated;
       if (fresh.location) {
         location.value = fresh.location;
