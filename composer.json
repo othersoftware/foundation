@@ -43,6 +43,7 @@
         "files": [
             "helpers/array.php",
             "helpers/countries.php",
+            "helpers/errors.php",
             "helpers/filesystem.php",
             "helpers/string.php",
             "helpers/translation.php"
