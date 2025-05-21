@@ -3496,10 +3496,18 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
     });
   }
   async function factory(configOrCallback, callback) {
-    if (callback !== void 0) {
-      return createConfirmation(configOrCallback, callback);
+    if (callback === void 0) {
+      if (configOrCallback instanceof Function) {
+        return createConfirmation({}, configOrCallback);
+      } else {
+        return createConfirmation(configOrCallback, configOrCallback.callback);
+      }
     } else {
-      return createConfirmation({}, configOrCallback);
+      if (configOrCallback instanceof Function) {
+        return createConfirmation({}, configOrCallback);
+      } else {
+        return createConfirmation(configOrCallback, callback);
+      }
     }
   }
   function useCurrentConfirmation() {

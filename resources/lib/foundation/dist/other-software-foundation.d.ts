@@ -59,6 +59,10 @@ declare interface Config {
     no?: string;
 }
 
+declare interface ConfigWithCallback<T = unknown> extends Config {
+    callback: Callback<T>;
+}
+
 export declare interface Confirmation extends Config {
     processing: boolean;
     confirm: () => void;
@@ -99,6 +103,8 @@ declare type EventHandler = (event?: any) => boolean | undefined | void;
 declare type EventName = string;
 
 declare type Factory = (options: FactoryOptions) => any;
+
+declare function factory<T>(config: ConfigWithCallback<T>): Promise<T>;
 
 declare function factory<T>(callback: Callback<T>): Promise<T>;
 

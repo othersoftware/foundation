@@ -7,6 +7,10 @@ interface Config {
   no?: string;
 }
 
+interface ConfigWithCallback<T = unknown> extends Config {
+  callback: Callback<T>;
+}
+
 export interface Confirmation extends Config {
   processing: boolean,
   confirm: () => void;
@@ -42,13 +46,22 @@ async function createConfirmation<T>(config: Config, callback: Callback<T>): Pro
   });
 }
 
+async function factory<T>(config: ConfigWithCallback<T>): Promise<T>;
 async function factory<T>(callback: Callback<T>): Promise<T>;
 async function factory<T>(config: Config, callback: Callback<T>): Promise<T>;
 async function factory<T>(configOrCallback: any, callback?: Callback<T>): Promise<T> {
-  if (callback !== undefined) {
-    return createConfirmation(configOrCallback, callback);
+  if (callback === undefined) {
+    if (configOrCallback instanceof Function) {
+      return createConfirmation({}, configOrCallback);
+    } else {
+      return createConfirmation(configOrCallback, configOrCallback.callback);
+    }
   } else {
-    return createConfirmation({}, configOrCallback);
+    if (configOrCallback instanceof Function) {
+      return createConfirmation({}, configOrCallback);
+    } else {
+      return createConfirmation(configOrCallback, callback);
+    }
   }
 }
 
