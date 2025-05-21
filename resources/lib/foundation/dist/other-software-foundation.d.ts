@@ -59,7 +59,7 @@ declare interface Config {
     no?: string;
 }
 
-declare interface ConfigWithCallback<T = unknown> extends Config {
+declare interface ConfigWithCallback<T> extends Config {
     callback: Callback<T>;
 }
 

@@ -7,7 +7,7 @@ interface Config {
   no?: string;
 }
 
-interface ConfigWithCallback<T = unknown> extends Config {
+interface ConfigWithCallback<T> extends Config {
   callback: Callback<T>;
 }
 
