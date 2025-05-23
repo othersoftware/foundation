@@ -1645,6 +1645,10 @@ const FormControllerComponent = defineComponent({
       nextTick(() => dispatch().catch((error) => {
         if (error instanceof CompleteResponse) {
           errors.value = error.errors;
+          nextTick(() => {
+            var _a;
+            return (_a = document.querySelector(".control--error")) == null ? void 0 : _a.scrollIntoView();
+          });
         }
       }).finally(() => {
         processing.value = false;
@@ -1892,7 +1896,7 @@ const RouterNestedComponent = defineComponent({
       };
     }
     async function update(fresh) {
-      abilities.value = fresh.abilities;
+      abilities.value = { ...abilities.value, ...fresh.abilities };
       authenticated.value = fresh.authenticated;
       if (fresh.location) {
         location.value = fresh.location;
@@ -3600,6 +3604,20 @@ function nestedSetAncestors(data, item) {
 function nestedSetDescendants(data, item) {
   return data.filter((node) => node.left > item.left && node.right < item.right);
 }
+function findScrollParent(element) {
+  if (!element) {
+    return void 0;
+  }
+  let parent = element;
+  while (parent) {
+    const { overflow } = window.getComputedStyle(parent);
+    if (overflow.split(" ").some((o) => o === "auto" || o === "scroll")) {
+      return parent;
+    }
+    parent = parent.parentElement;
+  }
+  return document.documentElement;
+}
 var ToastKind = /* @__PURE__ */ ((ToastKind2) => {
   ToastKind2["SUCCESS"] = "success";
   ToastKind2["DANGER"] = "danger";
@@ -3657,6 +3675,7 @@ export {
   createFoundationController,
   createOtherSoftwareFoundation,
   filled,
+  findScrollParent,
   getModelFromContext,
   hash,
   isCountryExplicit,

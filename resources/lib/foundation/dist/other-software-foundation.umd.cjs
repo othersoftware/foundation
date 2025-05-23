@@ -1648,6 +1648,10 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
         vue.nextTick(() => dispatch().catch((error) => {
           if (error instanceof CompleteResponse) {
             errors.value = error.errors;
+            vue.nextTick(() => {
+              var _a;
+              return (_a = document.querySelector(".control--error")) == null ? void 0 : _a.scrollIntoView();
+            });
           }
         }).finally(() => {
           processing.value = false;
@@ -1895,7 +1899,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
         };
       }
       async function update(fresh) {
-        abilities.value = fresh.abilities;
+        abilities.value = { ...abilities.value, ...fresh.abilities };
         authenticated.value = fresh.authenticated;
         if (fresh.location) {
           location.value = fresh.location;
@@ -3603,6 +3607,20 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
   function nestedSetDescendants(data, item) {
     return data.filter((node) => node.left > item.left && node.right < item.right);
   }
+  function findScrollParent(element) {
+    if (!element) {
+      return void 0;
+    }
+    let parent = element;
+    while (parent) {
+      const { overflow } = window.getComputedStyle(parent);
+      if (overflow.split(" ").some((o) => o === "auto" || o === "scroll")) {
+        return parent;
+      }
+      parent = parent.parentElement;
+    }
+    return document.documentElement;
+  }
   var ToastKind = /* @__PURE__ */ ((ToastKind2) => {
     ToastKind2["SUCCESS"] = "success";
     ToastKind2["DANGER"] = "danger";
@@ -3659,6 +3677,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
   exports2.createFoundationController = createFoundationController;
   exports2.createOtherSoftwareFoundation = createOtherSoftwareFoundation;
   exports2.filled = filled;
+  exports2.findScrollParent = findScrollParent;
   exports2.getModelFromContext = getModelFromContext;
   exports2.hash = hash;
   exports2.isCountryExplicit = isCountryExplicit;

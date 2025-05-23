@@ -120,6 +120,8 @@ declare type FactoryOptions = {
 
 export declare function filled(value: any): boolean;
 
+export declare function findScrollParent(element: HTMLElement | undefined | null): HTMLElement | undefined;
+
 declare type FormApi = {
     ctx: FormContextInterface;
     submit: () => void;
