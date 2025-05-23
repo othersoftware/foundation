@@ -45,6 +45,7 @@ export * from './Support/ErrorModal';
 export * from './Support/Hash';
 export * from './Support/NestedSet';
 export * from './Support/Route';
+export * from './Support/Scroll';
 export * from './Support/Translator';
 export * from './Support/Url';
 export * from './Support/Wrap';
