@@ -36,7 +36,7 @@ export const RouterNestedComponent = defineComponent({
     }
 
     async function update(fresh: CompleteResponse): Promise<State> {
-      abilities.value = fresh.abilities;
+      abilities.value = { ...abilities.value, ...fresh.abilities };
       authenticated.value = fresh.authenticated;
 
       if (fresh.location) {
