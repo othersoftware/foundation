@@ -4,13 +4,14 @@ namespace OtherSoftware\Routing;
 
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Routing\Route as BaseRoute;
 use Illuminate\Support\Facades\URL;
 
 
 final class Route extends BaseRoute implements Arrayable
 {
-    private string $hash;
+    private string $location;
 
 
     public function bindNested(Route $route): Route
@@ -26,17 +27,17 @@ final class Route extends BaseRoute implements Arrayable
 
     public function getParent(): ?string
     {
+        if ($this->isModal()) {
+            return $this->action['modal'] ?? null;
+        }
+
         return $this->action['parent'] ?? null;
     }
 
 
-    public function hash(): string
+    public function isModal(): bool
     {
-        if (! isset($this->hash)) {
-            $this->hash = URL::toRoute($this, $this->parameters(), true);
-        }
-
-        return $this->hash;
+        return $this->action['modal'] ?? false;
     }
 
 
@@ -53,6 +54,31 @@ final class Route extends BaseRoute implements Arrayable
         if (isset($this->action['parent'])) {
             $this->action['parent'] = $locale . '.' . $this->action['parent'];
         }
+
+        if (isset($this->action['modal'])) {
+            $this->action['modal'] = $locale . '.' . $this->action['modal'];
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * @throws UrlGenerationException
+     */
+    public function location(): string
+    {
+        if (! isset($this->location)) {
+            $this->location = URL::toRoute($this, $this->parameters(), true);
+        }
+
+        return $this->location;
+    }
+
+
+    public function modal(string $parent): Route
+    {
+        $this->action['modal'] = $parent;
 
         return $this;
     }

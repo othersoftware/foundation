@@ -330,6 +330,20 @@ required: true;
 };
 }>> & Readonly<{}>, {}, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
+export declare const RouterFrameComponent: DefineComponent<ExtractPropTypes<    {
+src: {
+type: StringConstructor;
+required: true;
+};
+}>, () => any, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+src: {
+type: StringConstructor;
+required: true;
+};
+}>> & Readonly<{}>, {}, SlotsType<{
+default?: () => any;
+}>, {}, {}, string, ComponentProvideOptions, true, {}, any>;
+
 export declare const RouterLinkComponent: DefineComponent<ExtractPropTypes<    {
 method: {
 type: PropType<Method>;
@@ -639,6 +653,7 @@ declare global {
 
 declare module 'vue' {
   export interface GlobalComponents {
+    RouterFrame: typeof RouterFrameComponent,
     RouterNested: typeof RouterNestedComponent,
     RouterView: typeof RouterViewComponent,
     RouterLink: typeof RouterLinkComponent,

@@ -1935,6 +1935,65 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       };
     }
   });
+  const RouterFrameComponent = vue.defineComponent({
+    inheritAttrs: false,
+    name: "RouterFrame",
+    props: {
+      src: { type: String, required: true }
+    },
+    slots: Object,
+    setup(props, { slots }) {
+      const resolver = useViewResolver();
+      const abilities = vue.inject(StateAbilities);
+      const authenticated = vue.inject(StateAuthenticated);
+      const toasts = vue.inject(ToastRegistryInjectionKey);
+      const loading = vue.ref(true);
+      const view = vue.ref(void 0);
+      vue.provide(HttpClientForceScrollPreservation, true);
+      vue.onMounted(() => {
+        Request.send("GET", props.src).then(async (response) => {
+          if (response.redirect) {
+            return new Promise(() => {
+              window.location.href = response.redirect.target;
+            });
+          }
+          abilities.value = { ...abilities.value, ...response.abilities };
+          authenticated.value = response.authenticated;
+          if (response.stack) {
+            view.value = updateStack(vue.toRaw(vue.toValue(view.value)), response.stack);
+          }
+          if (response.toasts && response.toasts.length > 0) {
+            toasts.value = [...toasts.value, ...response.toasts];
+          }
+          await vue.nextTick();
+          return Promise.resolve(response);
+        }).catch(async (error) => {
+          if (error.status === 423) {
+            EventBus.dispatch("password.confirm", { method: "GET", url: props.src, options: { data: void 0, preserveScroll: true, replace: false } });
+            return Promise.reject(error);
+          }
+          console.error(error);
+          if (APP_DEBUG && error.content) {
+            ErrorModal.show(error.content);
+          }
+          return Promise.reject(error);
+        }).finally(() => {
+          loading.value = false;
+        });
+      });
+      return () => {
+        if (view.value && "component" in view.value) {
+          let component = resolver(view.value.component);
+          let viewProps = view.value.props;
+          component.inheritAttrs = !!component.inheritAttrs;
+          return vue.h(component, viewProps);
+        }
+        if (slots.default) {
+          return slots.default();
+        }
+      };
+    }
+  });
   const ToastControllerComponent = vue.defineComponent({
     name: "ToastController",
     slots: Object,
@@ -3631,6 +3690,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
   function createOtherSoftwareFoundation() {
     return {
       install(app) {
+        app.component("RouterFrame", RouterFrameComponent);
         app.component("RouterNested", RouterNestedComponent);
         app.component("RouterView", RouterViewComponent);
         app.component("RouterLink", RouterLinkComponent);
@@ -3653,6 +3713,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
   exports2.Request = Request;
   exports2.Response = Response;
   exports2.RouterComponent = RouterComponent;
+  exports2.RouterFrameComponent = RouterFrameComponent;
   exports2.RouterLinkComponent = RouterLinkComponent;
   exports2.RouterNestedComponent = RouterNestedComponent;
   exports2.RouterViewComponent = RouterViewComponent;

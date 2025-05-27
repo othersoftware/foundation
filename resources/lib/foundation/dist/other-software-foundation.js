@@ -1932,6 +1932,65 @@ const RouterNestedComponent = defineComponent({
     };
   }
 });
+const RouterFrameComponent = defineComponent({
+  inheritAttrs: false,
+  name: "RouterFrame",
+  props: {
+    src: { type: String, required: true }
+  },
+  slots: Object,
+  setup(props, { slots }) {
+    const resolver = useViewResolver();
+    const abilities = inject(StateAbilities);
+    const authenticated = inject(StateAuthenticated);
+    const toasts = inject(ToastRegistryInjectionKey);
+    const loading = ref(true);
+    const view = ref(void 0);
+    provide(HttpClientForceScrollPreservation, true);
+    onMounted(() => {
+      Request.send("GET", props.src).then(async (response) => {
+        if (response.redirect) {
+          return new Promise(() => {
+            window.location.href = response.redirect.target;
+          });
+        }
+        abilities.value = { ...abilities.value, ...response.abilities };
+        authenticated.value = response.authenticated;
+        if (response.stack) {
+          view.value = updateStack(toRaw$1(toValue(view.value)), response.stack);
+        }
+        if (response.toasts && response.toasts.length > 0) {
+          toasts.value = [...toasts.value, ...response.toasts];
+        }
+        await nextTick();
+        return Promise.resolve(response);
+      }).catch(async (error) => {
+        if (error.status === 423) {
+          EventBus.dispatch("password.confirm", { method: "GET", url: props.src, options: { data: void 0, preserveScroll: true, replace: false } });
+          return Promise.reject(error);
+        }
+        console.error(error);
+        if (APP_DEBUG && error.content) {
+          ErrorModal.show(error.content);
+        }
+        return Promise.reject(error);
+      }).finally(() => {
+        loading.value = false;
+      });
+    });
+    return () => {
+      if (view.value && "component" in view.value) {
+        let component = resolver(view.value.component);
+        let viewProps = view.value.props;
+        component.inheritAttrs = !!component.inheritAttrs;
+        return h(component, viewProps);
+      }
+      if (slots.default) {
+        return slots.default();
+      }
+    };
+  }
+});
 const ToastControllerComponent = defineComponent({
   name: "ToastController",
   slots: Object,
@@ -3628,6 +3687,7 @@ var ToastKind = /* @__PURE__ */ ((ToastKind2) => {
 function createOtherSoftwareFoundation() {
   return {
     install(app) {
+      app.component("RouterFrame", RouterFrameComponent);
       app.component("RouterNested", RouterNestedComponent);
       app.component("RouterView", RouterViewComponent);
       app.component("RouterLink", RouterLinkComponent);
@@ -3651,6 +3711,7 @@ export {
   Request,
   Response,
   RouterComponent,
+  RouterFrameComponent,
   RouterLinkComponent,
   RouterNestedComponent,
   RouterViewComponent,

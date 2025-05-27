@@ -4,19 +4,20 @@ namespace OtherSoftware\Routing;
 
 
 use Illuminate\Contracts\Routing\UrlGenerator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Route as BaseRoute;
 use Illuminate\Routing\Router as BaseRouter;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use OtherSoftware\Bridge\Stack\Meta;
-use OtherSoftware\Bridge\Stack\StackMeta;
+use OtherSoftware\Bridge\Stack\Stack;
+use OtherSoftware\Bridge\Stack\StackEntry;
 use OtherSoftware\Bridge\Stack\View;
 use OtherSoftware\Routing\Exceptions\MissingParentRouteException;
 use OtherSoftware\Routing\Exceptions\OutsideRouterScopeException;
 use OtherSoftware\Support\Facades\Vue;
 use Override;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -25,7 +26,7 @@ final class Router extends BaseRouter
     protected Route $running;
 
 
-    protected StackMeta $stack;
+    protected Stack $stack;
 
 
     protected UrlGenerator $url;
@@ -45,7 +46,7 @@ final class Router extends BaseRouter
         $current = $route;
         $result = [];
 
-        while ($route->isNested()) {
+        while ($route->isNested() || $route->isModal()) {
             $route = $this->findParentRoute($route, skipBinding: true);
             $middleware = parent::gatherRouteMiddleware($route);
             $unique = array_diff($middleware, $result);
@@ -90,79 +91,102 @@ final class Router extends BaseRouter
         $this->stack = $this->buildViewStack($route, $request);
         $this->url = url();
 
+        // Bind stack to the service container.
+        $this->container->instance(Stack::class, $this->stack);
+
         return (new Pipeline($this->container))->send($request)->through($middleware)->then(function ($request) use ($route) {
-            return $this->prepareResponse($request, $this->wrapStack($this->runRouteUp($route, $request)));
+            return $this->prepareResponse($request, $this->wrapStack($this->runStack($request, $route)));
         });
     }
 
 
-    private function buildViewStack(Route $route, Request $request): StackMeta
+    private function bindRouteParameters(Request $request, Route $route): Route
+    {
+        try {
+            $this->substituteBindings($route);
+            $this->substituteImplicitBindings($route);
+        } catch (ModelNotFoundException $exception) {
+            if ($route->getMissing()) {
+                return $route->getMissing()($request, $exception);
+            }
+
+            throw $exception;
+        }
+
+        return $route;
+    }
+
+
+    private function buildViewStack(Route $route, Request $request): Stack
     {
         $previous = $this->buildViewStackFromRequest($request);
-        $next = $this->buildViewStackFromRoute($route);
-        $total = count($next) - 1;
 
-        // Check for stack refresh header. At some points, for example forms
-        // in modals we might want to refresh the whole stack, to reload data
-        // underneath modal window.
+        // When the request coming is not a GET method, we do not build the next
+        // stack as it would be pointless. Other than GET methods, by default
+        // return redirects, which won't return the new stack.
+        if ($request->method() !== 'GET') {
+            return $previous;
+        }
+
+        $next = $this->buildViewStackFromRoute($request, $previous, $route);
+
+//        dd($previous, $next, $previous->compare($next, false));
+
+        // Check for the stack refresh header. At some points, for example,
+        // forms in modals, we might want to refresh the whole stack to reload
+        // data underneath the modal window.
         $changed = $request->header('X-Stack-Refresh') === 'true';
 
-        $stack = new StackMeta();
+        return $previous->compare($next, $changed)->seal();
+    }
 
-        for ($i = 0; $i <= $total; $i++) {
-            $isLast = ($i === $total);
 
-            $a = $next[$i];
-            $b = $previous[$i] ?? null;
+    private function buildViewStackFromRequest(Request $request): Stack
+    {
+        if ($stack = $request->header('X-Stack-Signature')) {
+            return $this->hydrateRequestStackRoutes(decrypt($stack));
+        }
 
-            $stack->push($view = new Meta($a));
+        return new Stack();
+    }
 
-            if ($changed || $isLast) {
-                $view->forceRun();
-                continue;
+
+    /**
+     * This method builds a stack for the current request Route. It will go
+     * through the nested routes and create a new stack to compare with
+     * the previous stack.
+     *
+     * Modal routes should be handled differently, as they should simply append
+     * to the previous stack. But when the request is not coming from a JS
+     * router (usually meaning the page is refreshed or entered directly with
+     * the exact URL) or the previous stack is empty, we should build a fallback
+     * full modal stack instead.
+     *
+     * @param Request $request The current request.
+     * @param Stack $previous The previous stack built from the request.
+     * @param Route $route The current route.
+     *
+     * @return Stack
+     */
+    private function buildViewStackFromRoute(Request $request, Stack $previous, Route $route): Stack
+    {
+        if ($route->isModal()) {
+            if ($request->headers->get('X-Stack-Router') && $previous->isNotEmpty()) {
+                return $previous->append(StackEntry::fromRoute($route));
             }
+        }
 
-            if ($a === $b) {
-                $view->keep();
-                continue;
-            }
+        $stack = new Stack(StackEntry::fromRoute($route));
 
-            $changed = true;
+        while ($route->isNested() || $route->isModal()) {
+            $stack->prepend(StackEntry::fromRoute($route = $this->findParentRoute($route)));
         }
 
         return $stack;
     }
 
 
-    private function buildViewStackFromRequest(Request $request): array
-    {
-        $stack = $request->header('X-Stack-Signature');
-
-        if (is_null($stack)) {
-            return [];
-        }
-
-        return decrypt($stack);
-    }
-
-
-    private function buildViewStackFromRoute(Route $route): array
-    {
-        $map = Arr::wrap($route->hash());
-
-        while ($route->isNested()) {
-            $parent = $this->findParentRoute($route);
-
-            array_unshift($map, $parent->hash());
-
-            $route = $parent;
-        }
-
-        return $map;
-    }
-
-
-    private function findParentRoute(Route $route, bool $skipBinding = false, bool $rebound = false): Route
+    private function findParentRoute(Route $route, bool $skipBinding = false): Route
     {
         $parent = $this->routes->getByName($route->getParent());
 
@@ -172,8 +196,8 @@ final class Router extends BaseRouter
 
         assert($parent instanceof Route);
 
-        // When route was not bound, bind parameters from nested route.
-        if ($rebound || (! isset($parent->parameters) && ! $skipBinding)) {
+        // When the route was not bound, bind parameters from the nested route.
+        if (! isset($parent->parameters) && ! $skipBinding) {
             $parent->bindNested($route);
         }
 
@@ -181,30 +205,81 @@ final class Router extends BaseRouter
     }
 
 
-    private function runRouteUp(Route $route, Request $request, ?View $nested = null)
+    /**
+     * This method hydrates routes into the stack based on serialized route
+     * names. When any of the serialized routes is not found, an empty stack is
+     * returned, forcing a fresh stack to be built for the next route.
+     *
+     * @param Stack $stack A stack to be hydrated with routes.
+     *
+     * @return Stack
+     */
+    private function hydrateRequestStackRoutes(Stack $stack): Stack
     {
-        $this->running = $route;
+        /** @var StackEntry $entry */
+        foreach ($stack as $entry) {
+            $route = $this->routes->getByName($entry->getRouteName());
 
-        if ($this->stack->findByRoute($route)->shouldKeep()) {
-            $response = new View(keep: true);
-        } else {
-            $response = $route->run();
+            if (is_null($route)) {
+                return new Stack();
+            }
+
+            assert($route instanceof Route);
+
+            $request = Request::createFromBase(SymfonyRequest::create($entry->getLocation()));
+
+            $entry->setRoute($route->bind($request));
         }
 
-        unset($this->running);
+        return $stack;
+    }
 
-        // When route returns other kind of response, rather than View,
-        // skip nested route resolving as it has no point.
-        if ($response instanceof View) {
-            $response->setLocation($this->url->toRoute($route, $route->parameters, true));
 
-            if (! is_null($nested)) {
-                $response->nested($nested);
+    private function runStack(Request $request, Route $route)
+    {
+        $response = null;
+        $parent = null;
+
+        if ($request->method() !== 'GET') {
+            $this->stack->seek();
+            $this->running = $route;
+
+            $response = $route->run();
+
+            unset($this->running);
+
+            return $response;
+        }
+
+        /** @var StackEntry $entry */
+        foreach ($this->stack as $entry) {
+            $this->running = $entry->getRoute();
+
+            if ($entry->shouldKeep()) {
+                $view = (new View(keep: true));
+            } else {
+                $view = $this->bindRouteParameters($request, $this->running)->run();
             }
 
-            if ($route->isNested()) {
-                return $this->runRouteUp($this->findParentRoute($route, rebound: true), $request, $response);
+            // When route returns other kind of response, rather than View,
+            // skip nested route resolving as it has no point.
+            if (false === $view instanceof View) {
+                return $view;
             }
+
+            if ($response === null) {
+                $response = $view;
+            }
+
+            $view->setLocation($entry->getLocation());
+
+            if ($parent !== null) {
+                $parent->nested($view);
+            }
+
+            $parent = $view;
+
+            unset($this->running);
         }
 
         return $response;
@@ -213,13 +288,10 @@ final class Router extends BaseRouter
 
     private function wrapStack(mixed $response): mixed
     {
+        Vue::setStack($this->stack);
+
         if ($response instanceof View) {
-            $instance = Vue::getFacadeRoot();
-
-            $instance->setStackMeta($this->stack);
-            $instance->setStack($response);
-
-            return $instance;
+            return Vue::setRendered($response);
         }
 
         return $response;

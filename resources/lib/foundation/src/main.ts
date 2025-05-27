@@ -3,6 +3,7 @@ import { FormControllerComponent } from './Components/Controllers/FormController
 import { RouterViewComponent } from './Components/Routing/RouterViewComponent';
 import { RouterLinkComponent } from './Components/Routing/RouterLinkComponent';
 import { RouterNestedComponent } from './Components/Routing/RouterNestedComponent';
+import { RouterFrameComponent } from './Components/Routing/RouterFrameComponent';
 import { ToastControllerComponent, ToastComponent } from './Components/Controllers/ToastControllerComponent';
 import { PasswordConfirmationControllerComponent } from './Components/Controllers/PasswordConfirmationControllerComponent';
 import { trans, transChoice } from './Support/Translator';
@@ -17,6 +18,7 @@ export * from './Components/Routing/RouterComponent';
 export * from './Components/Routing/RouterLinkComponent';
 export * from './Components/Routing/RouterViewComponent';
 export * from './Components/Routing/RouterNestedComponent';
+export * from './Components/Routing/RouterFrameComponent';
 
 export * from './Composables/UseConfirmation';
 export * from './Composables/UseFormApi';
@@ -60,6 +62,7 @@ export * from './Types/ViewResolver';
 export function createOtherSoftwareFoundation(): Plugin {
   return {
     install(app: App) {
+      app.component('RouterFrame', RouterFrameComponent);
       app.component('RouterNested', RouterNestedComponent);
       app.component('RouterView', RouterViewComponent);
       app.component('RouterLink', RouterLinkComponent);

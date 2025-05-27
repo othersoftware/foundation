@@ -10,6 +10,7 @@ use OtherSoftware\Routing\Attributes\Authorize;
 use OtherSoftware\Routing\Attributes\FallbackRoute;
 use OtherSoftware\Routing\Attributes\Method;
 use OtherSoftware\Routing\Attributes\Middleware;
+use OtherSoftware\Routing\Attributes\Modal;
 use OtherSoftware\Routing\Attributes\Name;
 use OtherSoftware\Routing\Attributes\Nested;
 use OtherSoftware\Routing\Attributes\Route;
@@ -31,21 +32,21 @@ final class Registrar
     /**
      * @throws ReflectionException
      */
-    public static function register(Router $router, string $path): Registrar
-    {
-        return new self($router, $path);
-    }
-
-
-    /**
-     * @throws ReflectionException
-     */
     public function __construct(Router $router, string $path)
     {
         $this->router = $router;
         $this->path = $path;
 
         $this->compile();
+    }
+
+
+    /**
+     * @throws ReflectionException
+     */
+    public static function register(Router $router, string $path): Registrar
+    {
+        return new self($router, $path);
     }
 
 
@@ -188,6 +189,10 @@ final class Registrar
             $route->parent($nested->parent);
         }
 
+        if ($modal = $this->getModalAttribute($reflection)) {
+            $route->modal($modal->parent);
+        }
+
         if ($domain = config("translations.routing.{$locale}.domain")) {
             $route->domain($domain);
         }
@@ -264,6 +269,16 @@ final class Registrar
         }
 
         return [];
+    }
+
+
+    private function getModalAttribute(ReflectionMethod $reflection): ?Modal
+    {
+        if ($attribute = Arr::first($reflection->getAttributes(Modal::class))) {
+            return $attribute->newInstance();
+        }
+
+        return null;
     }
 
 

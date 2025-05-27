@@ -1,6 +1,7 @@
 import { RouterViewComponent } from '../src/Components/Routing/RouterViewComponent';
 import { RouterLinkComponent } from '../src/Components/Routing/RouterLinkComponent';
 import { RouterNestedComponent } from '../src/Components/Routing/RouterNestedComponent.ts';
+import { RouterFrameComponent } from '../src/Components/Routing/RouterFrameComponent.ts';
 import { FormControllerComponent } from '../src/Components/Controllers/FormControllerComponent';
 import type { ToastControllerComponent, ToastComponent } from '../src/Components/Controllers/ToastControllerComponent';
 import type { PasswordConfirmationControllerComponent } from '../src/Components/Controllers/PasswordConfirmationControllerComponent';
@@ -30,6 +31,7 @@ declare global {
 
 declare module 'vue' {
   export interface GlobalComponents {
+    RouterFrame: typeof RouterFrameComponent,
     RouterNested: typeof RouterNestedComponent,
     RouterView: typeof RouterViewComponent,
     RouterLink: typeof RouterLinkComponent,

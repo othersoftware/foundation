@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View as IlluminateView;
 use OtherSoftware\Auth\Access\AbilityResponse;
 use OtherSoftware\Bridge\Protocol\Redirect;
-use OtherSoftware\Bridge\Stack\StackMeta;
+use OtherSoftware\Bridge\Stack\Stack;
 use OtherSoftware\Bridge\Stack\View;
 use OtherSoftware\Support\Facades\Toast;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,13 +28,13 @@ final class ResponseFactory implements Responsable
     private string $guard = 'web';
 
 
-    private StackMeta $meta;
-
-
     private mixed $raw;
 
 
     private Redirect $redirect;
+
+
+    private View $rendered;
 
 
     private bool $rendersVueResponse = false;
@@ -43,7 +43,7 @@ final class ResponseFactory implements Responsable
     private Request $request;
 
 
-    private View $stack;
+    private Stack $stack;
 
 
     private string $view;
@@ -52,6 +52,12 @@ final class ResponseFactory implements Responsable
     public function __construct(Request $request)
     {
         $this->request = $request;
+    }
+
+
+    public function isVuePowered(?Request $request = null): bool
+    {
+        return (bool) ($request ?? $this->request)->header('X-Stack-Router');
     }
 
 
@@ -66,12 +72,6 @@ final class ResponseFactory implements Responsable
     public function rendersVueResponse(?Request $request = null): bool
     {
         return $this->rendersVueResponse || $this->isVuePowered($request);
-    }
-
-
-    public function isVuePowered(?Request $request = null): bool
-    {
-        return (bool) ($request ?? $this->request)->header('X-Stack-Router');
     }
 
 
@@ -115,9 +115,17 @@ final class ResponseFactory implements Responsable
     }
 
 
-    public function setStackMeta(StackMeta $meta): ResponseFactory
+    public function setRendered(View $rendered): ResponseFactory
     {
-        $this->meta = $meta;
+        $this->rendered = $rendered;
+
+        return $this;
+    }
+
+
+    public function setStack(Stack $stack): ResponseFactory
+    {
+        $this->stack = $stack;
 
         return $this;
     }
@@ -137,15 +145,18 @@ final class ResponseFactory implements Responsable
 
         $data = [];
 
-        if (isset($this->meta)) {
-            $data['signature'] = encrypt($this->meta->getViewStack());
-            $data['location'] = $request->fullUrl();
-        } else {
-            $data['signature'] = $request->header('X-Stack-Signature');
+        if (! isset($this->raw)) {
+            if (isset($this->stack)) {
+                $data['signature'] = encrypt($this->stack);
+                $data['rawStack'] = $this->stack->toArray();
+                $data['location'] = $request->fullUrl();
+            } else {
+                $data['signature'] = $request->header('X-Stack-Signature');
+            }
         }
 
-        if (isset($this->stack)) {
-            $data['stack'] = $this->stack->toArray();
+        if (isset($this->rendered)) {
+            $data['stack'] = $this->rendered->toArray();
         }
 
         if (isset($this->redirect)) {
@@ -168,13 +179,27 @@ final class ResponseFactory implements Responsable
             $response = $this->getInitialResponse($data);
         }
 
-        $response->headers->set('X-Stack-Signature', $data['signature']);
+        if (isset($data['signature'])) {
+            $response->headers->set('X-Stack-Signature', $data['signature']);
+        }
 
         if (isset($this->raw)) {
             $response->headers->set('X-Raw', 'true');
         }
 
         return $response;
+    }
+
+
+    public function view(string $view, array $props = []): View
+    {
+        return $this->rendered = new View($view, $props);
+    }
+
+
+    private function encodeJsonState(array $data): string
+    {
+        return json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
 
@@ -209,27 +234,5 @@ final class ResponseFactory implements Responsable
         assert(isset($this->view), 'Cannot find initial Blade view to render. Make sure you have wrapped your routes within Context middleware.');
 
         return view($this->view, ['initial' => $this->encodeJsonState($data)]);
-    }
-
-
-    private function encodeJsonState(array $data): string
-    {
-        return json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-    }
-
-
-    public function view(string $view, array $props = []): View
-    {
-        $this->setStack($instance = new View($view, $props));
-
-        return $instance;
-    }
-
-
-    public function setStack(View $stack): ResponseFactory
-    {
-        $this->stack = $stack;
-
-        return $this;
     }
 }
