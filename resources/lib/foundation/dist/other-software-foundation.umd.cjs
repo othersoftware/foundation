@@ -1947,10 +1947,11 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       const abilities = vue.inject(StateAbilities);
       const authenticated = vue.inject(StateAuthenticated);
       const toasts = vue.inject(ToastRegistryInjectionKey);
+      const stack2 = vue.inject(StackedViewInjectionKey);
       const loading = vue.ref(true);
       const view = vue.ref(void 0);
       vue.provide(HttpClientForceScrollPreservation, true);
-      vue.onMounted(() => {
+      function load() {
         Request.send("GET", props.src).then(async (response) => {
           if (response.redirect) {
             return new Promise(() => {
@@ -1980,6 +1981,12 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
         }).finally(() => {
           loading.value = false;
         });
+      }
+      vue.onMounted(() => {
+        load();
+      });
+      vue.watch(stack2, () => {
+        load();
       });
       return () => {
         if (view.value && "component" in view.value) {

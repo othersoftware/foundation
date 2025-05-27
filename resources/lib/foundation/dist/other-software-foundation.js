@@ -1944,10 +1944,11 @@ const RouterFrameComponent = defineComponent({
     const abilities = inject(StateAbilities);
     const authenticated = inject(StateAuthenticated);
     const toasts = inject(ToastRegistryInjectionKey);
+    const stack2 = inject(StackedViewInjectionKey);
     const loading = ref(true);
     const view = ref(void 0);
     provide(HttpClientForceScrollPreservation, true);
-    onMounted(() => {
+    function load() {
       Request.send("GET", props.src).then(async (response) => {
         if (response.redirect) {
           return new Promise(() => {
@@ -1977,6 +1978,12 @@ const RouterFrameComponent = defineComponent({
       }).finally(() => {
         loading.value = false;
       });
+    }
+    onMounted(() => {
+      load();
+    });
+    watch(stack2, () => {
+      load();
     });
     return () => {
       if (view.value && "component" in view.value) {

@@ -1,4 +1,4 @@
-import { defineComponent, provide, h, ref, nextTick, toValue, toRaw, inject, type Ref, type SlotsType, onMounted } from 'vue';
+import { defineComponent, provide, h, ref, nextTick, toValue, toRaw, inject, type Ref, type SlotsType, onMounted, watch } from 'vue';
 import { type StackedViewResolved } from '../../Types/StackedView';
 import { updateStack, StateAuthenticated, StateAbilities } from '../../Services/StateManager';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
@@ -7,6 +7,7 @@ import { Request } from '../../Http/Client/Request.ts';
 import { EventBus } from '../../Events/EventBus.ts';
 import { ErrorModal } from '../../Support/ErrorModal.ts';
 import { useViewResolver } from '../../Composables/UseViewResolver.ts';
+import { StackedViewInjectionKey } from '../../Services/StackedView.ts';
 
 
 export const RouterFrameComponent = defineComponent({
@@ -24,13 +25,14 @@ export const RouterFrameComponent = defineComponent({
       const abilities = inject(StateAbilities)!;
       const authenticated = inject(StateAuthenticated)!;
       const toasts = inject(ToastRegistryInjectionKey)!;
+      const stack = inject(StackedViewInjectionKey)!;
 
       const loading = ref(true);
       const view = ref(undefined) as unknown as Ref<StackedViewResolved>;
 
       provide(HttpClientForceScrollPreservation, true);
 
-      onMounted(() => {
+      function load() {
         Request.send('GET', props.src).then(async (response) => {
           if (response.redirect) {
             return new Promise(() => {
@@ -69,6 +71,14 @@ export const RouterFrameComponent = defineComponent({
         }).finally(() => {
           loading.value = false;
         });
+      }
+
+      onMounted(() => {
+        load();
+      });
+
+      watch(stack, () => {
+        load();
       });
 
       return () => {
