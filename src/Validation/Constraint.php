@@ -381,6 +381,10 @@ final readonly class Constraint
                 $value = $value ? 'true' : 'false';
             }
 
+            if (is_null($value)) {
+                $value = 'null';
+            }
+
             return sprintf('exclude_if:%s,%s', $field, $value);
         }
 
@@ -402,10 +406,14 @@ final readonly class Constraint
      *
      * @return string
      */
-    public static function excludeUnless(string|bool $field, mixed $value): string
+    public static function excludeUnless(string|bool $field, mixed $value = null): string
     {
         if (is_bool($value)) {
             $value = $value ? 'true' : 'false';
+        }
+
+        if (is_null($value)) {
+            $value = 'null';
         }
 
         return sprintf('exclude_unless:%s,%s', $field, $value);
