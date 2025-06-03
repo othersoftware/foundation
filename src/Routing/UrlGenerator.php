@@ -41,9 +41,9 @@ final class UrlGenerator extends IlluminateUrlGenerator
     #[Override]
     public function previous($fallback = false): string
     {
-        if ($previous = $this->getPreviousStackLocation()) {
-            $this->popStackLocation();
+        $this->popStackLocation();
 
+        if ($previous = $this->getPreviousStackLocation()) {
             return $previous;
         }
 

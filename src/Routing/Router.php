@@ -3,7 +3,6 @@
 namespace OtherSoftware\Routing;
 
 
-use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Pipeline;
@@ -27,9 +26,6 @@ final class Router extends BaseRouter
 
 
     protected Stack $stack;
-
-
-    protected UrlGenerator $url;
 
 
     public function exportForVue(): Collection
@@ -89,7 +85,6 @@ final class Router extends BaseRouter
         $middleware = $shouldSkipMiddleware ? [] : $this->gatherRouteMiddleware($route);
 
         $this->stack = $this->buildViewStack($route, $request);
-        $this->url = url();
 
         // Bind stack to the service container.
         $this->container->instance(Stack::class, $this->stack);
@@ -129,8 +124,6 @@ final class Router extends BaseRouter
         }
 
         $next = $this->buildViewStackFromRoute($request, $previous, $route);
-
-//        dd($previous, $next, $previous->compare($next, false));
 
         // Check for the stack refresh header. At some points, for example,
         // forms in modals, we might want to refresh the whole stack to reload
@@ -216,12 +209,11 @@ final class Router extends BaseRouter
      */
     private function hydrateRequestStackRoutes(Stack $stack): Stack
     {
-        /** @var StackEntry $entry */
-        foreach ($stack as $entry) {
+        return $stack->hydrate(function (StackEntry $entry) {
             $route = $this->routes->getByName($entry->getRouteName());
 
             if (is_null($route)) {
-                return new Stack();
+                return false;
             }
 
             assert($route instanceof Route);
@@ -229,9 +221,9 @@ final class Router extends BaseRouter
             $request = Request::createFromBase(SymfonyRequest::create($entry->getLocation()));
 
             $entry->setRoute($route->bind($request));
-        }
 
-        return $stack;
+            return true;
+        });
     }
 
 
@@ -241,22 +233,17 @@ final class Router extends BaseRouter
         $parent = null;
 
         if ($request->method() !== 'GET') {
-            $this->stack->append(StackEntry::fromRoute($route));
-            $this->stack->seekToLast();
-
             $this->running = $route;
 
             $response = $route->run();
 
             unset($this->running);
 
-            $this->stack->pop();
-
             return $response;
         }
 
         /** @var StackEntry $entry */
-        foreach ($this->stack as $entry) {
+        foreach ($this->stack->getIterator() as $entry) {
             $this->running = $entry->getRoute();
 
             if ($entry->shouldKeep()) {

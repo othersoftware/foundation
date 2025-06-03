@@ -8,12 +8,11 @@ use ArrayIterator;
 use Countable;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
-use IteratorAggregate;
 use RuntimeException;
 use Serializable;
 
 
-final class Stack implements Countable, ArrayAccess, IteratorAggregate, Serializable, Arrayable
+final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
 {
     /**
      * An array containing all stack entries being resolved.
@@ -138,9 +137,36 @@ final class Stack implements Countable, ArrayAccess, IteratorAggregate, Serializ
     }
 
 
+    /**
+     * Returns and stores an ArrayIterator for the stack. This method should be
+     * used when running a stack within the router.
+     *
+     * @return ArrayIterator
+     */
     public function getIterator(): ArrayIterator
     {
         return $this->iterator = new ArrayIterator($this->entries);
+    }
+
+
+    /**
+     * This method allows hydration of stack entries without generating
+     * an ArrayIterator. This method should only be used when hydrating a stack
+     * from the request.
+     *
+     * @param callable(StackEntry $entry): void $callback
+     *
+     * @return $this
+     */
+    public function hydrate(callable $callback): self
+    {
+        foreach ($this->entries as $entry) {
+            if (false === $callback($entry)) {
+                return new self();
+            }
+        }
+
+        return $this;
     }
 
 
@@ -234,7 +260,7 @@ final class Stack implements Countable, ArrayAccess, IteratorAggregate, Serializ
             return $this->entries[$this->iterator->key() - 1] ?? null;
         }
 
-        return null;
+        return Arr::last($this->entries);
     }
 
 
@@ -249,14 +275,6 @@ final class Stack implements Countable, ArrayAccess, IteratorAggregate, Serializ
         }
 
         $this->sealed = true;
-
-        return $this;
-    }
-
-
-    public function seekToLast(): self
-    {
-        $this->getIterator()->seek($this->count() - 1);
 
         return $this;
     }
