@@ -34,9 +34,9 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@types/node": "^22.14.1",
+        "@types/node": "^22.15.29",
         "typescript": "^5.8.3",
-        "vite": "^6.2.6",
-        "vite-plugin-dts": "^4.5.3"
+        "vite": "^6.3.5",
+        "vite-plugin-dts": "^4.5.4"
     }
 }

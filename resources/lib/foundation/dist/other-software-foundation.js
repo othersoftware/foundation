@@ -2518,7 +2518,7 @@ function replaceRouteParameters(route2, params) {
   }, route2.uri);
 }
 /**
-* @vue/shared v3.5.13
+* @vue/shared v3.5.16
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -2700,7 +2700,7 @@ function escapeHtmlComment(src) {
   return src.replace(commentStripRE, "");
 }
 /**
-* @vue/server-renderer v3.5.13
+* @vue/server-renderer v3.5.16
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -2776,15 +2776,6 @@ function ssrRenderTeleport(parentPush, contentRenderFn, target, disabled, parent
   targetBuffer.splice(bufferIndex, 0, teleportContent);
   parentPush("<!--teleport end-->");
 }
-Symbol(
-  !!(process.env.NODE_ENV !== "production") ? "Object iterate" : ""
-);
-Symbol(
-  !!(process.env.NODE_ENV !== "production") ? "Map keys iterate" : ""
-);
-Symbol(
-  !!(process.env.NODE_ENV !== "production") ? "Array iterate" : ""
-);
 function toRaw(observed) {
   const raw = observed && observed["__v_raw"];
   return raw ? toRaw(raw) : observed;
