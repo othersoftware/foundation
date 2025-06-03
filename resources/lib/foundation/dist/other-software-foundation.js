@@ -3670,6 +3670,15 @@ function nestedSetAncestors(data, item) {
 function nestedSetDescendants(data, item) {
   return data.filter((node) => node.left > item.left && node.right < item.right);
 }
+function random(length, characterSet = void 0) {
+  let result = "";
+  const characters = characterSet || "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890";
+  const charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 function findScrollParent(element) {
   if (!element) {
     return void 0;
@@ -3752,6 +3761,7 @@ export {
   nestedSetChildren,
   nestedSetDescendants,
   nestedSetRoot,
+  random,
   route,
   setModelWithContext,
   trans,

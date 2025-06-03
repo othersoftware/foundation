@@ -270,6 +270,8 @@ declare type Options = {
 
 declare type Params = Record<string, any>;
 
+export declare function random(length: number, characterSet?: string | undefined): string;
+
 declare class Request_2 {
     protected method: Method;
     protected url: string;

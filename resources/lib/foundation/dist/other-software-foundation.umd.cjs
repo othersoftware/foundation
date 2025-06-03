@@ -3673,6 +3673,15 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
   function nestedSetDescendants(data, item) {
     return data.filter((node) => node.left > item.left && node.right < item.right);
   }
+  function random(length, characterSet = void 0) {
+    let result = "";
+    const characters = characterSet || "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890";
+    const charactersLength = characters.length;
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
   function findScrollParent(element) {
     if (!element) {
       return void 0;
@@ -3754,6 +3763,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
   exports2.nestedSetChildren = nestedSetChildren;
   exports2.nestedSetDescendants = nestedSetDescendants;
   exports2.nestedSetRoot = nestedSetRoot;
+  exports2.random = random;
   exports2.route = route;
   exports2.setModelWithContext = setModelWithContext;
   exports2.trans = trans;
