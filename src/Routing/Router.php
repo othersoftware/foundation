@@ -241,12 +241,16 @@ final class Router extends BaseRouter
         $parent = null;
 
         if ($request->method() !== 'GET') {
-            $this->stack->seek();
+            $this->stack->append(StackEntry::fromRoute($route));
+            $this->stack->seekToLast();
+
             $this->running = $route;
 
             $response = $route->run();
 
             unset($this->running);
+
+            $this->stack->pop();
 
             return $response;
         }

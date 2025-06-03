@@ -208,6 +208,16 @@ final class Stack implements Countable, ArrayAccess, IteratorAggregate, Serializ
     }
 
 
+    public function pop(): self
+    {
+        $this->preventSealedStackModification();
+
+        array_pop($this->entries);
+
+        return $this;
+    }
+
+
     public function prepend(StackEntry $entry): self
     {
         $this->preventSealedStackModification();
@@ -244,7 +254,7 @@ final class Stack implements Countable, ArrayAccess, IteratorAggregate, Serializ
     }
 
 
-    public function seek(): self
+    public function seekToLast(): self
     {
         $this->getIterator()->seek($this->count() - 1);
 

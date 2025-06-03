@@ -45,6 +45,7 @@
             "helpers/countries.php",
             "helpers/errors.php",
             "helpers/filesystem.php",
+            "helpers/redirect.php",
             "helpers/string.php",
             "helpers/translation.php"
         ]

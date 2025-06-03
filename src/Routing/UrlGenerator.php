@@ -32,10 +32,22 @@ final class UrlGenerator extends IlluminateUrlGenerator
     }
 
 
+    public function forward($path, $extra = [], $secure = null): string
+    {
+        return $this->popStackLocation()->to($path, $extra, $secure);
+    }
+
+
     #[Override]
     public function previous($fallback = false): string
     {
-        $referrer = $this->getPreviousStackLocation() ?: $this->request->headers->get('X-Stack-Referer') ?: $this->request->headers->get('Referer');
+        if ($previous = $this->getPreviousStackLocation()) {
+            $this->popStackLocation();
+
+            return $previous;
+        }
+
+        $referrer = $this->request->headers->get('X-Stack-Referer') ?: $this->request->headers->get('Referer');
         $url = $referrer ? $this->to($referrer) : $this->getPreviousUrlFromSession();
 
         if ($url) {
@@ -108,5 +120,19 @@ final class UrlGenerator extends IlluminateUrlGenerator
         }
 
         return null;
+    }
+
+
+    private function popStackLocation(): self
+    {
+        if (App::bound(Stack::class)) {
+            try {
+                App::make(Stack::class)->pop();
+            } catch (BindingResolutionException $e) {
+
+            }
+        }
+
+        return $this;
     }
 }
