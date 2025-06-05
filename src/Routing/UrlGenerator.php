@@ -62,6 +62,20 @@ final class UrlGenerator extends IlluminateUrlGenerator
     }
 
 
+    public function refresh($fallback = false): string
+    {
+        if ($previous = $this->getPreviousStackLocation()) {
+            return $previous;
+        }
+
+        if ($fallback) {
+            return $this->to($fallback);
+        }
+
+        return $this->to('/');
+    }
+
+
     #[Override]
     public function route($name, $parameters = [], $absolute = true): string
     {

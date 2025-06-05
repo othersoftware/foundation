@@ -25,4 +25,10 @@ final class Redirector extends IlluminateRedirector
     {
         return $this->createRedirect($this->generator->forward($path, [], $secure), $status, $headers);
     }
+
+
+    public function refresh($status = 302, $headers = [], $fallback = false): RedirectResponse
+    {
+        return $this->createRedirect($this->generator->refresh($fallback), $status, $headers);
+    }
 }

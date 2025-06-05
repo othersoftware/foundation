@@ -25,6 +25,7 @@ use Illuminate\Validation\Rules\Unique;
 use Illuminate\Validation\Validator;
 use OtherSoftware\Validation\Rules\Country;
 use OtherSoftware\Validation\Rules\Currency;
+use OtherSoftware\Validation\Rules\ExcludeUnless;
 use OtherSoftware\Validation\Rules\ExcludeWithExplicitAddress;
 use OtherSoftware\Validation\Rules\ExcludeWithImplicitAddress;
 use OtherSoftware\Validation\Rules\MaxUploadSize;
@@ -401,22 +402,26 @@ final readonly class Constraint
      *
      * @see https://laravel.com/docs/11.x/validation#rule-exclude-unless
      *
-     * @param string|bool $field
+     * @param string|bool|callable $field
      * @param mixed $value
      *
      * @return string
      */
-    public static function excludeUnless(string|bool $field, mixed $value = null): string
+    public static function excludeUnless(string|bool|callable $field, mixed $value = null): string
     {
-        if (is_bool($value)) {
-            $value = $value ? 'true' : 'false';
+        if (is_string($field)) {
+            if (is_bool($value)) {
+                $value = $value ? 'true' : 'false';
+            }
+
+            if (is_null($value)) {
+                $value = 'null';
+            }
+
+            return sprintf('exclude_unless:%s,%s', $field, $value);
         }
 
-        if (is_null($value)) {
-            $value = 'null';
-        }
-
-        return sprintf('exclude_unless:%s,%s', $field, $value);
+        return new ExcludeUnless($field);
     }
 
 
@@ -630,6 +635,21 @@ final readonly class Constraint
     public static function lowercase(): string
     {
         return 'lowercase';
+    }
+
+
+    /**
+     * The field under validation must be less than or equal to the given field.
+     * The two fields must be of the same type. Strings, numerics, arrays,
+     * and files are evaluated using the same conventions as the `size` rule.
+     *
+     * @param string $field
+     *
+     * @return string
+     */
+    public static function lte(string $field): string
+    {
+        return sprintf('lte:%s', $field);
     }
 
 

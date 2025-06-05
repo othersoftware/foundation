@@ -1,4 +1,4 @@
-import { type PropType, nextTick, watch, provide, defineComponent, h, type SlotsType, toValue, inject, computed } from 'vue';
+import { type PropType, nextTick, watch, provide, defineComponent, h, type SlotsType, toValue, inject, computed, mergeProps } from 'vue';
 import type { Method } from '../../Http/Client/Request';
 import type { Response } from '../../Http/Client/Response';
 import { CompleteResponse } from '../../Http/Client/Response';
@@ -45,7 +45,7 @@ export const FormControllerComponent = defineComponent({
       submit: () => void,
     },
   }>,
-  setup(props, { slots, expose }) {
+  setup(props, { attrs, slots, expose }) {
     const ctx = createFormContext(lodashCloneDeep(toValue(props.data)), toValue(props.readonly));
     const http = useHttpClient();
     const parent = inject(FormContextInjectionKey, null);
@@ -113,7 +113,7 @@ export const FormControllerComponent = defineComponent({
 
     provide(FormContextInjectionKey, ctx);
 
-    return () => h(element.value, { class: 'form', ...specific.value }, slots.default({
+    return () => h(element.value, mergeProps(attrs, specific.value, { class: 'form' }), slots.default({
       data: data.value,
       processing: processing.value,
       errors: errors.value,

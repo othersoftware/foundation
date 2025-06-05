@@ -1613,7 +1613,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       }
     },
     slots: Object,
-    setup(props, { slots, expose }) {
+    setup(props, { attrs, slots, expose }) {
       const ctx = createFormContext(lodashCloneDeep(vue.toValue(props.data)), vue.toValue(props.readonly));
       const http = useHttpClient();
       const parent = vue.inject(FormContextInjectionKey, null);
@@ -1669,7 +1669,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
         submit
       });
       vue.provide(FormContextInjectionKey, ctx);
-      return () => vue.h(element.value, { class: "form", ...specific.value }, slots.default({
+      return () => vue.h(element.value, vue.mergeProps(attrs, specific.value, { class: "form" }), slots.default({
         data: data.value,
         processing: processing.value,
         errors: errors.value,

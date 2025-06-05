@@ -1,7 +1,7 @@
 var __defProp = Object.defineProperty;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-import { inject, ref, defineComponent, toValue, computed, watch, provide, h, nextTick, mergeProps, onMounted, toRaw as toRaw$1, onBeforeUnmount, ssrUtils, initDirectivesForSSR, createApp, createVNode, ssrContextKey, warn, Fragment, Static, Comment, Text } from "vue";
+import { inject, ref, defineComponent, toValue, computed, watch, provide, h, mergeProps, nextTick, onMounted, toRaw as toRaw$1, onBeforeUnmount, ssrUtils, initDirectivesForSSR, createApp, createVNode, ssrContextKey, warn, Fragment, Static, Comment, Text } from "vue";
 class Response {
   constructor(xhr) {
     __publicField(this, "xhr");
@@ -1610,7 +1610,7 @@ const FormControllerComponent = defineComponent({
     }
   },
   slots: Object,
-  setup(props, { slots, expose }) {
+  setup(props, { attrs, slots, expose }) {
     const ctx = createFormContext(lodashCloneDeep(toValue(props.data)), toValue(props.readonly));
     const http = useHttpClient();
     const parent = inject(FormContextInjectionKey, null);
@@ -1666,7 +1666,7 @@ const FormControllerComponent = defineComponent({
       submit
     });
     provide(FormContextInjectionKey, ctx);
-    return () => h(element.value, { class: "form", ...specific.value }, slots.default({
+    return () => h(element.value, mergeProps(attrs, specific.value, { class: "form" }), slots.default({
       data: data.value,
       processing: processing.value,
       errors: errors.value,
