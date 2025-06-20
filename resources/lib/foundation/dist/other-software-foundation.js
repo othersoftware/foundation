@@ -3616,6 +3616,16 @@ function useViewQuery() {
   }
   return view;
 }
+function groupBy(array, key) {
+  return array.reduce((result, item) => {
+    const groupKey = item[key];
+    if (!result[groupKey]) {
+      result[groupKey] = [];
+    }
+    result[groupKey].push(item);
+    return result;
+  }, {});
+}
 function isCountryImplicit(country) {
   if (country) {
     return APP_COUNTRIES_IMPLICITLY_ADDRESSES.includes(country);
@@ -3650,10 +3660,10 @@ function hash(length = 16) {
   return Array.from(window.crypto.getRandomValues(new Uint8Array(Math.ceil(length / 2))), (b) => ("0" + (b & 255).toString(16)).slice(-2)).join("");
 }
 function nestedSetRoot(data) {
-  return data.filter((node) => node.parentId === null);
+  return data.filter((node) => node.parent === null);
 }
 function nestedSetChildren(data, item) {
-  return data.filter((node) => node.left > item.left && node.right < item.right && node.parentId === item.id);
+  return data.filter((node) => node.left > item.left && node.right < item.right && node.parent === item.id);
 }
 function nestedSetAncestors(data, item) {
   return data.filter((node) => node.left < item.left && node.right > item.right);
@@ -3745,6 +3755,7 @@ export {
   filled,
   findScrollParent,
   getModelFromContext,
+  groupBy,
   hash,
   isCountryExplicit,
   isCountryImplicit,

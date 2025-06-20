@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * @method static bool isVuePowered(?Request $request = null)
  * @method static bool rendersVueResponse(?Request $request = null)
- * @method static ResponseFactory view(string $view, array $props = [])
+ * @method static View view(string $view, array $props = [])
  * @method static ResponseFactory getFacadeRoot()
  * @method static ResponseFactory setErrors(array $errors)
  * @method static ResponseFactory setRaw(mixed $raw)

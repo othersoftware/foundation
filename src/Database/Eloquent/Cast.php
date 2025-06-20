@@ -3,9 +3,13 @@
 namespace OtherSoftware\Database\Eloquent;
 
 
+use Illuminate\Database\Eloquent\Casts\AsCollection;
+use Illuminate\Database\Eloquent\Casts\AsEnumCollection;
+use OtherSoftware\Database\Eloquent\Casts\AsEnumArray;
 use OtherSoftware\Database\Eloquent\Casts\DateCast;
 use OtherSoftware\Database\Eloquent\Casts\DatetimeCast;
 use OtherSoftware\Database\Eloquent\Casts\PhoneNumberCast;
+use UnitEnum;
 
 
 final readonly class Cast
@@ -13,6 +17,34 @@ final readonly class Cast
     public static function array(): string
     {
         return 'array';
+    }
+
+
+    public static function asCollectionOf(mixed $map): string
+    {
+        return AsCollection::of($map);
+    }
+
+
+    /**
+     * @param class-string<UnitEnum> $class
+     *
+     * @return string
+     */
+    public static function asEnumArray(string $class): string
+    {
+        return AsEnumArray::of($class);
+    }
+
+
+    /**
+     * @param class-string<UnitEnum> $class
+     *
+     * @return string
+     */
+    public static function asEnumCollection(string $class): string
+    {
+        return AsEnumCollection::of($class);
     }
 
 
@@ -37,6 +69,12 @@ final readonly class Cast
     public static function decimal(int $precision): string
     {
         return sprintf('decimal:%d', $precision);
+    }
+
+
+    public static function encrypted(): string
+    {
+        return 'encrypted';
     }
 
 

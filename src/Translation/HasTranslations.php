@@ -3,6 +3,7 @@
 namespace OtherSoftware\Translation;
 
 
+use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,12 @@ trait HasTranslations
 
 
     protected $defaultLocale;
+
+
+    public function __isset($key)
+    {
+        return $this->isTranslationAttribute($key) || parent::__isset($key);
+    }
 
 
     public static function bootHasTranslations(): void
@@ -80,12 +87,6 @@ trait HasTranslations
     public static function enableDeleteTranslationsCascade(): void
     {
         self::$deleteTranslationsCascade = true;
-    }
-
-
-    public function __isset($key)
-    {
-        return $this->isTranslationAttribute($key) || parent::__isset($key);
     }
 
 
@@ -392,6 +393,29 @@ trait HasTranslations
     public function translateOrNew(?string $locale = null): Model
     {
         return $this->getTranslationOrNew($locale);
+    }
+
+
+    /**
+     * @template TModel of Model
+     *
+     * @param Closure(TModel $model):void|string $locale
+     * @param Closure(TModel $model):void|null $factory
+     *
+     * @return TModel
+     */
+    public function translationFactory(Closure|string $locale, Closure|null $factory = null): Model
+    {
+        if (is_callable($locale)) {
+            $factory = $locale;
+            $locale = $this->getFallbackLocale();
+        }
+
+        $model = $this->translateOrNew($locale);
+
+        $factory($model);
+
+        return $model;
     }
 
 

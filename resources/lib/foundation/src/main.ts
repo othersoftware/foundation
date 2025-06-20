@@ -41,6 +41,7 @@ export * from './Services/StateManager';
 export * from './Services/StackedView';
 export * from './Services/ToastManager';
 
+export * from './Support/Array';
 export * from './Support/Countries';
 export * from './Support/Empty';
 export * from './Support/ErrorModal';

@@ -200,6 +200,8 @@ declare type FormHandler = (data: any, ctx: FormContextInterface) => Promise<any
 
 export declare function getModelFromContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any): any;
 
+export declare function groupBy<T extends Record<K, PropertyKey>, K extends keyof T>(array: T[], key: K): Record<T[K], T[]>;
+
 export declare function hash(length?: number): string;
 
 export declare type HeadMeta = {
@@ -256,8 +258,8 @@ export declare type NestedSetItem = {
     id: number;
     left: number;
     right: number;
-    parentId: number | null;
-    title: string;
+    parent: number | null;
+    label: string | null;
 };
 
 export declare function nestedSetRoot<T extends NestedSetItem = any>(data: NestedSet<T>): T[];
