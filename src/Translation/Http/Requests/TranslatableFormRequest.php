@@ -3,8 +3,8 @@
 namespace OtherSoftware\Translation\Http\Requests;
 
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Arr;
+use OtherSoftware\Http\Requests\FormRequest;
 
 
 class TranslatableFormRequest extends FormRequest
