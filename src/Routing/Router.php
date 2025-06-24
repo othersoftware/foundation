@@ -130,7 +130,7 @@ final class Router extends BaseRouter
         // data underneath the modal window.
         $changed = $request->header('X-Stack-Refresh') === 'true';
 
-        return $previous->compare($next, $changed)->seal();
+        return $previous->compare($next, $changed);
     }
 
 

@@ -26,16 +26,6 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
 
 
     /**
-     * Indicated whether a stack has been built and hydrated with necessary
-     * data. It is then sealed to avoid any "unintended" data changes
-     * to the stack.
-     *
-     * @var bool
-     */
-    private bool $sealed = false;
-
-
-    /**
      * Creates a new stack instance.
      *
      * @param StackEntry|array $entries Initial entries for the stack.
@@ -74,8 +64,6 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
 
     public function append(StackEntry $entry): self
     {
-        $this->preventSealedStackModification();
-
         if ($offset = array_find_key($this->entries, fn(StackEntry $item) => $item->is($entry->getRouteName()))) {
             array_splice($this->entries, $offset);
         }
@@ -236,8 +224,6 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
 
     public function pop(): self
     {
-        $this->preventSealedStackModification();
-
         array_pop($this->entries);
 
         return $this;
@@ -246,8 +232,6 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
 
     public function prepend(StackEntry $entry): self
     {
-        $this->preventSealedStackModification();
-
         array_unshift($this->entries, $entry);
 
         return $this;
@@ -261,22 +245,6 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
         }
 
         return Arr::last($this->entries);
-    }
-
-
-    public function seal(): self
-    {
-        if ($this->sealed) {
-            return $this;
-        }
-
-        foreach ($this->entries as $entry) {
-            $entry->seal();
-        }
-
-        $this->sealed = true;
-
-        return $this;
     }
 
 
@@ -304,13 +272,5 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
     public function unserialize(string $data): void
     {
         [$this->entries] = unserialize($data);
-    }
-
-
-    private function preventSealedStackModification(): void
-    {
-        if ($this->sealed) {
-            throw new RuntimeException('This stack has already been sealed. You cannot modify it at this stage.');
-        }
     }
 }
