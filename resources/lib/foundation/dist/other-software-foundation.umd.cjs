@@ -1658,6 +1658,27 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
           readonly.value = beforeReadonly;
         }));
       }
+      function handleSubmit(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        submit();
+      }
+      function onKeydown(event) {
+        if (event.key === "Enter") {
+          const target = event.target;
+          if (target.tagName !== "TEXTAREA" && !target.form && element.value === "div") {
+            handleSubmit(event);
+          }
+        }
+      }
+      const eventHandlers = vue.computed(() => {
+        if (element.value === "form") {
+          return { onSubmit: handleSubmit };
+        } else if (element.value === "div") {
+          return { onKeydown };
+        }
+        return {};
+      });
       vue.watch(() => props.data, (values) => {
         data.value = lodashCloneDeep(vue.toValue(values));
       });
@@ -1669,7 +1690,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
         submit
       });
       vue.provide(FormContextInjectionKey, ctx);
-      return () => vue.h(element.value, vue.mergeProps(attrs, specific.value, { class: "form" }), slots.default({
+      return () => vue.h(element.value, vue.mergeProps(attrs, specific.value, eventHandlers.value, { class: "form" }), slots.default({
         data: data.value,
         processing: processing.value,
         errors: errors.value,

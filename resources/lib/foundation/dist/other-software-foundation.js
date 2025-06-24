@@ -1655,6 +1655,27 @@ const FormControllerComponent = defineComponent({
         readonly.value = beforeReadonly;
       }));
     }
+    function handleSubmit(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      submit();
+    }
+    function onKeydown(event) {
+      if (event.key === "Enter") {
+        const target = event.target;
+        if (target.tagName !== "TEXTAREA" && !target.form && element.value === "div") {
+          handleSubmit(event);
+        }
+      }
+    }
+    const eventHandlers = computed(() => {
+      if (element.value === "form") {
+        return { onSubmit: handleSubmit };
+      } else if (element.value === "div") {
+        return { onKeydown };
+      }
+      return {};
+    });
     watch(() => props.data, (values) => {
       data.value = lodashCloneDeep(toValue(values));
     });
@@ -1666,7 +1687,7 @@ const FormControllerComponent = defineComponent({
       submit
     });
     provide(FormContextInjectionKey, ctx);
-    return () => h(element.value, mergeProps(attrs, specific.value, { class: "form" }), slots.default({
+    return () => h(element.value, mergeProps(attrs, specific.value, eventHandlers.value, { class: "form" }), slots.default({
       data: data.value,
       processing: processing.value,
       errors: errors.value,
