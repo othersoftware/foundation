@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest as IlluminateFormRequest;
 
 class FormRequest extends IlluminateFormRequest
 {
-    public function validationRules(): array
+    protected function validationRules(): array
     {
         $rules = parent::validationRules();
 
