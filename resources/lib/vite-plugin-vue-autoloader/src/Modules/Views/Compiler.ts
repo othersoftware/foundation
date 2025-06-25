@@ -1,7 +1,7 @@
 import path from 'node:path';
 import fs from 'node:fs';
-import { ComponentsMap } from '../../Services/Collector';
-import { ResolvedConfig } from 'vite';
+import { type ComponentsMap } from '../../Services/Collector';
+import { type ResolvedConfig } from 'vite';
 
 export function compileViewsModule(views: ComponentsMap) {
   let lines: string[] = [];

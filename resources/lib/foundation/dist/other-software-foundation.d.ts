@@ -530,7 +530,7 @@ export declare interface Toast {
     id: string;
     description: string;
     duration: number;
-    kind: ToastKind;
+    kind: typeof ToastKind;
 }
 
 export declare const ToastComponent: DefineComponent<ExtractPropTypes<    {
@@ -560,12 +560,12 @@ toasts: ToastRegistry;
 };
 }>, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
-export declare enum ToastKind {
-    SUCCESS = "success",
-    DANGER = "danger",
-    INFO = "info",
-    WARNING = "warning"
-}
+export declare const ToastKind: {
+    SUCCESS: string;
+    DANGER: string;
+    INFO: string;
+    WARNING: string;
+};
 
 export declare type ToastRegistry = Toast[];
 

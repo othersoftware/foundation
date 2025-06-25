@@ -1,7 +1,7 @@
-import { ResolvedConfig } from 'vite';
+import { type ResolvedConfig } from 'vite';
 import { writeComponentsDeclarations, writeVueDeclarations, compileComponentsModule } from './Compiler';
 import { collect } from '../../Services/Collector';
-import { Options } from '../../Types/Options';
+import { type Options } from '../../Types/Options';
 import { resolveTargetDirectory } from '../../Utils/Target.ts';
 
 export function provideVirtualComponentsModule(config: ResolvedConfig, options: Options, compile: boolean = true) {

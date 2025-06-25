@@ -1,11 +1,11 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
-import dts from 'vite-plugin-dts';
+import dts from 'unplugin-dts/vite';
 
 export default defineConfig({
   plugins: [
     dts({
-      rollupTypes: true,
+      bundleTypes: true,
     }),
   ],
   build: {

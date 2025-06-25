@@ -1,20 +1,17 @@
 (function(global2, factory) {
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("vue")) : typeof define === "function" && define.amd ? define(["exports", "vue"], factory) : (global2 = typeof globalThis !== "undefined" ? globalThis : global2 || self, factory(global2.OtherSoftwareFoundation = {}, global2.Vue));
 })(this, function(exports2, vue) {
-  "use strict";var __defProp = Object.defineProperty;
-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
-
+  "use strict";
   class Response {
+    xhr;
+    status;
+    success;
+    fail;
+    partial;
+    raw;
+    message;
+    content;
     constructor(xhr) {
-      __publicField(this, "xhr");
-      __publicField(this, "status");
-      __publicField(this, "success");
-      __publicField(this, "fail");
-      __publicField(this, "partial");
-      __publicField(this, "raw");
-      __publicField(this, "message");
-      __publicField(this, "content");
       this.xhr = xhr;
       if (this.xhr.getResponseHeader("x-stack-router")) {
         throw new Error("Invalid response for MVC HTTP client.");
@@ -29,17 +26,17 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
     }
   }
   class CompleteResponse extends Response {
+    abilities;
+    authenticated;
+    location;
+    signature;
+    redirect;
+    stack;
+    toasts;
+    errors;
+    data;
     constructor(xhr) {
       super(xhr);
-      __publicField(this, "abilities");
-      __publicField(this, "authenticated");
-      __publicField(this, "location");
-      __publicField(this, "signature");
-      __publicField(this, "redirect");
-      __publicField(this, "stack");
-      __publicField(this, "toasts");
-      __publicField(this, "errors");
-      __publicField(this, "data");
       let data = JSON.parse(this.xhr.response);
       this.abilities = data.abilities;
       this.authenticated = data.authenticated;
@@ -115,14 +112,17 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
     return { ...fresh };
   }
   class Request {
+    method;
+    url;
+    xhr;
+    body;
+    signature;
+    refreshStack;
+    referer;
+    static send(method, url2, body = void 0, signature = void 0, refreshStack = false, referer = void 0) {
+      return new Request(method, url2, body, signature, refreshStack, referer).send();
+    }
     constructor(method, url2, body = void 0, signature = void 0, refreshStack = false, referer = void 0) {
-      __publicField(this, "method");
-      __publicField(this, "url");
-      __publicField(this, "xhr");
-      __publicField(this, "body");
-      __publicField(this, "signature");
-      __publicField(this, "refreshStack");
-      __publicField(this, "referer");
       this.xhr = new XMLHttpRequest();
       this.method = method;
       this.url = url2;
@@ -130,9 +130,6 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       this.signature = signature;
       this.refreshStack = refreshStack;
       this.referer = referer;
-    }
-    static send(method, url2, body = void 0, signature = void 0, refreshStack = false, referer = void 0) {
-      return new Request(method, url2, body, signature, refreshStack, referer).send();
     }
     send() {
       return new Promise((resolve, reject) => {
@@ -1112,8 +1109,8 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       var reIsNative = RegExp(
         "^" + funcToString.call(hasOwnProperty).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
       );
-      var Buffer2 = moduleExports ? root.Buffer : void 0, Symbol2 = root.Symbol, Uint8Array2 = root.Uint8Array, getPrototype = overArg(Object.getPrototypeOf, Object), objectCreate = Object.create, propertyIsEnumerable = objectProto.propertyIsEnumerable, splice = arrayProto.splice;
-      var nativeGetSymbols = Object.getOwnPropertySymbols, nativeIsBuffer = Buffer2 ? Buffer2.isBuffer : void 0, nativeKeys = overArg(Object.keys, Object);
+      var Buffer = moduleExports ? root.Buffer : void 0, Symbol2 = root.Symbol, Uint8Array2 = root.Uint8Array, getPrototype = overArg(Object.getPrototypeOf, Object), objectCreate = Object.create, propertyIsEnumerable = objectProto.propertyIsEnumerable, splice = arrayProto.splice;
+      var nativeGetSymbols = Object.getOwnPropertySymbols, nativeIsBuffer = Buffer ? Buffer.isBuffer : void 0, nativeKeys = overArg(Object.keys, Object);
       var DataView = getNative(root, "DataView"), Map2 = getNative(root, "Map"), Promise2 = getNative(root, "Promise"), Set2 = getNative(root, "Set"), WeakMap = getNative(root, "WeakMap"), nativeCreate = getNative(Object, "create");
       var dataViewCtorString = toSource(DataView), mapCtorString = toSource(Map2), promiseCtorString = toSource(Promise2), setCtorString = toSource(Set2), weakMapCtorString = toSource(WeakMap);
       var symbolProto = Symbol2 ? Symbol2.prototype : void 0, symbolValueOf = symbolProto ? symbolProto.valueOf : void 0;
@@ -1648,10 +1645,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
         vue.nextTick(() => dispatch().catch((error) => {
           if (error instanceof CompleteResponse) {
             errors.value = error.errors;
-            vue.nextTick(() => {
-              var _a;
-              return (_a = document.querySelector(".control--error")) == null ? void 0 : _a.scrollIntoView();
-            });
+            vue.nextTick(() => document.querySelector(".control--error")?.scrollIntoView());
           }
         }).finally(() => {
           processing.value = false;
@@ -1745,14 +1739,8 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       const resolver = useViewResolver();
       const depth = useViewDepth();
       const view = useViewStack();
-      const location = vue.computed(() => {
-        var _a;
-        return (_a = view.value) == null ? void 0 : _a.location;
-      });
-      const query = vue.computed(() => {
-        var _a;
-        return (_a = view.value) == null ? void 0 : _a.query;
-      });
+      const location = vue.computed(() => view.value?.location);
+      const query = vue.computed(() => view.value?.query);
       const stack2 = vue.computed(() => {
         if (view.value && view.value.child) {
           return { ...view.value.child, parent: view.value };
@@ -1762,10 +1750,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       });
       vue.provide(StackedViewInjectionKey, stack2);
       vue.provide(StackedViewDepthInjectionKey, vue.computed(() => depth.value + 1));
-      vue.provide(StackedViewParentInjectionKey, vue.computed(() => {
-        var _a;
-        return (_a = view.value) == null ? void 0 : _a.parent;
-      }));
+      vue.provide(StackedViewParentInjectionKey, vue.computed(() => view.value?.parent));
       vue.provide(StackedViewLocationInjectionKey, location);
       vue.provide(StackedViewQueryInjectionKey, query);
       return () => {
@@ -1806,9 +1791,8 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
       const http = useHttpClient();
       const pending = vue.ref(false);
       const active = vue.computed(() => {
-        var _a;
         let current = location.value.replace(/\/$/, "");
-        let target = (_a = props.href) == null ? void 0 : _a.replace(/\/$/, "");
+        let target = props.href?.replace(/\/$/, "");
         let explicit = current === target;
         let implicit = !props.explicit && target && location.value.startsWith(target);
         return explicit || implicit;
@@ -2542,7 +2526,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
     }, route2.uri);
   }
   /**
-  * @vue/shared v3.5.16
+  * @vue/shared v3.5.17
   * (c) 2018-present Yuxi (Evan) You and Vue contributors
   * @license MIT
   **/
@@ -2724,7 +2708,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
     return src.replace(commentStripRE, "");
   }
   /**
-  * @vue/server-renderer v3.5.16
+  * @vue/server-renderer v3.5.17
   * (c) 2018-present Yuxi (Evan) You and Vue contributors
   * @license MIT
   **/
@@ -3718,13 +3702,12 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key !== "sy
     }
     return document.documentElement;
   }
-  var ToastKind = /* @__PURE__ */ ((ToastKind2) => {
-    ToastKind2["SUCCESS"] = "success";
-    ToastKind2["DANGER"] = "danger";
-    ToastKind2["INFO"] = "info";
-    ToastKind2["WARNING"] = "warning";
-    return ToastKind2;
-  })(ToastKind || {});
+  const ToastKind = {
+    SUCCESS: "success",
+    DANGER: "danger",
+    INFO: "info",
+    WARNING: "warning"
+  };
   function createOtherSoftwareFoundation() {
     return {
       install(app) {

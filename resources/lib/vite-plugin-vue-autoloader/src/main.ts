@@ -1,7 +1,7 @@
-import { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
+import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import { provideVirtualComponentsModule } from './Modules/Components';
 import { provideVirtualViewsModule } from './Modules/Views';
-import { Options } from './Types/Options';
+import type { Options } from './Types/Options';
 
 
 export default function autoloader(options: Options): Plugin {

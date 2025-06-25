@@ -1,19 +1,9 @@
 {
-    "extends": "@vue/tsconfig/tsconfig.dom.json",
-    "compilerOptions": {
-        "composite": true,
-        "baseUrl": ".",
-        "noImplicitAny": false,
-        "preserveSymlinks": true,
-        "allowSyntheticDefaultImports": true,
-        "types": ["vite/client"]
-    },
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.vue",
-        "types/**/*.ts"
-    ],
+    "files": [],
     "references": [
+        {
+            "path": "./tsconfig.lib.json"
+        },
         {
             "path": "./tsconfig.node.json"
         }
