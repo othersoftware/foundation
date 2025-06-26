@@ -10,26 +10,22 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property string[] $translatedAttributes
+ *
+ * @phpstan-require-extends Model
  */
 interface Translatable
 {
     public static function defaultAutoloadTranslations(): void;
 
-
-    public function deleteTranslations($locales = null): void;
-
-
     public static function disableAutoloadTranslations(): void;
-
 
     public static function disableDeleteTranslationsCascade(): void;
 
-
     public static function enableAutoloadTranslations(): void;
-
 
     public static function enableDeleteTranslationsCascade(): void;
 
+    public function deleteTranslations($locales = null): void;
 
     public function getDefaultLocale(): ?string;
 
