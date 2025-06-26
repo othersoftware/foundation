@@ -48,12 +48,12 @@ class TranslatableFormRequest extends FormRequest
             $rules[$locale] = $this->createTranslatableGroupRules($locale, $default);
 
             $mapper = function ($rule) use ($locale, $default) {
-                if (str_starts_with($rule, 'required') && $locale !== $default) {
-                    return 'nullable';
-                }
-
                 if (is_string($rule)) {
-                    return str_replace('{locale}', $locale, $rule);
+                    $rule = str_replace('{locale}', $locale, $rule);
+
+                    if (str_starts_with($rule, 'required') && $locale !== $default) {
+                        return 'nullable';
+                    }
                 }
 
                 return $rule;
