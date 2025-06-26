@@ -5,6 +5,7 @@
 namespace OtherSoftware\Database\Eloquent;
 
 
+use BackedEnum;
 use Carbon\CarbonImmutable;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -91,6 +92,24 @@ abstract class Model extends EloquentModel
         }
 
         return array_camel_keys($dates);
+    }
+
+
+    public function getSerializedEnums(): array
+    {
+        $enums = [];
+
+        foreach ($this->getArrayableAttributes() as $key => $value) {
+            if ($this->hasCast($key) && class_exists($class = $this->getCastType($key))) {
+                if (is_subclass_of($class, BackedEnum::class)) {
+                    if (method_exists($class, 'toRecord')) {
+                        $enums[$key] = $this->castAttribute($key, $value)->toRecord();
+                    }
+                }
+            }
+        }
+
+        return array_camel_keys($enums);
     }
 
 
@@ -183,6 +202,24 @@ abstract class Model extends EloquentModel
     public function toArray()
     {
         return array_camel_keys(parent::toArray());
+    }
+
+
+    public function toFormResource(array $data): array
+    {
+        $class = static::class;
+        $booted = [];
+
+        foreach (class_uses_recursive($class) as $trait) {
+            $method = 'formResource' . class_basename($trait);
+
+            if (method_exists($class, $method) && ! in_array($method, $booted)) {
+                $data = $this->$method($data);
+                $booted[] = $method;
+            }
+        }
+
+        return $data;
     }
 
 

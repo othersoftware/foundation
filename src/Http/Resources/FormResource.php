@@ -61,7 +61,14 @@ class FormResource extends JsonResource
             foreach ($this->resource->getSerializedDates() as $key => $value) {
                 $data['meta'][$key] = $value;
             }
+
+            foreach ($this->resource->getSerializedEnums() as $key => $value) {
+                $data['meta'][$key] = $value;
+            }
+
+            $data = $this->resource->toFormResource($data);
         }
+
 
         // Finally, return to the previous render mode.
         static::$rendersForForm = $previousState;
