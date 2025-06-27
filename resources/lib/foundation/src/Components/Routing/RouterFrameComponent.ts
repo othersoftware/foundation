@@ -8,6 +8,7 @@ import { EventBus } from '../../Events/EventBus.ts';
 import { ErrorModal } from '../../Support/ErrorModal.ts';
 import { useViewResolver } from '../../Composables/UseViewResolver.ts';
 import { StackedViewInjectionKey } from '../../Services/StackedView.ts';
+import { PreventNestedRouterViewRenderInjectionKey } from '../../Composables/UseViewStack.ts';
 
 
 export const RouterFrameComponent = defineComponent({
@@ -31,6 +32,7 @@ export const RouterFrameComponent = defineComponent({
       const view = ref(undefined) as unknown as Ref<StackedViewResolved>;
 
       provide(HttpClientForceScrollPreservation, true);
+      provide(PreventNestedRouterViewRenderInjectionKey, true);
 
       function load() {
         Request.send('GET', props.src).then(async (response) => {

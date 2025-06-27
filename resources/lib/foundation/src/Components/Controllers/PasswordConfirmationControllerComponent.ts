@@ -24,7 +24,7 @@ export const PasswordConfirmationControllerComponent = defineComponent({
       let { method, url, options } = original.value;
 
       return await http.post(props.action, data).then(async () => {
-        return await http.dispatch(method, url, options).then(async (res) => {
+        return await http.dispatch(method, url, options).then(async (res: unknown) => {
           cancel();
           return await nextTick(() => res);
         });

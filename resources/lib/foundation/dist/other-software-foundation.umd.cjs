@@ -1710,6 +1710,14 @@
     }
     return resolver;
   }
+  const PreventNestedRouterViewRenderInjectionKey = Symbol("PreventNestedRouterViewRenderInjectionKey");
+  function isNestedRouterViewPrevented() {
+    const view = vue.inject(PreventNestedRouterViewRenderInjectionKey);
+    if (!view) {
+      return false;
+    }
+    return view;
+  }
   function useViewStack() {
     const view = vue.inject(StackedViewInjectionKey);
     if (!view) {
@@ -1739,6 +1747,7 @@
       const resolver = useViewResolver();
       const depth = useViewDepth();
       const view = useViewStack();
+      const prevented = isNestedRouterViewPrevented();
       const location = vue.computed(() => view.value?.location);
       const query = vue.computed(() => view.value?.query);
       const stack2 = vue.computed(() => {
@@ -1753,6 +1762,9 @@
       vue.provide(StackedViewParentInjectionKey, vue.computed(() => view.value?.parent));
       vue.provide(StackedViewLocationInjectionKey, location);
       vue.provide(StackedViewQueryInjectionKey, query);
+      if (prevented) {
+        return null;
+      }
       return () => {
         if (view.value && "component" in view.value) {
           let component = resolver(view.value.component);
@@ -1930,9 +1942,9 @@
       vue.provide(ToastRegistryInjectionKey, toasts);
       vue.provide(HttpClientForceScrollPreservation, true);
       vue.provide(StateHistoryInjectionKey, {
-        historyPushState(state) {
+        historyPushState() {
         },
-        historyReplaceState(state) {
+        historyReplaceState() {
         }
       });
       return () => {
@@ -1956,6 +1968,7 @@
       const loading = vue.ref(true);
       const view = vue.ref(void 0);
       vue.provide(HttpClientForceScrollPreservation, true);
+      vue.provide(PreventNestedRouterViewRenderInjectionKey, true);
       function load() {
         Request.send("GET", props.src).then(async (response) => {
           if (response.redirect) {
@@ -2009,7 +2022,11 @@
   const ToastControllerComponent = vue.defineComponent({
     name: "ToastController",
     slots: Object,
-    setup(props, { slots, attrs }) {
+    // _props is a hack to avoid TS error on unused parameter as it is not used
+    // at the moment it will throw a TS error, but it has to be passed to read
+    // slots and attrs. Remember _ in front whenever you will actually have to
+    // use the props. https://github.com/microsoft/TypeScript/issues/9458
+    setup(_props, { slots, attrs }) {
       const toasts = useToasts();
       return () => vue.h("div", attrs, slots.default({ toasts: toasts.value }));
     }
@@ -3731,6 +3748,7 @@
   exports2.FormContextInjectionKey = FormContextInjectionKey;
   exports2.FormControllerComponent = FormControllerComponent;
   exports2.HttpClientForceScrollPreservation = HttpClientForceScrollPreservation;
+  exports2.PreventNestedRouterViewRenderInjectionKey = PreventNestedRouterViewRenderInjectionKey;
   exports2.Request = Request;
   exports2.Response = Response;
   exports2.RouterComponent = RouterComponent;
@@ -3765,6 +3783,7 @@
   exports2.hash = hash;
   exports2.isCountryExplicit = isCountryExplicit;
   exports2.isCountryImplicit = isCountryImplicit;
+  exports2.isNestedRouterViewPrevented = isNestedRouterViewPrevented;
   exports2.nestedSetAncestors = nestedSetAncestors;
   exports2.nestedSetChildren = nestedSetChildren;
   exports2.nestedSetDescendants = nestedSetDescendants;

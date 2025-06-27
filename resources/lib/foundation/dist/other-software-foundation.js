@@ -1707,6 +1707,14 @@ function useViewResolver() {
   }
   return resolver;
 }
+const PreventNestedRouterViewRenderInjectionKey = Symbol("PreventNestedRouterViewRenderInjectionKey");
+function isNestedRouterViewPrevented() {
+  const view = inject(PreventNestedRouterViewRenderInjectionKey);
+  if (!view) {
+    return false;
+  }
+  return view;
+}
 function useViewStack() {
   const view = inject(StackedViewInjectionKey);
   if (!view) {
@@ -1736,6 +1744,7 @@ const RouterViewComponent = defineComponent({
     const resolver = useViewResolver();
     const depth = useViewDepth();
     const view = useViewStack();
+    const prevented = isNestedRouterViewPrevented();
     const location = computed(() => view.value?.location);
     const query = computed(() => view.value?.query);
     const stack2 = computed(() => {
@@ -1750,6 +1759,9 @@ const RouterViewComponent = defineComponent({
     provide(StackedViewParentInjectionKey, computed(() => view.value?.parent));
     provide(StackedViewLocationInjectionKey, location);
     provide(StackedViewQueryInjectionKey, query);
+    if (prevented) {
+      return null;
+    }
     return () => {
       if (view.value && "component" in view.value) {
         let component = resolver(view.value.component);
@@ -1927,9 +1939,9 @@ const RouterNestedComponent = defineComponent({
     provide(ToastRegistryInjectionKey, toasts);
     provide(HttpClientForceScrollPreservation, true);
     provide(StateHistoryInjectionKey, {
-      historyPushState(state) {
+      historyPushState() {
       },
-      historyReplaceState(state) {
+      historyReplaceState() {
       }
     });
     return () => {
@@ -1953,6 +1965,7 @@ const RouterFrameComponent = defineComponent({
     const loading = ref(true);
     const view = ref(void 0);
     provide(HttpClientForceScrollPreservation, true);
+    provide(PreventNestedRouterViewRenderInjectionKey, true);
     function load() {
       Request.send("GET", props.src).then(async (response) => {
         if (response.redirect) {
@@ -2006,7 +2019,11 @@ const RouterFrameComponent = defineComponent({
 const ToastControllerComponent = defineComponent({
   name: "ToastController",
   slots: Object,
-  setup(props, { slots, attrs }) {
+  // _props is a hack to avoid TS error on unused parameter as it is not used
+  // at the moment it will throw a TS error, but it has to be passed to read
+  // slots and attrs. Remember _ in front whenever you will actually have to
+  // use the props. https://github.com/microsoft/TypeScript/issues/9458
+  setup(_props, { slots, attrs }) {
     const toasts = useToasts();
     return () => h("div", attrs, slots.default({ toasts: toasts.value }));
   }
@@ -3729,6 +3746,7 @@ export {
   FormContextInjectionKey,
   FormControllerComponent,
   HttpClientForceScrollPreservation,
+  PreventNestedRouterViewRenderInjectionKey,
   Request,
   Response,
   RouterComponent,
@@ -3763,6 +3781,7 @@ export {
   hash,
   isCountryExplicit,
   isCountryImplicit,
+  isNestedRouterViewPrevented,
   nestedSetAncestors,
   nestedSetChildren,
   nestedSetDescendants,

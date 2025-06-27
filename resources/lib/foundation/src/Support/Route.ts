@@ -51,7 +51,7 @@ function build(name: string, params: Params, hash?: string) {
     }
 
     return prev;
-  }, {});
+  }, {} as Record<string, any>);
 
   return url(uri, search, hash, route.domain);
 }

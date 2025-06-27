@@ -4,10 +4,16 @@ import { useToasts } from '../../Services/ToastManager';
 
 export const ToastControllerComponent = defineComponent({
   name: 'ToastController',
+
   slots: Object as SlotsType<{
     default: { toasts: ToastRegistry },
   }>,
-  setup(props, { slots, attrs }) {
+
+  // _props is a hack to avoid TS error on unused parameter as it is not used
+  // at the moment it will throw a TS error, but it has to be passed to read
+  // slots and attrs. Remember _ in front whenever you will actually have to
+  // use the props. https://github.com/microsoft/TypeScript/issues/9458
+  setup(_props, { slots, attrs }) {
     const toasts = useToasts();
 
     return () => h('div', attrs, slots.default({ toasts: toasts.value }));

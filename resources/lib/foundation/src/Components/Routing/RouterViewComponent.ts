@@ -2,7 +2,7 @@ import { defineComponent, provide, h, type PropType, computed, type SlotsType } 
 import { StackedViewInjectionKey, StackedViewQueryInjectionKey, StackedViewLocationInjectionKey, StackedViewDepthInjectionKey, StackedViewParentInjectionKey } from '../../Services/StackedView';
 import { wrap } from '../../Support/Wrap';
 import { useViewResolver } from '../../Composables/UseViewResolver';
-import { useViewStack } from '../../Composables/UseViewStack';
+import { useViewStack, isNestedRouterViewPrevented } from '../../Composables/UseViewStack';
 import { useViewDepth } from '../../Composables/UseViewDepth';
 import type { StackedViewResolved } from '../../Types/StackedView';
 
@@ -23,6 +23,7 @@ export const RouterViewComponent = defineComponent({
     const resolver = useViewResolver();
     const depth = useViewDepth();
     const view = useViewStack();
+    const prevented = isNestedRouterViewPrevented();
 
     const location = computed(() => view.value?.location);
     const query = computed(() => view.value?.query);
@@ -40,6 +41,10 @@ export const RouterViewComponent = defineComponent({
     provide(StackedViewParentInjectionKey, computed(() => view.value?.parent));
     provide(StackedViewLocationInjectionKey, location);
     provide(StackedViewQueryInjectionKey, query);
+
+    if (prevented) {
+      return null;
+    }
 
     return () => {
       if (view.value && 'component' in view.value) {

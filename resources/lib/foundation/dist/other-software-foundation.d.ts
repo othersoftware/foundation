@@ -239,6 +239,8 @@ export declare function isCountryExplicit(country: string | null | undefined): b
 
 export declare function isCountryImplicit(country: string | null | undefined): boolean;
 
+export declare function isNestedRouterViewPrevented(): boolean;
+
 export declare type Locale = {
     name: string;
     code: string;
@@ -271,6 +273,8 @@ declare type Options = {
 };
 
 declare type Params = Record<string, any>;
+
+export declare const PreventNestedRouterViewRenderInjectionKey: InjectionKey<boolean>;
 
 export declare function random(length: number, characterSet?: string | undefined): string;
 
@@ -453,7 +457,7 @@ type: PropType<boolean>;
 required: false;
 default: boolean;
 };
-}>, () => any, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+}>, (() => any) | null, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
 allowLayouts: {
 type: PropType<boolean>;
 required: false;
@@ -592,7 +596,7 @@ export declare function useFormApi(): Ref<FormApi>;
 export declare function useFormContext(): FormContextInterface | null;
 
 export declare function useHttpClient(): {
-    dispatch: (method: Method, url: string, { data, preserveScroll, replace, refreshStack }?: HttpOptions) => any;
+    dispatch: (method: Method, url: string, { data, preserveScroll, replace, refreshStack }?: HttpOptions) => Promise<any>;
     get: (url: string) => Promise<any>;
     post: (url: string, data?: Body_2 | undefined) => Promise<any>;
     patch: (url: string, data?: Body_2 | undefined) => Promise<any>;

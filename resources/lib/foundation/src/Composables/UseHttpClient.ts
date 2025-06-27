@@ -28,7 +28,7 @@ export function useHttpClient() {
     document.body.classList.add('osf-loading');
 
     return await Request.send(method, url, data, signature.value, refreshStack, location.value).then(async (response: CompleteResponse) => {
-      return await state.update(response).then(async (fresh) => {
+      return await state.update(response).then(async (fresh): Promise<any> => {
         if (response.redirect) {
           return await handleRedirectResponse(response.redirect);
         }

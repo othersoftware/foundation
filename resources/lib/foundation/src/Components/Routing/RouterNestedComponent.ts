@@ -69,10 +69,10 @@ export const RouterNestedComponent = defineComponent({
     provide(HttpClientForceScrollPreservation, true);
 
     provide(StateHistoryInjectionKey, {
-      historyPushState(state: State) {
+      historyPushState() {
         // Nothing to do, we don't handle history in nested routers.
       },
-      historyReplaceState(state: State) {
+      historyReplaceState() {
         // Nothing to do, we don't handle history in nested routers.
       },
     });
