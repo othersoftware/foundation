@@ -1712,11 +1712,7 @@
   }
   const PreventNestedRouterViewRenderInjectionKey = Symbol("PreventNestedRouterViewRenderInjectionKey");
   function isNestedRouterViewPrevented() {
-    const view = vue.inject(PreventNestedRouterViewRenderInjectionKey);
-    if (!view) {
-      return false;
-    }
-    return view;
+    return vue.inject(PreventNestedRouterViewRenderInjectionKey, false);
   }
   function useViewStack() {
     const view = vue.inject(StackedViewInjectionKey);
@@ -1763,7 +1759,7 @@
       vue.provide(StackedViewLocationInjectionKey, location);
       vue.provide(StackedViewQueryInjectionKey, query);
       if (prevented) {
-        return null;
+        return () => null;
       }
       return () => {
         if (view.value && "component" in view.value) {

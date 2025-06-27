@@ -457,7 +457,7 @@ type: PropType<boolean>;
 required: false;
 default: boolean;
 };
-}>, (() => any) | null, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
+}>, () => any, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
 allowLayouts: {
 type: PropType<boolean>;
 required: false;

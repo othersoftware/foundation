@@ -1709,11 +1709,7 @@ function useViewResolver() {
 }
 const PreventNestedRouterViewRenderInjectionKey = Symbol("PreventNestedRouterViewRenderInjectionKey");
 function isNestedRouterViewPrevented() {
-  const view = inject(PreventNestedRouterViewRenderInjectionKey);
-  if (!view) {
-    return false;
-  }
-  return view;
+  return inject(PreventNestedRouterViewRenderInjectionKey, false);
 }
 function useViewStack() {
   const view = inject(StackedViewInjectionKey);
@@ -1760,7 +1756,7 @@ const RouterViewComponent = defineComponent({
     provide(StackedViewLocationInjectionKey, location);
     provide(StackedViewQueryInjectionKey, query);
     if (prevented) {
-      return null;
+      return () => null;
     }
     return () => {
       if (view.value && "component" in view.value) {

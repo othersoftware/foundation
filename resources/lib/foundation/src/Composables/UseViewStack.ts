@@ -5,13 +5,7 @@ import { type StackedViewResolved } from '../Types/StackedView';
 export const PreventNestedRouterViewRenderInjectionKey = Symbol('PreventNestedRouterViewRenderInjectionKey') as InjectionKey<boolean>;
 
 export function isNestedRouterViewPrevented(): boolean {
-  const view = inject(PreventNestedRouterViewRenderInjectionKey);
-
-  if (!view) {
-    return false;
-  }
-
-  return view;
+  return inject(PreventNestedRouterViewRenderInjectionKey, false);
 }
 
 export function useViewStack(): Ref<StackedViewResolved | undefined> {

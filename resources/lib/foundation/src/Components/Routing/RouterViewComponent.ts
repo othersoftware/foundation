@@ -43,7 +43,7 @@ export const RouterViewComponent = defineComponent({
     provide(StackedViewQueryInjectionKey, query);
 
     if (prevented) {
-      return null;
+      return () => null;
     }
 
     return () => {
