@@ -1,30 +1,30 @@
-import * as n from "node:path";
-function m(o = {}) {
+import * as s from "node:path";
+function c(l = {}) {
   const {
-    target: l = "resources/views",
-    exclude: i = []
-  } = o;
-  let s;
+    target: o = "resources/views",
+    exclude: u = []
+  } = l;
+  let n;
   return {
     name: "vite-plugin-vue-router",
     enforce: "pre",
     configResolved(e) {
-      s = e;
+      n = e;
     },
     async transform(e, r) {
-      const u = n.join(s.root, l);
-      if (!(!n.normalize(r).startsWith(u) || !r.endsWith(".vue") || i.some((t) => r.includes(t)))) {
-        if (e.includes("<template>") && !e.includes("<RouterView") && !e.includes("<router-view")) {
-          const t = e.lastIndexOf("</template>"), a = e.slice(0, t), c = e.slice(t);
-          return `${a}
+      const a = s.join(n.root, o);
+      if (!s.normalize(r).startsWith(a) || !r.endsWith(".vue") || u.some((t) => r.includes(t)))
+        return { code: e, map: null };
+      if (e.includes("<template>") && !e.includes("<RouterView") && !e.includes("<router-view")) {
+        const t = e.lastIndexOf("</template>"), i = e.slice(0, t), m = e.slice(t);
+        return { code: `${i}
   <RouterView />
-${c}`;
-        }
-        return e;
+${m}`, map: null };
       }
+      return { code: e, map: null };
     }
   };
 }
 export {
-  m as default
+  c as default
 };

@@ -29,7 +29,7 @@ export default function router(options: Options = {}): Plugin {
 
       // Check if the file is in the target directory and is a Vue component
       if (!resolvedId.startsWith(resolvedTarget) || !id.endsWith('.vue') || exclude.some(pattern => id.includes(pattern))) {
-        return;
+        return { code, map: null };
       }
 
       // Check if the template exists and doesn't already contain RouterView
@@ -39,10 +39,10 @@ export default function router(options: Options = {}): Plugin {
         const beforeTemplate = code.slice(0, templateEnd);
         const afterTemplate = code.slice(templateEnd);
 
-        return `${beforeTemplate}\n  <RouterView />\n${afterTemplate}`;
+        return { code: `${beforeTemplate}\n  <RouterView />\n${afterTemplate}`, map: null };
       }
 
-      return code;
+      return { code, map: null };
     },
   };
 }
