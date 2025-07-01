@@ -24,7 +24,15 @@ export declare interface Ability {
     code: any;
 }
 
-export declare type AppFactory = (options: FactoryOptions) => any;
+export declare type AppFactory = (options: AppFactoryOptions) => any;
+
+export declare type AppFactoryOptions = {
+    router: typeof RouterComponent;
+    props: {
+        resolver: ViewResolver;
+        state: State;
+    };
+};
 
 export declare interface Authenticated {
     id: number;
@@ -109,14 +117,6 @@ declare function factory<T>(config: ConfigWithCallback<T>): Promise<T>;
 declare function factory<T>(callback: Callback<T>): Promise<T>;
 
 declare function factory<T>(config: Config, callback: Callback<T>): Promise<T>;
-
-declare type FactoryOptions = {
-    router: typeof RouterComponent;
-    props: {
-        resolver: ViewResolver;
-        state: State;
-    };
-};
 
 export declare function filled(value: any): boolean;
 

@@ -3,9 +3,9 @@ import { type State } from '../Types/State';
 import { type ViewResolver } from '../Types/ViewResolver';
 import { RouterComponent } from '../Components/Routing/RouterComponent';
 
-export type AppFactory = (options: FactoryOptions) => any;
+export type AppFactory = (options: AppFactoryOptions) => any;
 
-type FactoryOptions = {
+export type AppFactoryOptions = {
   router: typeof RouterComponent,
   props: { resolver: ViewResolver, state: State },
 }
