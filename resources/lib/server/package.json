@@ -1,0 +1,36 @@
+{
+    "name": "@othersoftware/server",
+    "description": "This library creates a bridge between Vue frontends and Laravel backends.",
+    "keywords": ["othersoftware", "laravel", "vue", "vite"],
+    "version": "1.0.0",
+    "author": {
+        "name": "Rafał Krawiec",
+        "email": "rafal.krawiec16@gmail.com"
+    },
+    "type": "module",
+    "module": "dist/other-software-server.js",
+    "main": "dist/other-software-server.cjs",
+    "types": "dist/other-software-server.d.ts",
+    "files": ["dist", "src", "types"],
+    "exports": {
+        ".": {
+            "import": "./dist/other-software-server.js",
+            "types": "./dist/other-software-server.d.ts",
+            "require": "./dist/other-software-server.cjs"
+        }
+    },
+    "scripts": {
+        "dev": "vite build -m development --watch",
+        "build": "vite build"
+    },
+    "dependencies": {
+        "@othersoftware/foundation": "workspace:*"
+    },
+    "devDependencies": {
+        "@types/node": "^24.0.4",
+        "@vue/tsconfig": "^0.7.0",
+        "typescript": "^5.8.3",
+        "unplugin-dts": "^1.0.0-beta.2",
+        "vite": "^7.0.0"
+    }
+}
