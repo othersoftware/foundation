@@ -2001,6 +2001,8 @@
       });
       vue.watch(stack2, () => {
         load();
+      }, {
+        deep: true
       });
       return () => {
         if (view.value && "component" in view.value) {
