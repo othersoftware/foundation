@@ -3,7 +3,7 @@ import { type State } from '../Types/State';
 import { type ViewResolver } from '../Types/ViewResolver';
 import { RouterComponent } from '../Components/Routing/RouterComponent';
 
-type Factory = (options: FactoryOptions) => any;
+export type AppFactory = (options: FactoryOptions) => any;
 
 type FactoryOptions = {
   router: typeof RouterComponent,
@@ -13,7 +13,7 @@ type FactoryOptions = {
 type Options = {
   initial?: State | undefined,
   resolver: ViewResolver,
-  setup: Factory,
+  setup: AppFactory,
 }
 
 export async function createFoundationController({ initial, resolver, setup }: Options) {

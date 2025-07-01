@@ -24,6 +24,8 @@ export declare interface Ability {
     code: any;
 }
 
+export declare type AppFactory = (options: FactoryOptions) => any;
+
 export declare interface Authenticated {
     id: number;
     name: string;
@@ -101,8 +103,6 @@ export declare const EventBus: {
 declare type EventHandler = (event?: any) => boolean | undefined | void;
 
 declare type EventName = string;
-
-declare type Factory = (options: FactoryOptions) => any;
 
 declare function factory<T>(config: ConfigWithCallback<T>): Promise<T>;
 
@@ -269,7 +269,7 @@ export declare function nestedSetRoot<T extends NestedSetItem = any>(data: Neste
 declare type Options = {
     initial?: State | undefined;
     resolver: ViewResolver;
-    setup: Factory;
+    setup: AppFactory;
 };
 
 declare type Params = Record<string, any>;
