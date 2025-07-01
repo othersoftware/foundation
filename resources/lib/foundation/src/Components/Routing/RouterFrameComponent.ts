@@ -81,6 +81,8 @@ export const RouterFrameComponent = defineComponent({
 
       watch(stack, () => {
         load();
+      }, {
+        deep: true,
       });
 
       return () => {
