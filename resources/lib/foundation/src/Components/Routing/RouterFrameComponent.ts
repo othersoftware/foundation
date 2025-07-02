@@ -1,6 +1,6 @@
 import { defineComponent, provide, h, ref, nextTick, toValue, toRaw, inject, type Ref, type SlotsType, onMounted, watch } from 'vue';
 import { type StackedViewResolved } from '../../Types/StackedView';
-import { updateStack, StateAuthenticated, StateAbilities } from '../../Services/StateManager';
+import { updateStack, StateAuthenticated, StateAbilities, StateShared } from '../../Services/StateManager';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
 import { HttpClientForceScrollPreservation } from '../../Composables/UseHttpClient';
 import { Request } from '../../Http/Client/Request.ts';
@@ -25,6 +25,7 @@ export const RouterFrameComponent = defineComponent({
 
       const abilities = inject(StateAbilities)!;
       const authenticated = inject(StateAuthenticated)!;
+      const shared = inject(StateShared)!;
       const toasts = inject(ToastRegistryInjectionKey)!;
       const stack = inject(StackedViewInjectionKey)!;
 
@@ -44,6 +45,10 @@ export const RouterFrameComponent = defineComponent({
 
           abilities.value = { ...abilities.value, ...response.abilities };
           authenticated.value = response.authenticated;
+
+          if (response.shared) {
+            shared.value = { ...shared.value, ...response.shared };
+          }
 
           if (response.stack) {
             view.value = updateStack(toRaw(toValue(view.value)), response.stack);

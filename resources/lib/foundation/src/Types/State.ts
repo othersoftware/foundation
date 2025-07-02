@@ -21,9 +21,16 @@ export interface Authenticated {
   updatedAt: string;
 }
 
+export interface Shared {
+  // Use module augmentation to type the shared state.
+}
+
+export type SharedState = Partial<Shared>;
+
 export interface State {
   location: string,
   signature: string,
+  shared: SharedState,
   stack: StackedViewResolved,
 }
 

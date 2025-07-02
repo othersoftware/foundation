@@ -1,12 +1,11 @@
-import { defineComponent, type PropType, provide, h, ref, nextTick, toValue, toRaw, onMounted, onBeforeUnmount, computed, type ConcreteComponent } from 'vue';
+import { defineComponent, type PropType, provide, h, ref, nextTick, toValue, toRaw, onMounted, onBeforeUnmount, computed } from 'vue';
 import { type ViewResolver } from '../../Types/ViewResolver';
 import { type State, type InitialState } from '../../Types/State';
 import type { CompleteResponse } from '../../Http/Client/Response';
 import { StackedViewResolverInjectionKey, StackedViewInjectionKey, StackedViewDepthInjectionKey } from '../../Services/StackedView';
-import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities, StateHistoryInjectionKey } from '../../Services/StateManager';
+import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities, StateHistoryInjectionKey, StateShared } from '../../Services/StateManager';
 import { RouterViewComponent } from './RouterViewComponent';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
-import { StackedViewLayoutInjectionKey } from '../../Composables/UseStackLayout.ts';
 
 
 export const RouterComponent = defineComponent({
@@ -21,13 +20,10 @@ export const RouterComponent = defineComponent({
       type: Object as PropType<InitialState>,
       required: true,
     },
-    layout: {
-      type: [Object, Function, String] as PropType<ConcreteComponent | string>,
-      required: false,
-    },
   },
   setup(props) {
     const abilities = ref(props.state.abilities);
+    const shared = ref(props.state.shared || {});
     const authenticated = ref(props.state.authenticated);
     const location = ref(props.state.location);
     const stack = ref(props.state.stack);
@@ -36,6 +32,7 @@ export const RouterComponent = defineComponent({
 
     function buildState() {
       return {
+        shared: toRaw(toValue(shared)),
         location: toRaw(toValue(location)),
         signature: toRaw(toValue(signature)),
         stack: toRaw(toValue(stack)),
@@ -45,6 +42,10 @@ export const RouterComponent = defineComponent({
     async function update(fresh: CompleteResponse): Promise<State> {
       abilities.value = { ...abilities.value, ...fresh.abilities };
       authenticated.value = fresh.authenticated;
+
+      if (fresh.shared) {
+        shared.value = { ...shared.value, ...fresh.shared };
+      }
 
       if (fresh.location) {
         location.value = fresh.location;
@@ -67,10 +68,10 @@ export const RouterComponent = defineComponent({
 
     provide(StateAbilities, abilities);
     provide(StateAuthenticated, authenticated);
+    provide(StateShared, shared);
     provide(StateLocationInjectionKey, location);
     provide(StateStackSignatureInjectionKey, signature);
     provide(StateManagerInjectionKey, update);
-    provide(StackedViewLayoutInjectionKey, props.layout);
     provide(StackedViewResolverInjectionKey, props.resolver);
     provide(StackedViewDepthInjectionKey, computed(() => 0));
     provide(StackedViewInjectionKey, stack);

@@ -27,6 +27,7 @@
   }
   class CompleteResponse extends Response {
     abilities;
+    shared;
     authenticated;
     location;
     signature;
@@ -39,6 +40,7 @@
       super(xhr);
       let data = JSON.parse(this.xhr.response);
       this.abilities = data.abilities;
+      this.shared = data.shared;
       this.authenticated = data.authenticated;
       this.location = data.location;
       this.signature = data.signature;
@@ -51,6 +53,7 @@
   }
   const StateLocationInjectionKey = Symbol("StateLocation");
   const StateStackSignatureInjectionKey = Symbol("StateStackSignature");
+  const StateShared = Symbol("StateShared");
   const StateAuthenticated = Symbol("StateAuthenticated");
   const StateAbilities = Symbol("StateAbilities");
   const StateManagerInjectionKey = Symbol("StateManager");
@@ -68,6 +71,13 @@
       throw new Error("Authenticated is used out of router context!");
     }
     return authenticated;
+  }
+  function useShared() {
+    let shared = vue.inject(StateShared);
+    if (!shared) {
+      throw new Error("Shared state is used out of router context!");
+    }
+    return shared;
   }
   function useLocation() {
     let location = vue.inject(StateLocationInjectionKey);
@@ -1910,10 +1920,12 @@
       const abilities = vue.ref(void 0);
       const stack2 = vue.ref(void 0);
       const signature = vue.ref(void 0);
+      const shared = vue.inject(StateShared);
       const authenticated = vue.inject(StateAuthenticated);
       const toasts = vue.inject(ToastRegistryInjectionKey);
       function buildState() {
         return {
+          shared: vue.toRaw(vue.toValue(shared)),
           location: vue.toRaw(vue.toValue(location)),
           signature: vue.toRaw(vue.toValue(signature)),
           stack: vue.toRaw(vue.toValue(stack2))
@@ -1922,6 +1934,9 @@
       async function update(fresh) {
         abilities.value = { ...abilities.value, ...fresh.abilities };
         authenticated.value = fresh.authenticated;
+        if (fresh.shared) {
+          shared.value = { ...shared.value, ...fresh.shared };
+        }
         if (fresh.location) {
           location.value = fresh.location;
         }
@@ -1937,6 +1952,7 @@
         return await vue.nextTick(() => buildState());
       }
       vue.provide(StateAbilities, abilities);
+      vue.provide(StateShared, shared);
       vue.provide(StateAuthenticated, authenticated);
       vue.provide(StateLocationInjectionKey, location);
       vue.provide(StateStackSignatureInjectionKey, signature);
@@ -1967,6 +1983,7 @@
       const resolver = useViewResolver();
       const abilities = vue.inject(StateAbilities);
       const authenticated = vue.inject(StateAuthenticated);
+      const shared = vue.inject(StateShared);
       const toasts = vue.inject(ToastRegistryInjectionKey);
       const stack2 = vue.inject(StackedViewInjectionKey);
       const loading = vue.ref(true);
@@ -1982,6 +1999,9 @@
           }
           abilities.value = { ...abilities.value, ...response.abilities };
           authenticated.value = response.authenticated;
+          if (response.shared) {
+            shared.value = { ...shared.value, ...response.shared };
+          }
           if (response.stack) {
             view.value = updateStack(vue.toRaw(vue.toValue(view.value)), response.stack);
           }
@@ -3474,14 +3494,11 @@
       state: {
         type: Object,
         required: true
-      },
-      layout: {
-        type: [Object, Function, String],
-        required: false
       }
     },
     setup(props) {
       const abilities = vue.ref(props.state.abilities);
+      const shared = vue.ref(props.state.shared || {});
       const authenticated = vue.ref(props.state.authenticated);
       const location = vue.ref(props.state.location);
       const stack2 = vue.ref(props.state.stack);
@@ -3489,6 +3506,7 @@
       const toasts = vue.ref(props.state.toasts);
       function buildState() {
         return {
+          shared: vue.toRaw(vue.toValue(shared)),
           location: vue.toRaw(vue.toValue(location)),
           signature: vue.toRaw(vue.toValue(signature)),
           stack: vue.toRaw(vue.toValue(stack2))
@@ -3497,6 +3515,9 @@
       async function update(fresh) {
         abilities.value = { ...abilities.value, ...fresh.abilities };
         authenticated.value = fresh.authenticated;
+        if (fresh.shared) {
+          shared.value = { ...shared.value, ...fresh.shared };
+        }
         if (fresh.location) {
           location.value = fresh.location;
         }
@@ -3513,10 +3534,10 @@
       }
       vue.provide(StateAbilities, abilities);
       vue.provide(StateAuthenticated, authenticated);
+      vue.provide(StateShared, shared);
       vue.provide(StateLocationInjectionKey, location);
       vue.provide(StateStackSignatureInjectionKey, signature);
       vue.provide(StateManagerInjectionKey, update);
-      vue.provide(StackedViewLayoutInjectionKey, props.layout);
       vue.provide(StackedViewResolverInjectionKey, props.resolver);
       vue.provide(StackedViewDepthInjectionKey, vue.computed(() => 0));
       vue.provide(StackedViewInjectionKey, stack2);
@@ -3551,10 +3572,10 @@
       };
     }
   });
-  async function createFoundationController({ initial, resolver, layout, setup }) {
+  async function createFoundationController({ initial, resolver, setup }) {
     const isServer = typeof window === "undefined";
     const state = initial || readInitialState();
-    const app = setup({ router: RouterComponent, props: { resolver, state, layout } });
+    const app = setup({ router: RouterComponent, props: { resolver, state } });
     if (isServer) {
       return await renderToString(app);
     }
@@ -3736,7 +3757,7 @@
     INFO: "info",
     WARNING: "warning"
   };
-  function createOtherSoftwareFoundation() {
+  function createOtherSoftwareFoundation(options = {}) {
     return {
       install(app) {
         app.component("RouterFrame", RouterFrameComponent);
@@ -3744,9 +3765,10 @@
         app.component("RouterView", RouterViewComponent);
         app.component("RouterLink", RouterLinkComponent);
         app.component("FormController", FormControllerComponent);
-        app.component("ToastController", ToastControllerComponent);
         app.component("PasswordConfirmationController", PasswordConfirmationControllerComponent);
+        app.component("ToastController", ToastControllerComponent);
         app.component("Toast", ToastComponent);
+        app.provide(StackedViewLayoutInjectionKey, options.layout);
         app.config.globalProperties.$t = trans;
         app.config.globalProperties.$tc = transChoice;
         app.config.globalProperties.$route = route;
@@ -3779,6 +3801,7 @@
   exports2.StateHistoryInjectionKey = StateHistoryInjectionKey;
   exports2.StateLocationInjectionKey = StateLocationInjectionKey;
   exports2.StateManagerInjectionKey = StateManagerInjectionKey;
+  exports2.StateShared = StateShared;
   exports2.StateStackSignatureInjectionKey = StateStackSignatureInjectionKey;
   exports2.ToastComponent = ToastComponent;
   exports2.ToastControllerComponent = ToastControllerComponent;
@@ -3816,6 +3839,7 @@
   exports2.useHttpClient = useHttpClient;
   exports2.useLocation = useLocation;
   exports2.usePersistentFormContext = usePersistentFormContext;
+  exports2.useShared = useShared;
   exports2.useStackLayout = useStackLayout;
   exports2.useStackSignature = useStackSignature;
   exports2.useStateHistory = useStateHistory;

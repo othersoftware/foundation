@@ -24,6 +24,7 @@ class Response {
 }
 class CompleteResponse extends Response {
   abilities;
+  shared;
   authenticated;
   location;
   signature;
@@ -36,6 +37,7 @@ class CompleteResponse extends Response {
     super(xhr);
     let data = JSON.parse(this.xhr.response);
     this.abilities = data.abilities;
+    this.shared = data.shared;
     this.authenticated = data.authenticated;
     this.location = data.location;
     this.signature = data.signature;
@@ -48,6 +50,7 @@ class CompleteResponse extends Response {
 }
 const StateLocationInjectionKey = Symbol("StateLocation");
 const StateStackSignatureInjectionKey = Symbol("StateStackSignature");
+const StateShared = Symbol("StateShared");
 const StateAuthenticated = Symbol("StateAuthenticated");
 const StateAbilities = Symbol("StateAbilities");
 const StateManagerInjectionKey = Symbol("StateManager");
@@ -65,6 +68,13 @@ function useAuthenticated() {
     throw new Error("Authenticated is used out of router context!");
   }
   return authenticated;
+}
+function useShared() {
+  let shared = inject(StateShared);
+  if (!shared) {
+    throw new Error("Shared state is used out of router context!");
+  }
+  return shared;
 }
 function useLocation() {
   let location = inject(StateLocationInjectionKey);
@@ -1907,10 +1917,12 @@ const RouterNestedComponent = defineComponent({
     const abilities = ref(void 0);
     const stack2 = ref(void 0);
     const signature = ref(void 0);
+    const shared = inject(StateShared);
     const authenticated = inject(StateAuthenticated);
     const toasts = inject(ToastRegistryInjectionKey);
     function buildState() {
       return {
+        shared: toRaw$1(toValue(shared)),
         location: toRaw$1(toValue(location)),
         signature: toRaw$1(toValue(signature)),
         stack: toRaw$1(toValue(stack2))
@@ -1919,6 +1931,9 @@ const RouterNestedComponent = defineComponent({
     async function update(fresh) {
       abilities.value = { ...abilities.value, ...fresh.abilities };
       authenticated.value = fresh.authenticated;
+      if (fresh.shared) {
+        shared.value = { ...shared.value, ...fresh.shared };
+      }
       if (fresh.location) {
         location.value = fresh.location;
       }
@@ -1934,6 +1949,7 @@ const RouterNestedComponent = defineComponent({
       return await nextTick(() => buildState());
     }
     provide(StateAbilities, abilities);
+    provide(StateShared, shared);
     provide(StateAuthenticated, authenticated);
     provide(StateLocationInjectionKey, location);
     provide(StateStackSignatureInjectionKey, signature);
@@ -1964,6 +1980,7 @@ const RouterFrameComponent = defineComponent({
     const resolver = useViewResolver();
     const abilities = inject(StateAbilities);
     const authenticated = inject(StateAuthenticated);
+    const shared = inject(StateShared);
     const toasts = inject(ToastRegistryInjectionKey);
     const stack2 = inject(StackedViewInjectionKey);
     const loading = ref(true);
@@ -1979,6 +1996,9 @@ const RouterFrameComponent = defineComponent({
         }
         abilities.value = { ...abilities.value, ...response.abilities };
         authenticated.value = response.authenticated;
+        if (response.shared) {
+          shared.value = { ...shared.value, ...response.shared };
+        }
         if (response.stack) {
           view.value = updateStack(toRaw$1(toValue(view.value)), response.stack);
         }
@@ -3471,14 +3491,11 @@ const RouterComponent = defineComponent({
     state: {
       type: Object,
       required: true
-    },
-    layout: {
-      type: [Object, Function, String],
-      required: false
     }
   },
   setup(props) {
     const abilities = ref(props.state.abilities);
+    const shared = ref(props.state.shared || {});
     const authenticated = ref(props.state.authenticated);
     const location = ref(props.state.location);
     const stack2 = ref(props.state.stack);
@@ -3486,6 +3503,7 @@ const RouterComponent = defineComponent({
     const toasts = ref(props.state.toasts);
     function buildState() {
       return {
+        shared: toRaw$1(toValue(shared)),
         location: toRaw$1(toValue(location)),
         signature: toRaw$1(toValue(signature)),
         stack: toRaw$1(toValue(stack2))
@@ -3494,6 +3512,9 @@ const RouterComponent = defineComponent({
     async function update(fresh) {
       abilities.value = { ...abilities.value, ...fresh.abilities };
       authenticated.value = fresh.authenticated;
+      if (fresh.shared) {
+        shared.value = { ...shared.value, ...fresh.shared };
+      }
       if (fresh.location) {
         location.value = fresh.location;
       }
@@ -3510,10 +3531,10 @@ const RouterComponent = defineComponent({
     }
     provide(StateAbilities, abilities);
     provide(StateAuthenticated, authenticated);
+    provide(StateShared, shared);
     provide(StateLocationInjectionKey, location);
     provide(StateStackSignatureInjectionKey, signature);
     provide(StateManagerInjectionKey, update);
-    provide(StackedViewLayoutInjectionKey, props.layout);
     provide(StackedViewResolverInjectionKey, props.resolver);
     provide(StackedViewDepthInjectionKey, computed(() => 0));
     provide(StackedViewInjectionKey, stack2);
@@ -3548,10 +3569,10 @@ const RouterComponent = defineComponent({
     };
   }
 });
-async function createFoundationController({ initial, resolver, layout, setup }) {
+async function createFoundationController({ initial, resolver, setup }) {
   const isServer = typeof window === "undefined";
   const state = initial || readInitialState();
-  const app = setup({ router: RouterComponent, props: { resolver, state, layout } });
+  const app = setup({ router: RouterComponent, props: { resolver, state } });
   if (isServer) {
     return await renderToString(app);
   }
@@ -3733,7 +3754,7 @@ const ToastKind = {
   INFO: "info",
   WARNING: "warning"
 };
-function createOtherSoftwareFoundation() {
+function createOtherSoftwareFoundation(options = {}) {
   return {
     install(app) {
       app.component("RouterFrame", RouterFrameComponent);
@@ -3741,9 +3762,10 @@ function createOtherSoftwareFoundation() {
       app.component("RouterView", RouterViewComponent);
       app.component("RouterLink", RouterLinkComponent);
       app.component("FormController", FormControllerComponent);
-      app.component("ToastController", ToastControllerComponent);
       app.component("PasswordConfirmationController", PasswordConfirmationControllerComponent);
+      app.component("ToastController", ToastControllerComponent);
       app.component("Toast", ToastComponent);
+      app.provide(StackedViewLayoutInjectionKey, options.layout);
       app.config.globalProperties.$t = trans;
       app.config.globalProperties.$tc = transChoice;
       app.config.globalProperties.$route = route;
@@ -3777,6 +3799,7 @@ export {
   StateHistoryInjectionKey,
   StateLocationInjectionKey,
   StateManagerInjectionKey,
+  StateShared,
   StateStackSignatureInjectionKey,
   ToastComponent,
   ToastControllerComponent,
@@ -3814,6 +3837,7 @@ export {
   useHttpClient,
   useLocation,
   usePersistentFormContext,
+  useShared,
   useStackLayout,
   useStackSignature,
   useStateHistory,

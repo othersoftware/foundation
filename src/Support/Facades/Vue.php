@@ -3,6 +3,7 @@
 namespace OtherSoftware\Support\Facades;
 
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Facade;
 use OtherSoftware\Bridge\ResponseFactory;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @method static bool isVuePowered(?Request $request = null)
  * @method static bool rendersVueResponse(?Request $request = null)
  * @method static View view(string $view, array $props = [])
+ * @method static ResponseFactory share(Arrayable|array|string $key, mixed $value = null)
  * @method static ResponseFactory getFacadeRoot()
  * @method static ResponseFactory setErrors(array $errors)
  * @method static ResponseFactory setRaw(mixed $raw)

@@ -3,10 +3,12 @@
 namespace OtherSoftware\Bridge;
 
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View as IlluminateView;
 use OtherSoftware\Auth\Access\AbilityResponse;
@@ -41,6 +43,9 @@ final class ResponseFactory implements Responsable
 
 
     private Request $request;
+
+
+    private array $shared;
 
 
     private Stack $stack;
@@ -139,6 +144,24 @@ final class ResponseFactory implements Responsable
     }
 
 
+    public function share(Arrayable|array|string $key, mixed $value = null): ResponseFactory
+    {
+        if (! isset($this->shared)) {
+            $this->shared = [];
+        }
+
+        if (is_array($key)) {
+            $this->shared = array_merge($this->shared, $key);
+        } elseif ($key instanceof Arrayable) {
+            $this->shared = array_merge($this->shared, $key->toArray());
+        } else {
+            Arr::set($this->shared, $key, value($value));
+        }
+
+        return $this;
+    }
+
+
     public function toResponse($request): Response
     {
         $this->rendersVueResponse = true;
@@ -153,6 +176,10 @@ final class ResponseFactory implements Responsable
             } else {
                 $data['signature'] = $request->header('X-Stack-Signature');
             }
+        }
+
+        if (isset($this->shared)) {
+            $data['shared'] = $this->shared;
         }
 
         if (isset($this->rendered)) {

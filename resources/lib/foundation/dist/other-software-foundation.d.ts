@@ -31,7 +31,6 @@ export declare type AppFactoryOptions = {
     props: {
         resolver: ViewResolver;
         state: State;
-        layout?: ConcreteComponent | string | undefined;
     };
 };
 
@@ -52,6 +51,7 @@ declare type Callback<T> = () => Promise<T> | T;
 
 export declare class CompleteResponse extends Response_2 {
     readonly abilities: Abilities;
+    readonly shared: SharedState | undefined;
     readonly authenticated: Authenticated | null;
     readonly location: string;
     readonly signature: string;
@@ -68,6 +68,10 @@ declare interface Config {
     description?: string;
     yes?: string;
     no?: string;
+}
+
+declare interface Configuration {
+    layout?: ConcreteComponent | string | undefined;
 }
 
 declare interface ConfigWithCallback<T> extends Config {
@@ -91,9 +95,9 @@ export declare function createFormContext(initial?: Record<string, any>, initial
     fill: (name: string, value: any) => void;
 };
 
-export declare function createFoundationController({ initial, resolver, layout, setup }: Options): Promise<string>;
+export declare function createFoundationController({ initial, resolver, setup }: Options): Promise<string>;
 
-export declare function createOtherSoftwareFoundation(): Plugin_2;
+export declare function createOtherSoftwareFoundation(options?: Configuration): Plugin_2;
 
 export declare const ErrorModal: {
     modal: HTMLDialogElement | undefined;
@@ -269,7 +273,6 @@ export declare function nestedSetRoot<T extends NestedSetItem = any>(data: Neste
 
 declare type Options = {
     initial?: State | undefined;
-    layout?: ConcreteComponent | string | undefined;
     resolver: ViewResolver;
     setup: AppFactory;
 };
@@ -327,10 +330,6 @@ state: {
 type: PropType<InitialState>;
 required: true;
 };
-layout: {
-type: PropType<ConcreteComponent | string>;
-required: false;
-};
 }>, () => VNode<RendererNode, RendererElement, {
 [key: string]: any;
 }>, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
@@ -341,10 +340,6 @@ required: true;
 state: {
 type: PropType<InitialState>;
 required: true;
-};
-layout: {
-type: PropType<ConcreteComponent | string>;
-required: false;
 };
 }>> & Readonly<{}>, {}, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
@@ -481,6 +476,11 @@ default?: () => any;
 
 export declare function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any): any;
 
+export declare interface Shared {
+}
+
+export declare type SharedState = Partial<Shared>;
+
 export declare type Signature = string | undefined;
 
 export declare type StackedView = StackedViewResolved | StackedViewKept;
@@ -520,6 +520,7 @@ export declare const StackedViewResolverInjectionKey: InjectionKey<ViewResolver>
 export declare interface State {
     location: string;
     signature: string;
+    shared: SharedState;
     stack: StackedViewResolved;
 }
 
@@ -539,6 +540,8 @@ export declare const StateLocationInjectionKey: InjectionKey<Ref<string>>;
 export declare type StateManager = (fresh: CompleteResponse) => Promise<State>;
 
 export declare const StateManagerInjectionKey: InjectionKey<StateManager>;
+
+export declare const StateShared: InjectionKey<Ref<SharedState>>;
 
 export declare const StateStackSignatureInjectionKey: InjectionKey<Ref<string>>;
 
@@ -619,6 +622,8 @@ export declare function useHttpClient(): {
 export declare function useLocation(): Ref<string, string>;
 
 export declare function usePersistentFormContext(): FormContextInterface;
+
+export declare function useShared(): Ref<Partial<Shared>, Partial<Shared>>;
 
 export declare function useStackLayout(): ConcreteComponent | string | undefined;
 

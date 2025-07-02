@@ -1,9 +1,10 @@
 import { type InjectionKey, inject, type Ref } from 'vue';
-import type { StateManager, Authenticated, Abilities, StateHistory } from '../Types/State';
+import type { StateManager, Authenticated, Abilities, StateHistory, SharedState } from '../Types/State';
 import type { StackedView, StackedViewResolved } from '../Types/StackedView';
 
 export const StateLocationInjectionKey = Symbol('StateLocation') as InjectionKey<Ref<string>>;
 export const StateStackSignatureInjectionKey = Symbol('StateStackSignature') as InjectionKey<Ref<string>>;
+export const StateShared = Symbol('StateShared') as InjectionKey<Ref<SharedState>>;
 export const StateAuthenticated = Symbol('StateAuthenticated') as InjectionKey<Ref<Authenticated | null>>;
 export const StateAbilities = Symbol('StateAbilities') as InjectionKey<Ref<Abilities>>;
 export const StateManagerInjectionKey = Symbol('StateManager') as InjectionKey<StateManager>;
@@ -27,6 +28,16 @@ export function useAuthenticated() {
   }
 
   return authenticated;
+}
+
+export function useShared() {
+  let shared = inject(StateShared);
+
+  if (!shared) {
+    throw new Error('Shared state is used out of router context!');
+  }
+
+  return shared;
 }
 
 export function useLocation() {

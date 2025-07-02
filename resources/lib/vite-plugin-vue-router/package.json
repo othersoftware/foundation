@@ -34,7 +34,7 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@types/node": "^24.0.4",
+        "@types/node": "^24.0.10",
         "@vue/compiler-sfc": "^3.5.17",
         "typescript": "^5.8.3",
         "vite": "^7.0.0",

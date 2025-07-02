@@ -1,4 +1,4 @@
-import type { App, Plugin } from 'vue';
+import type { App, Plugin, ConcreteComponent } from 'vue';
 import { FormControllerComponent } from './Components/Controllers/FormControllerComponent.ts';
 import { RouterViewComponent } from './Components/Routing/RouterViewComponent.ts';
 import { RouterLinkComponent } from './Components/Routing/RouterLinkComponent.ts';
@@ -8,6 +8,7 @@ import { ToastControllerComponent, ToastComponent } from './Components/Controlle
 import { PasswordConfirmationControllerComponent } from './Components/Controllers/PasswordConfirmationControllerComponent.ts';
 import { trans, transChoice } from './Support/Translator.ts';
 import { route } from './Support/Route.ts';
+import { StackedViewLayoutInjectionKey } from './Composables/UseStackLayout.ts';
 
 export * from './Application/Factory.ts';
 
@@ -62,7 +63,11 @@ export * from './Types/State.ts';
 export * from './Types/Toast.ts';
 export * from './Types/ViewResolver.ts';
 
-export function createOtherSoftwareFoundation(): Plugin {
+interface Configuration {
+  layout?: ConcreteComponent | string | undefined,
+}
+
+export function createOtherSoftwareFoundation(options: Configuration = {}): Plugin {
   return {
     install(app: App) {
       app.component('RouterFrame', RouterFrameComponent);
@@ -70,9 +75,11 @@ export function createOtherSoftwareFoundation(): Plugin {
       app.component('RouterView', RouterViewComponent);
       app.component('RouterLink', RouterLinkComponent);
       app.component('FormController', FormControllerComponent);
-      app.component('ToastController', ToastControllerComponent);
       app.component('PasswordConfirmationController', PasswordConfirmationControllerComponent);
+      app.component('ToastController', ToastControllerComponent);
       app.component('Toast', ToastComponent);
+
+      app.provide(StackedViewLayoutInjectionKey, options.layout);
 
       app.config.globalProperties.$t = trans;
       app.config.globalProperties.$tc = transChoice;
