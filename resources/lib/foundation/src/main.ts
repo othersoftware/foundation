@@ -1,65 +1,66 @@
 import type { App, Plugin } from 'vue';
-import { FormControllerComponent } from './Components/Controllers/FormControllerComponent';
-import { RouterViewComponent } from './Components/Routing/RouterViewComponent';
-import { RouterLinkComponent } from './Components/Routing/RouterLinkComponent';
-import { RouterNestedComponent } from './Components/Routing/RouterNestedComponent';
-import { RouterFrameComponent } from './Components/Routing/RouterFrameComponent';
-import { ToastControllerComponent, ToastComponent } from './Components/Controllers/ToastControllerComponent';
-import { PasswordConfirmationControllerComponent } from './Components/Controllers/PasswordConfirmationControllerComponent';
-import { trans, transChoice } from './Support/Translator';
-import { route } from './Support/Route';
+import { FormControllerComponent } from './Components/Controllers/FormControllerComponent.ts';
+import { RouterViewComponent } from './Components/Routing/RouterViewComponent.ts';
+import { RouterLinkComponent } from './Components/Routing/RouterLinkComponent.ts';
+import { RouterNestedComponent } from './Components/Routing/RouterNestedComponent.ts';
+import { RouterFrameComponent } from './Components/Routing/RouterFrameComponent.ts';
+import { ToastControllerComponent, ToastComponent } from './Components/Controllers/ToastControllerComponent.ts';
+import { PasswordConfirmationControllerComponent } from './Components/Controllers/PasswordConfirmationControllerComponent.ts';
+import { trans, transChoice } from './Support/Translator.ts';
+import { route } from './Support/Route.ts';
 
-export * from './Application/Factory';
+export * from './Application/Factory.ts';
 
-export * from './Components/Controllers/FormControllerComponent';
-export * from './Components/Controllers/ToastControllerComponent';
+export * from './Components/Controllers/FormControllerComponent.ts';
+export * from './Components/Controllers/ToastControllerComponent.ts';
 
-export * from './Components/Routing/RouterComponent';
-export * from './Components/Routing/RouterLinkComponent';
-export * from './Components/Routing/RouterViewComponent';
-export * from './Components/Routing/RouterNestedComponent';
-export * from './Components/Routing/RouterFrameComponent';
+export * from './Components/Routing/RouterComponent.ts';
+export * from './Components/Routing/RouterLinkComponent.ts';
+export * from './Components/Routing/RouterViewComponent.ts';
+export * from './Components/Routing/RouterNestedComponent.ts';
+export * from './Components/Routing/RouterFrameComponent.ts';
 
-export * from './Composables/UseConfirmation';
-export * from './Composables/UseFormApi';
-export * from './Composables/UseFormContext';
-export * from './Composables/UseHttpClient';
-export * from './Composables/UseViewDepth';
-export * from './Composables/UseViewLocation';
-export * from './Composables/UseViewParent';
-export * from './Composables/UseViewQuery';
-export * from './Composables/UseViewResolver';
-export * from './Composables/UseViewStack';
+export * from './Composables/UseConfirmation.ts';
+export * from './Composables/UseStackLayout.ts';
+export * from './Composables/UseFormApi.ts';
+export * from './Composables/UseFormContext.ts';
+export * from './Composables/UseHttpClient.ts';
+export * from './Composables/UseViewDepth.ts';
+export * from './Composables/UseViewLocation.ts';
+export * from './Composables/UseViewParent.ts';
+export * from './Composables/UseViewQuery.ts';
+export * from './Composables/UseViewResolver.ts';
+export * from './Composables/UseViewStack.ts';
 
-export * from './Events/EventBus';
+export * from './Events/EventBus.ts';
 
-export * from './Http/Client/Request';
-export * from './Http/Client/Response';
+export * from './Http/Client/Request.ts';
+export * from './Http/Client/Response.ts';
 
-export * from './Services/FormContext';
-export * from './Services/StateManager';
-export * from './Services/StackedView';
-export * from './Services/ToastManager';
+export * from './Services/FormContext.ts';
+export * from './Services/StateManager.ts';
+export * from './Services/StackedView.ts';
+export * from './Services/ToastManager.ts';
 
-export * from './Support/Array';
-export * from './Support/Countries';
-export * from './Support/Empty';
-export * from './Support/ErrorModal';
-export * from './Support/Hash';
-export * from './Support/NestedSet';
-export * from './Support/Random';
-export * from './Support/Route';
-export * from './Support/Scroll';
-export * from './Support/Translator';
-export * from './Support/Url';
-export * from './Support/Wrap';
+export * from './Support/Array.ts';
+export * from './Support/Countries.ts';
+export * from './Support/Empty.ts';
+export * from './Support/ErrorModal.ts';
+export * from './Support/Hash.ts';
+export * from './Support/NestedSet.ts';
+export * from './Support/Random.ts';
+export * from './Support/Route.ts';
+export * from './Support/Scroll.ts';
+export * from './Support/Translator.ts';
+export * from './Support/Url.ts';
+export * from './Support/Wrap.ts';
 
-export * from './Types/HeadMeta';
-export * from './Types/RouterRedirect';
-export * from './Types/StackedView';
-export * from './Types/State';
-export * from './Types/Toast';
-export * from './Types/ViewResolver';
+export * from './Types/HeadMeta.ts';
+export * from './Types/RouterRedirect.ts';
+export * from './Types/StackedView.ts';
+export * from './Types/State.ts';
+export * from './Types/Toast.ts';
+export * from './Types/ViewResolver.ts';
 
 export function createOtherSoftwareFoundation(): Plugin {
   return {

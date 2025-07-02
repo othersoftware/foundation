@@ -1,4 +1,4 @@
-import { defineComponent, type PropType, provide, h, ref, nextTick, toValue, toRaw, onMounted, onBeforeUnmount, computed } from 'vue';
+import { defineComponent, type PropType, provide, h, ref, nextTick, toValue, toRaw, onMounted, onBeforeUnmount, computed, type ConcreteComponent } from 'vue';
 import { type ViewResolver } from '../../Types/ViewResolver';
 import { type State, type InitialState } from '../../Types/State';
 import type { CompleteResponse } from '../../Http/Client/Response';
@@ -6,6 +6,7 @@ import { StackedViewResolverInjectionKey, StackedViewInjectionKey, StackedViewDe
 import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities, StateHistoryInjectionKey } from '../../Services/StateManager';
 import { RouterViewComponent } from './RouterViewComponent';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
+import { StackedViewLayoutInjectionKey } from '../../Composables/UseStackLayout.ts';
 
 
 export const RouterComponent = defineComponent({
@@ -19,6 +20,10 @@ export const RouterComponent = defineComponent({
     state: {
       type: Object as PropType<InitialState>,
       required: true,
+    },
+    layout: {
+      type: [Object, Function, String] as PropType<ConcreteComponent | string>,
+      required: false,
     },
   },
   setup(props) {
@@ -65,6 +70,7 @@ export const RouterComponent = defineComponent({
     provide(StateLocationInjectionKey, location);
     provide(StateStackSignatureInjectionKey, signature);
     provide(StateManagerInjectionKey, update);
+    provide(StackedViewLayoutInjectionKey, props.layout);
     provide(StackedViewResolverInjectionKey, props.resolver);
     provide(StackedViewDepthInjectionKey, computed(() => 0));
     provide(StackedViewInjectionKey, stack);

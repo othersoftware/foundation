@@ -31,6 +31,7 @@ export declare type AppFactoryOptions = {
     props: {
         resolver: ViewResolver;
         state: State;
+        layout?: ConcreteComponent | string | undefined;
     };
 };
 
@@ -90,7 +91,7 @@ export declare function createFormContext(initial?: Record<string, any>, initial
     fill: (name: string, value: any) => void;
 };
 
-export declare function createFoundationController({ initial, resolver, setup }: Options): Promise<string>;
+export declare function createFoundationController({ initial, resolver, layout, setup }: Options): Promise<string>;
 
 export declare function createOtherSoftwareFoundation(): Plugin_2;
 
@@ -268,6 +269,7 @@ export declare function nestedSetRoot<T extends NestedSetItem = any>(data: Neste
 
 declare type Options = {
     initial?: State | undefined;
+    layout?: ConcreteComponent | string | undefined;
     resolver: ViewResolver;
     setup: AppFactory;
 };
@@ -325,6 +327,10 @@ state: {
 type: PropType<InitialState>;
 required: true;
 };
+layout: {
+type: PropType<ConcreteComponent | string>;
+required: false;
+};
 }>, () => VNode<RendererNode, RendererElement, {
 [key: string]: any;
 }>, {}, {}, {}, ComponentOptionsMixin, ComponentOptionsMixin, {}, string, PublicProps, Readonly<ExtractPropTypes<    {
@@ -335,6 +341,10 @@ required: true;
 state: {
 type: PropType<InitialState>;
 required: true;
+};
+layout: {
+type: PropType<ConcreteComponent | string>;
+required: false;
 };
 }>> & Readonly<{}>, {}, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
@@ -488,6 +498,8 @@ declare interface StackedViewKept {
     child?: StackedView | undefined;
 }
 
+export declare const StackedViewLayoutInjectionKey: InjectionKey<ConcreteComponent | string | undefined>;
+
 export declare const StackedViewLocationInjectionKey: InjectionKey<Ref<string | undefined>>;
 
 export declare const StackedViewParentInjectionKey: InjectionKey<Ref<StackedViewResolved | undefined>>;
@@ -607,6 +619,8 @@ export declare function useHttpClient(): {
 export declare function useLocation(): Ref<string, string>;
 
 export declare function usePersistentFormContext(): FormContextInterface;
+
+export declare function useStackLayout(): ConcreteComponent | string | undefined;
 
 export declare function useStackSignature(): Ref<string, string>;
 

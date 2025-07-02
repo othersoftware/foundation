@@ -5,6 +5,7 @@ import { useViewResolver } from '../../Composables/UseViewResolver';
 import { useViewStack, isNestedRouterViewPrevented } from '../../Composables/UseViewStack';
 import { useViewDepth } from '../../Composables/UseViewDepth';
 import type { StackedViewResolved } from '../../Types/StackedView';
+import { useStackLayout } from '../../Composables/UseStackLayout.ts';
 
 export const RouterViewComponent = defineComponent({
   inheritAttrs: false,
@@ -21,6 +22,7 @@ export const RouterViewComponent = defineComponent({
   }>,
   setup(props, { slots }) {
     const resolver = useViewResolver();
+    const defaultLayout = useStackLayout();
     const depth = useViewDepth();
     const view = useViewStack();
     const prevented = isNestedRouterViewPrevented();
@@ -54,6 +56,10 @@ export const RouterViewComponent = defineComponent({
         component.inheritAttrs = !!component.inheritAttrs;
 
         let children = h(component, viewProps);
+
+        if (depth.value === 0 && component.layout === undefined) {
+          component.layout = defaultLayout;
+        }
 
         if (props.allowLayouts && component.layout) {
           children = wrap(component.layout).concat(children).reverse().reduce((child, layout) => {

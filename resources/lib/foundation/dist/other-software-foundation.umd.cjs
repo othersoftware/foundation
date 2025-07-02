@@ -1728,6 +1728,10 @@
     }
     return view;
   }
+  const StackedViewLayoutInjectionKey = Symbol("StackedViewLayoutInjectionKey");
+  function useStackLayout() {
+    return vue.inject(StackedViewLayoutInjectionKey, () => void 0);
+  }
   const RouterViewComponent = vue.defineComponent({
     inheritAttrs: false,
     name: "RouterView",
@@ -1741,6 +1745,7 @@
     slots: Object,
     setup(props, { slots }) {
       const resolver = useViewResolver();
+      const defaultLayout = useStackLayout();
       const depth = useViewDepth();
       const view = useViewStack();
       const prevented = isNestedRouterViewPrevented();
@@ -1767,6 +1772,9 @@
           let viewProps = view.value.props;
           component.inheritAttrs = !!component.inheritAttrs;
           let children = vue.h(component, viewProps);
+          if (depth.value === 0 && component.layout === void 0) {
+            component.layout = defaultLayout;
+          }
           if (props.allowLayouts && component.layout) {
             children = wrap(component.layout).concat(children).reverse().reduce((child, layout) => {
               layout = typeof layout === "string" ? resolver(layout) : layout;
@@ -3466,6 +3474,10 @@
       state: {
         type: Object,
         required: true
+      },
+      layout: {
+        type: [Object, Function, String],
+        required: false
       }
     },
     setup(props) {
@@ -3504,6 +3516,7 @@
       vue.provide(StateLocationInjectionKey, location);
       vue.provide(StateStackSignatureInjectionKey, signature);
       vue.provide(StateManagerInjectionKey, update);
+      vue.provide(StackedViewLayoutInjectionKey, props.layout);
       vue.provide(StackedViewResolverInjectionKey, props.resolver);
       vue.provide(StackedViewDepthInjectionKey, vue.computed(() => 0));
       vue.provide(StackedViewInjectionKey, stack2);
@@ -3538,10 +3551,10 @@
       };
     }
   });
-  async function createFoundationController({ initial, resolver, setup }) {
+  async function createFoundationController({ initial, resolver, layout, setup }) {
     const isServer = typeof window === "undefined";
     const state = initial || readInitialState();
-    const app = setup({ router: RouterComponent, props: { resolver, state } });
+    const app = setup({ router: RouterComponent, props: { resolver, state, layout } });
     if (isServer) {
       return await renderToString(app);
     }
@@ -3756,6 +3769,7 @@
   exports2.RouterViewComponent = RouterViewComponent;
   exports2.StackedViewDepthInjectionKey = StackedViewDepthInjectionKey;
   exports2.StackedViewInjectionKey = StackedViewInjectionKey;
+  exports2.StackedViewLayoutInjectionKey = StackedViewLayoutInjectionKey;
   exports2.StackedViewLocationInjectionKey = StackedViewLocationInjectionKey;
   exports2.StackedViewParentInjectionKey = StackedViewParentInjectionKey;
   exports2.StackedViewQueryInjectionKey = StackedViewQueryInjectionKey;
@@ -3802,6 +3816,7 @@
   exports2.useHttpClient = useHttpClient;
   exports2.useLocation = useLocation;
   exports2.usePersistentFormContext = usePersistentFormContext;
+  exports2.useStackLayout = useStackLayout;
   exports2.useStackSignature = useStackSignature;
   exports2.useStateHistory = useStateHistory;
   exports2.useStateManager = useStateManager;

@@ -1725,6 +1725,10 @@ function useViewDepth() {
   }
   return view;
 }
+const StackedViewLayoutInjectionKey = Symbol("StackedViewLayoutInjectionKey");
+function useStackLayout() {
+  return inject(StackedViewLayoutInjectionKey, () => void 0);
+}
 const RouterViewComponent = defineComponent({
   inheritAttrs: false,
   name: "RouterView",
@@ -1738,6 +1742,7 @@ const RouterViewComponent = defineComponent({
   slots: Object,
   setup(props, { slots }) {
     const resolver = useViewResolver();
+    const defaultLayout = useStackLayout();
     const depth = useViewDepth();
     const view = useViewStack();
     const prevented = isNestedRouterViewPrevented();
@@ -1764,6 +1769,9 @@ const RouterViewComponent = defineComponent({
         let viewProps = view.value.props;
         component.inheritAttrs = !!component.inheritAttrs;
         let children = h(component, viewProps);
+        if (depth.value === 0 && component.layout === void 0) {
+          component.layout = defaultLayout;
+        }
         if (props.allowLayouts && component.layout) {
           children = wrap(component.layout).concat(children).reverse().reduce((child, layout) => {
             layout = typeof layout === "string" ? resolver(layout) : layout;
@@ -3463,6 +3471,10 @@ const RouterComponent = defineComponent({
     state: {
       type: Object,
       required: true
+    },
+    layout: {
+      type: [Object, Function, String],
+      required: false
     }
   },
   setup(props) {
@@ -3501,6 +3513,7 @@ const RouterComponent = defineComponent({
     provide(StateLocationInjectionKey, location);
     provide(StateStackSignatureInjectionKey, signature);
     provide(StateManagerInjectionKey, update);
+    provide(StackedViewLayoutInjectionKey, props.layout);
     provide(StackedViewResolverInjectionKey, props.resolver);
     provide(StackedViewDepthInjectionKey, computed(() => 0));
     provide(StackedViewInjectionKey, stack2);
@@ -3535,10 +3548,10 @@ const RouterComponent = defineComponent({
     };
   }
 });
-async function createFoundationController({ initial, resolver, setup }) {
+async function createFoundationController({ initial, resolver, layout, setup }) {
   const isServer = typeof window === "undefined";
   const state = initial || readInitialState();
-  const app = setup({ router: RouterComponent, props: { resolver, state } });
+  const app = setup({ router: RouterComponent, props: { resolver, state, layout } });
   if (isServer) {
     return await renderToString(app);
   }
@@ -3754,6 +3767,7 @@ export {
   RouterViewComponent,
   StackedViewDepthInjectionKey,
   StackedViewInjectionKey,
+  StackedViewLayoutInjectionKey,
   StackedViewLocationInjectionKey,
   StackedViewParentInjectionKey,
   StackedViewQueryInjectionKey,
@@ -3800,6 +3814,7 @@ export {
   useHttpClient,
   useLocation,
   usePersistentFormContext,
+  useStackLayout,
   useStackSignature,
   useStateHistory,
   useStateManager,
