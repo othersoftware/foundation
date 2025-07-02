@@ -103,7 +103,7 @@ abstract class Model extends EloquentModel
             if ($this->hasCast($key) && class_exists($class = $this->getCastType($key))) {
                 if (is_subclass_of($class, BackedEnum::class)) {
                     if (method_exists($class, 'toRecord')) {
-                        $enums[$key] = $this->castAttribute($key, $value)->toRecord();
+                        $enums[$key] = $this->castAttribute($key, $value)?->toRecord();
                     }
                 }
             }
