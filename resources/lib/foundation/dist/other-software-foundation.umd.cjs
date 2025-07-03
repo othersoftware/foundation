@@ -27,6 +27,7 @@
   }
   class CompleteResponse extends Response {
     abilities;
+    meta;
     shared;
     authenticated;
     location;
@@ -39,6 +40,7 @@
     constructor(xhr) {
       super(xhr);
       let data = JSON.parse(this.xhr.response);
+      this.meta = data.meta;
       this.abilities = data.abilities;
       this.shared = data.shared;
       this.authenticated = data.authenticated;
@@ -3483,6 +3485,39 @@
   }
   const { isVNode } = vue.ssrUtils;
   vue.initDirectivesForSSR();
+  function updateHead(meta) {
+    if (!meta) {
+      return meta;
+    }
+    document.head.querySelectorAll("[data-fdn]").forEach((element) => element.remove());
+    meta.forEach((tag) => {
+      let element;
+      switch (tag.type) {
+        case "title":
+          element = document.createElement("title");
+          element.innerHTML = tag.content;
+          break;
+        case "meta":
+          element = document.createElement("meta");
+          element.setAttribute("name", tag.name);
+          element.setAttribute("content", tag.content);
+          break;
+        case "link":
+          element = document.createElement("link");
+          element.setAttribute("rel", tag.rel);
+          element.setAttribute("href", tag.href);
+          break;
+        case "snippet":
+          element = document.createElement("script");
+          element.setAttribute("type", "application/ld+json");
+          element.innerHTML = tag.content;
+          break;
+      }
+      element.setAttribute("data-fdn", "");
+      document.head.append(element);
+    });
+    return meta;
+  }
   const RouterComponent = vue.defineComponent({
     inheritAttrs: false,
     name: "Router",
@@ -3498,6 +3533,7 @@
     },
     setup(props) {
       const abilities = vue.ref(props.state.abilities);
+      const meta = vue.ref(props.state.meta);
       const shared = vue.ref(props.state.shared || {});
       const authenticated = vue.ref(props.state.authenticated);
       const location = vue.ref(props.state.location);
@@ -3506,6 +3542,7 @@
       const toasts = vue.ref(props.state.toasts);
       function buildState() {
         return {
+          meta: vue.toRaw(vue.toValue(meta)),
           shared: vue.toRaw(vue.toValue(shared)),
           location: vue.toRaw(vue.toValue(location)),
           signature: vue.toRaw(vue.toValue(signature)),
@@ -3515,6 +3552,9 @@
       async function update(fresh) {
         abilities.value = { ...abilities.value, ...fresh.abilities };
         authenticated.value = fresh.authenticated;
+        if (fresh.meta) {
+          meta.value = updateHead(fresh.meta);
+        }
         if (fresh.shared) {
           shared.value = { ...shared.value, ...fresh.shared };
         }
@@ -3582,7 +3622,7 @@
     return "";
   }
   function readInitialState() {
-    let element = document.getElementById("ias");
+    let element = document.getElementById("fdn-init");
     if (!element || !element.textContent) {
       throw new Error("Cannot find initial script element with MVC state.");
     }

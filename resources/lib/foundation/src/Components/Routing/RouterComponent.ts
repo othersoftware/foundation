@@ -6,6 +6,7 @@ import { StackedViewResolverInjectionKey, StackedViewInjectionKey, StackedViewDe
 import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities, StateHistoryInjectionKey, StateShared } from '../../Services/StateManager';
 import { RouterViewComponent } from './RouterViewComponent';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
+import { updateHead } from '../../Services/MetaManager.ts';
 
 
 export const RouterComponent = defineComponent({
@@ -23,6 +24,7 @@ export const RouterComponent = defineComponent({
   },
   setup(props) {
     const abilities = ref(props.state.abilities);
+    const meta = ref(props.state.meta);
     const shared = ref(props.state.shared || {});
     const authenticated = ref(props.state.authenticated);
     const location = ref(props.state.location);
@@ -32,6 +34,7 @@ export const RouterComponent = defineComponent({
 
     function buildState() {
       return {
+        meta: toRaw(toValue(meta)),
         shared: toRaw(toValue(shared)),
         location: toRaw(toValue(location)),
         signature: toRaw(toValue(signature)),
@@ -42,6 +45,10 @@ export const RouterComponent = defineComponent({
     async function update(fresh: CompleteResponse): Promise<State> {
       abilities.value = { ...abilities.value, ...fresh.abilities };
       authenticated.value = fresh.authenticated;
+
+      if (fresh.meta) {
+        meta.value = updateHead(fresh.meta);
+      }
 
       if (fresh.shared) {
         shared.value = { ...shared.value, ...fresh.shared };

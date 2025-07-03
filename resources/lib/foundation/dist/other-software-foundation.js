@@ -24,6 +24,7 @@ class Response {
 }
 class CompleteResponse extends Response {
   abilities;
+  meta;
   shared;
   authenticated;
   location;
@@ -36,6 +37,7 @@ class CompleteResponse extends Response {
   constructor(xhr) {
     super(xhr);
     let data = JSON.parse(this.xhr.response);
+    this.meta = data.meta;
     this.abilities = data.abilities;
     this.shared = data.shared;
     this.authenticated = data.authenticated;
@@ -3480,6 +3482,39 @@ async function resolveTeleports(context) {
 }
 const { isVNode } = ssrUtils;
 initDirectivesForSSR();
+function updateHead(meta) {
+  if (!meta) {
+    return meta;
+  }
+  document.head.querySelectorAll("[data-fdn]").forEach((element) => element.remove());
+  meta.forEach((tag) => {
+    let element;
+    switch (tag.type) {
+      case "title":
+        element = document.createElement("title");
+        element.innerHTML = tag.content;
+        break;
+      case "meta":
+        element = document.createElement("meta");
+        element.setAttribute("name", tag.name);
+        element.setAttribute("content", tag.content);
+        break;
+      case "link":
+        element = document.createElement("link");
+        element.setAttribute("rel", tag.rel);
+        element.setAttribute("href", tag.href);
+        break;
+      case "snippet":
+        element = document.createElement("script");
+        element.setAttribute("type", "application/ld+json");
+        element.innerHTML = tag.content;
+        break;
+    }
+    element.setAttribute("data-fdn", "");
+    document.head.append(element);
+  });
+  return meta;
+}
 const RouterComponent = defineComponent({
   inheritAttrs: false,
   name: "Router",
@@ -3495,6 +3530,7 @@ const RouterComponent = defineComponent({
   },
   setup(props) {
     const abilities = ref(props.state.abilities);
+    const meta = ref(props.state.meta);
     const shared = ref(props.state.shared || {});
     const authenticated = ref(props.state.authenticated);
     const location = ref(props.state.location);
@@ -3503,6 +3539,7 @@ const RouterComponent = defineComponent({
     const toasts = ref(props.state.toasts);
     function buildState() {
       return {
+        meta: toRaw$1(toValue(meta)),
         shared: toRaw$1(toValue(shared)),
         location: toRaw$1(toValue(location)),
         signature: toRaw$1(toValue(signature)),
@@ -3512,6 +3549,9 @@ const RouterComponent = defineComponent({
     async function update(fresh) {
       abilities.value = { ...abilities.value, ...fresh.abilities };
       authenticated.value = fresh.authenticated;
+      if (fresh.meta) {
+        meta.value = updateHead(fresh.meta);
+      }
       if (fresh.shared) {
         shared.value = { ...shared.value, ...fresh.shared };
       }
@@ -3579,7 +3619,7 @@ async function createFoundationController({ initial, resolver, setup }) {
   return "";
 }
 function readInitialState() {
-  let element = document.getElementById("ias");
+  let element = document.getElementById("fdn-init");
   if (!element || !element.textContent) {
     throw new Error("Cannot find initial script element with MVC state.");
   }

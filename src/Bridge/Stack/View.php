@@ -29,7 +29,7 @@ final class View implements Arrayable, Jsonable, JsonSerializable
     private ?View $child = null;
 
 
-    public function __construct(string $component = null, array $props = [], true $keep = null)
+    public function __construct(string $component = null, array $props = [], ?true $keep = null)
     {
         if (is_null($component) && is_null($keep)) {
             throw new InvalidArgumentException('You must decide that you want to keep stacked view in SPA, or that you want to rerender it.');

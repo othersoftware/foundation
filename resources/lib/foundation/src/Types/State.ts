@@ -27,11 +27,28 @@ export interface Shared {
 
 export type SharedState = Partial<Shared>;
 
+export type Meta = {
+  type: 'title',
+  content: string;
+} | {
+  type: 'meta',
+  name: string;
+  content: string;
+} | {
+  type: 'link',
+  rel: string;
+  href: string;
+} | {
+  type: 'snippet',
+  content: string;
+};
+
 export interface State {
   location: string,
   signature: string,
   shared: SharedState,
   stack: StackedViewResolved,
+  meta?: Meta[],
 }
 
 export interface InitialState extends State {

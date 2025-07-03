@@ -30,7 +30,7 @@ export declare type AppFactoryOptions = {
     router: typeof RouterComponent;
     props: {
         resolver: ViewResolver;
-        state: State;
+        state: InitialState;
     };
 };
 
@@ -51,6 +51,7 @@ declare type Callback<T> = () => Promise<T> | T;
 
 export declare class CompleteResponse extends Response_2 {
     readonly abilities: Abilities;
+    readonly meta: Meta[] | undefined;
     readonly shared: SharedState | undefined;
     readonly authenticated: Authenticated | null;
     readonly location: string;
@@ -251,6 +252,22 @@ export declare type Locale = {
     code: string;
 };
 
+export declare type Meta = {
+    type: 'title';
+    content: string;
+} | {
+    type: 'meta';
+    name: string;
+    content: string;
+} | {
+    type: 'link';
+    rel: string;
+    href: string;
+} | {
+    type: 'snippet';
+    content: string;
+};
+
 export declare type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | string;
 
 export declare type NestedSet<T extends NestedSetItem = any> = T[];
@@ -272,7 +289,7 @@ export declare type NestedSetItem = {
 export declare function nestedSetRoot<T extends NestedSetItem = any>(data: NestedSet<T>): T[];
 
 declare type Options = {
-    initial?: State | undefined;
+    initial?: InitialState | undefined;
     resolver: ViewResolver;
     setup: AppFactory;
 };
@@ -522,6 +539,7 @@ export declare interface State {
     signature: string;
     shared: SharedState;
     stack: StackedViewResolved;
+    meta?: Meta[];
 }
 
 export declare const StateAbilities: InjectionKey<Ref<Abilities>>;

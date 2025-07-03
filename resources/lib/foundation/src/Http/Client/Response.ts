@@ -1,7 +1,7 @@
 import type { StackedView } from '../../Types/StackedView';
 import type { RouterRedirect } from '../../Types/RouterRedirect';
 import type { ToastRegistry } from '../../Types/Toast';
-import type { Authenticated, Abilities, SharedState } from '../../Types/State';
+import type { Authenticated, Abilities, SharedState, Meta } from '../../Types/State';
 
 export class Response {
   protected readonly xhr: XMLHttpRequest;
@@ -34,6 +34,7 @@ export class Response {
 
 export class CompleteResponse extends Response {
   public readonly abilities: Abilities;
+  public readonly meta: Meta[] | undefined;
   public readonly shared: SharedState | undefined;
   public readonly authenticated: Authenticated | null;
   public readonly location: string;
@@ -49,6 +50,7 @@ export class CompleteResponse extends Response {
 
     let data = JSON.parse(this.xhr.response);
 
+    this.meta = data.meta;
     this.abilities = data.abilities;
     this.shared = data.shared;
     this.authenticated = data.authenticated;

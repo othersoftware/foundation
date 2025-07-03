@@ -21,9 +21,11 @@
     },
     "require": {
         "php": "^8.3.0",
+        "ext-curl": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
         "ext-pdo": "*",
+        "ext-pcntl": "*",
         "composer/class-map-generator": "^1.6.1",
         "doctrine/dbal": "^3.9.5",
         "doctrine/migrations": "^3.9.1",
