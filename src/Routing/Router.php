@@ -9,6 +9,7 @@ use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Route as BaseRoute;
 use Illuminate\Routing\Router as BaseRouter;
 use Illuminate\Support\Collection;
+use OtherSoftware\Bridge\Middleware\Context;
 use OtherSoftware\Bridge\Stack\Stack;
 use OtherSoftware\Bridge\Stack\StackEntry;
 use OtherSoftware\Bridge\Stack\View;
@@ -83,6 +84,13 @@ final class Router extends BaseRouter
 
         $shouldSkipMiddleware = $this->container->bound('middleware.disable') && $this->container->make('middleware.disable') === true;
         $middleware = $shouldSkipMiddleware ? [] : $this->gatherRouteMiddleware($route);
+
+        // When the route is not within Foundation's context, run the route without a stack.
+        if (count(array_filter($middleware, fn($entry) => str_starts_with($entry, Context::class))) <= 0) {
+            return (new Pipeline($this->container))->send($request)->through($middleware)->then(function ($request) use ($route) {
+                return $this->prepareResponse($request, $route->run());
+            });
+        }
 
         $this->stack = $this->buildViewStack($route, $request);
 
