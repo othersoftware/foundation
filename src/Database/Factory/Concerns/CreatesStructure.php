@@ -146,6 +146,15 @@ trait CreatesStructure
     }
 
 
+    public function nullableMorphs(string $name, string $index = null): void
+    {
+        $this->makeStructure(new StringStructure("{$name}_type", 255))->nullable();
+        $this->makeStructure(new IntegerBigStructure("{$name}_id"))->unsigned()->nullable();
+
+        $this->index(["{$name}_type", "{$name}_id"], $index);
+    }
+
+
     public function pageable(): void
     {
         $this->makeStructure(new PageablePreset());

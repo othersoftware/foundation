@@ -689,6 +689,7 @@ declare global {
   declare const APP_CURRENCY: string;
   declare const APP_ROUTES: Record<string, any>;
   declare const APP_TRANSLATIONS: Record<string, any>;
+  declare const APP_VAPID_KEY: string | null;
 }
 
 declare global {
