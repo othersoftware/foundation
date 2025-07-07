@@ -30,7 +30,6 @@ export const RouterNestedComponent = defineComponent({
 
     function buildState() {
       return {
-        shared: toRaw(toValue(shared)),
         location: toRaw(toValue(location)),
         signature: toRaw(toValue(signature)),
         stack: toRaw(toValue(stack)),

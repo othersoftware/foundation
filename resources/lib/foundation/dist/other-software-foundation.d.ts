@@ -238,6 +238,7 @@ declare interface HttpOptions {
 export declare interface InitialState extends State {
     abilities: Abilities;
     authenticated: Authenticated | null;
+    shared: SharedState;
     toasts: ToastRegistry;
 }
 
@@ -537,7 +538,6 @@ export declare const StackedViewResolverInjectionKey: InjectionKey<ViewResolver>
 export declare interface State {
     location: string;
     signature: string;
-    shared: SharedState;
     stack: StackedViewResolved;
     meta?: Meta[];
 }

@@ -1924,7 +1924,6 @@ const RouterNestedComponent = defineComponent({
     const toasts = inject(ToastRegistryInjectionKey);
     function buildState() {
       return {
-        shared: toRaw$1(toValue(shared)),
         location: toRaw$1(toValue(location)),
         signature: toRaw$1(toValue(signature)),
         stack: toRaw$1(toValue(stack2))
@@ -3540,7 +3539,6 @@ const RouterComponent = defineComponent({
     function buildState() {
       return {
         meta: toRaw$1(toValue(meta)),
-        shared: toRaw$1(toValue(shared)),
         location: toRaw$1(toValue(location)),
         signature: toRaw$1(toValue(signature)),
         stack: toRaw$1(toValue(stack2))

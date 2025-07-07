@@ -46,7 +46,6 @@ export type Meta = {
 export interface State {
   location: string,
   signature: string,
-  shared: SharedState,
   stack: StackedViewResolved,
   meta?: Meta[],
 }
@@ -54,6 +53,7 @@ export interface State {
 export interface InitialState extends State {
   abilities: Abilities,
   authenticated: Authenticated | null,
+  shared: SharedState,
   toasts: ToastRegistry,
 }
 

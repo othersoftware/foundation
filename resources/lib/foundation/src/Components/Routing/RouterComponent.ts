@@ -35,7 +35,6 @@ export const RouterComponent = defineComponent({
     function buildState() {
       return {
         meta: toRaw(toValue(meta)),
-        shared: toRaw(toValue(shared)),
         location: toRaw(toValue(location)),
         signature: toRaw(toValue(signature)),
         stack: toRaw(toValue(stack)),

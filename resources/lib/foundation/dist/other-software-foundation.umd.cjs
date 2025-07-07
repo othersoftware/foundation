@@ -1927,7 +1927,6 @@
       const toasts = vue.inject(ToastRegistryInjectionKey);
       function buildState() {
         return {
-          shared: vue.toRaw(vue.toValue(shared)),
           location: vue.toRaw(vue.toValue(location)),
           signature: vue.toRaw(vue.toValue(signature)),
           stack: vue.toRaw(vue.toValue(stack2))
@@ -3543,7 +3542,6 @@
       function buildState() {
         return {
           meta: vue.toRaw(vue.toValue(meta)),
-          shared: vue.toRaw(vue.toValue(shared)),
           location: vue.toRaw(vue.toValue(location)),
           signature: vue.toRaw(vue.toValue(signature)),
           stack: vue.toRaw(vue.toValue(stack2))
