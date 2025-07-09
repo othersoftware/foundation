@@ -2,6 +2,7 @@ import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
 import { provideVirtualComponentsModule } from './Modules/Components';
 import { provideVirtualViewsModule } from './Modules/Views';
 import type { Options } from './Types/Options';
+import { transformViewComponent } from './Services/ViewRouterTransformer.ts';
 
 
 export default function autoloader(options: Options): Plugin {
@@ -25,6 +26,7 @@ export default function autoloader(options: Options): Plugin {
 
   return {
     name: 'vue-autoloader',
+    enforce: 'pre',
 
     configResolved(resolvedConfig) {
       config = resolvedConfig;
@@ -38,6 +40,10 @@ export default function autoloader(options: Options): Plugin {
     load(id) {
       if (id === '\0@app/components') return provideVirtualComponentsModule(config, options);
       if (id === '\0@app/views') return provideVirtualViewsModule(config, options);
+    },
+
+    async transform(code, id) {
+      return transformViewComponent(config, options, code, id);
     },
 
     configureServer(server) {
