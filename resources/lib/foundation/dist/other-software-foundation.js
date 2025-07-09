@@ -1645,8 +1645,12 @@ const FormControllerComponent = defineComponent({
       }
       return http.dispatch(props.method, props.action, { data: data.value });
     }
-    function submit() {
+    function submit(event) {
       let beforeReadonly = readonly.value;
+      if (event) {
+        event.stopPropagation();
+        event.preventDefault();
+      }
       processing.value = true;
       readonly.value = true;
       errors.value = {};

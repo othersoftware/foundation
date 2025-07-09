@@ -21,6 +21,7 @@ use OtherSoftware\Bridge\Protocol\Redirect;
 use OtherSoftware\Bridge\Stack\Stack;
 use OtherSoftware\Bridge\Stack\View;
 use OtherSoftware\Support\Facades\Toast;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -144,8 +145,12 @@ final class ResponseFactory implements Responsable
     }
 
 
-    public function setRedirect(string $target, bool $reload = false): static
+    public function setRedirect(RedirectResponse|string $target, bool $reload = false): static
     {
+        if ($target instanceof RedirectResponse) {
+            $target = $target->getTargetUrl();
+        }
+
         $this->redirect = new Redirect($target, $reload);
 
         return $this;
