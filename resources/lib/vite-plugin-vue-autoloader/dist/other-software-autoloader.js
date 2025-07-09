@@ -1,7 +1,7 @@
 import { normalizePath as l } from "vite";
 import a from "node:fs";
 import * as O from "node:path";
-import p, { basename as V, parse as $, resolve as m } from "node:path";
+import p, { basename as $, parse as D, resolve as m } from "node:path";
 function T(t, e = [".vue"], r = []) {
   return a.existsSync(t) && a.readdirSync(t).forEach((s) => {
     const n = p.join(t, s);
@@ -13,19 +13,19 @@ function T(t, e = [".vue"], r = []) {
 function h(t) {
   return t.charAt(0).toUpperCase() + t.slice(1);
 }
-function D(t, e, r = void 0) {
+function I(t, e, r = void 0) {
   e = l(e), t = l(t);
   let o = e.replace(t, "").replace(/^\//, "").replace(".vue", "").split("/").join(".");
   return r ? r + "::" + o : o;
 }
-function I(t, e, r = void 0) {
+function j(t, e, r = void 0) {
   e = l(e), t = l(t);
   let o = e.replace(t, "").replace(/^\//, "").replace(".vue", "").split("/");
   return r && o.unshift(r), o.map(h).join("");
 }
-function j(t, e = void 0) {
+function M(t, e = void 0) {
   t = l(t);
-  let r = V(t), o = $(r), s = h(o.name);
+  let r = $(t), o = D(r), s = h(o.name);
   return e ? h(e) + s : s;
 }
 function f(t, e, r = void 0) {
@@ -36,11 +36,11 @@ function f(t, e, r = void 0) {
 }
 function d(t, e, r = void 0, o = void 0) {
   T(t).forEach((s) => {
-    let n = j(s, o), i = D(t, s, o), u = I(t, s, o);
+    let n = M(s, o), i = I(t, s, o), u = j(t, s, o);
     s = l(s), r && r.set(u, { global: n, name: u, laravel: i, path: s }), e.set(u, { global: n, name: u, laravel: i, path: s });
   });
 }
-function M(t) {
+function x(t) {
   let e = [];
   return t.forEach((r) => e.push(`import ${r.global} from '${r.path}';`)), e.push("export {"), t.forEach((r) => e.push(`  ${r.global},`)), e.push("};"), e.push(""), e.push("export function createOtherSoftwareAutoloader() {"), e.push("  return {"), e.push("    install(app) {"), t.forEach((r) => e.push(`      app.component('${r.global}', ${r.global});`)), e.push("    },"), e.push("  };"), e.push("};"), e.push(""), e.join(`
 `);
@@ -63,9 +63,9 @@ function E(t, e, r = !0) {
   if (!o)
     throw new Error("Unknown target for output files!");
   let [s, n] = o, i = f(t, e.components);
-  return n && (w(t, n, i.vendors), v(t, n, i.vendors)), w(t, s, i.components), v(t, s, i.components), r ? M(i.components) : null;
+  return n && (w(t, n, i.vendors), v(t, n, i.vendors)), w(t, s, i.components), v(t, s, i.components), r ? x(i.components) : null;
 }
-function x(t) {
+function R(t) {
   let e = [];
   return t.forEach((r) => e.push(`import ${r.name} from '${r.path}';`)), e.push(""), e.push("const ViewsRepository = {"), t.forEach((r) => e.push(`  '${r.laravel}': ${r.name},`)), e.push("};"), e.push(""), e.push("export function createViewResolver(name) {"), e.push("  const view = ViewsRepository[name];"), e.push(""), e.push("  if (!view) {"), e.push(`    throw new Error('View "' + name + '" not found!');`), e.push("  }"), e.push(""), e.push("  return view;"), e.push("}"), e.push(""), e.join(`
 `);
@@ -86,17 +86,20 @@ function A(t, e, r = !0) {
     throw new Error("Unknown target for output files!");
   let [s, n] = o;
   const i = f(t, e.views, e.namespace);
-  return n && (y(t, n), S(t, n, i.vendors)), y(t, s), S(t, s, i.components), r ? x(i.components) : null;
+  return n && (y(t, n), S(t, n, i.vendors)), y(t, s), S(t, s, i.components), r ? R(i.components) : null;
 }
 let c;
-function R(t, e) {
+function V(t, e) {
   let r = f(t, e.views, e.namespace);
   c = /* @__PURE__ */ new Set(), r.components.forEach((o) => {
     c.add(o.path);
   });
 }
-function C(t, e, r, o) {
-  c || R(t, e);
+function C(t, e) {
+  V(t, e);
+}
+function b(t, e, r, o) {
+  c || V(t, e);
   const s = O.normalize(o);
   if (!o.endsWith(".vue") || !c.has(s))
     return { code: r, map: null };
@@ -108,10 +111,10 @@ ${u}`, map: null };
   }
   return { code: r, map: null };
 }
-function P(t) {
+function N(t) {
   let e;
   function r(o) {
-    E(e, t, !1), A(e, t, !1);
+    E(e, t, !1), A(e, t, !1), C(e, t);
     const s = o.moduleGraph.getModuleById("\0@app/components"), n = o.moduleGraph.getModuleById("\0@app/views");
     s && o.reloadModule(s), n && o.reloadModule(n);
   }
@@ -130,7 +133,7 @@ function P(t) {
       if (o === "\0@app/views") return A(e, t);
     },
     async transform(o, s) {
-      return C(e, t, o, s);
+      return b(e, t, o, s);
     },
     configureServer(o) {
       const s = (n) => {
@@ -141,5 +144,5 @@ function P(t) {
   };
 }
 export {
-  P as default
+  N as default
 };

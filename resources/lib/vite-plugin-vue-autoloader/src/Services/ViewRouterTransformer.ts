@@ -15,6 +15,10 @@ function collectViewsSet(config: ResolvedConfig, options: Options) {
   });
 }
 
+export function resetViewsSet(config: ResolvedConfig, options: Options) {
+  collectViewsSet(config, options);
+}
+
 export function transformViewComponent(config: ResolvedConfig, options: Options, code: string, id: string) {
   if (!views) {
     collectViewsSet(config, options);

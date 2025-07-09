@@ -1,8 +1,8 @@
 import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite';
+import type { Options } from './Types/Options';
 import { provideVirtualComponentsModule } from './Modules/Components';
 import { provideVirtualViewsModule } from './Modules/Views';
-import type { Options } from './Types/Options';
-import { transformViewComponent } from './Services/ViewRouterTransformer.ts';
+import { transformViewComponent, resetViewsSet } from './Services/ViewRouterTransformer.ts';
 
 
 export default function autoloader(options: Options): Plugin {
@@ -11,6 +11,8 @@ export default function autoloader(options: Options): Plugin {
   function refreshDeclarations(server: ViteDevServer) {
     provideVirtualComponentsModule(config, options, false);
     provideVirtualViewsModule(config, options, false);
+
+    resetViewsSet(config, options);
 
     const components = server.moduleGraph.getModuleById('\0@app/components');
     const views = server.moduleGraph.getModuleById('\0@app/views');
