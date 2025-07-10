@@ -567,7 +567,7 @@ export declare interface Toast {
     id: string;
     description: string;
     duration: number;
-    kind: typeof ToastKind;
+    kind: typeof ToastKind[keyof typeof ToastKind];
 }
 
 export declare const ToastComponent: DefineComponent<ExtractPropTypes<    {
@@ -598,10 +598,10 @@ toasts: ToastRegistry;
 }>, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
 export declare const ToastKind: {
-    SUCCESS: string;
-    DANGER: string;
-    INFO: string;
-    WARNING: string;
+    readonly SUCCESS: "success";
+    readonly DANGER: "danger";
+    readonly INFO: "info";
+    readonly WARNING: "warning";
 };
 
 export declare type ToastRegistry = Toast[];
