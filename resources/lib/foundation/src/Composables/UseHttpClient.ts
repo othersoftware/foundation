@@ -26,6 +26,7 @@ export function useHttpClient() {
 
   async function dispatch(method: Method, url: string, { data = undefined, preserveScroll = false, replace = false, refreshStack = false }: HttpOptions = {}) {
     document.body.classList.add('osf-loading');
+    document.dispatchEvent(new Event('visit:start'));
 
     return await Request.send(method, url, data, signature.value, refreshStack, location.value).then(async (response: CompleteResponse) => {
       return await state.update(response).then(async (fresh): Promise<any> => {
@@ -69,6 +70,7 @@ export function useHttpClient() {
       return Promise.reject(error);
     }).finally(() => {
       document.body.classList.remove('osf-loading');
+      document.dispatchEvent(new Event('visit:done'));
     });
   }
 

@@ -284,6 +284,7 @@
     const forceScrollPreserve = vue.inject(HttpClientForceScrollPreservation, false);
     async function dispatch(method, url2, { data = void 0, preserveScroll = false, replace = false, refreshStack = false } = {}) {
       document.body.classList.add("osf-loading");
+      document.dispatchEvent(new Event("visit:start"));
       return await Request.send(method, url2, data, signature.value, refreshStack, location.value).then(async (response) => {
         return await state.update(response).then(async (fresh) => {
           if (response.redirect) {
@@ -317,6 +318,7 @@
         return Promise.reject(error);
       }).finally(() => {
         document.body.classList.remove("osf-loading");
+        document.dispatchEvent(new Event("visit:done"));
       });
     }
     function resetScrollPosition() {

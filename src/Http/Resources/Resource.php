@@ -35,6 +35,12 @@ abstract class Resource implements Arrayable
                 $value = $value->toArray();
             }
 
+            if ($value instanceof \BackedEnum) {
+                if (method_exists($value, 'toRecord')) {
+                    $value = $value->toRecord();
+                }
+            }
+
             $data[$name] = $value;
         }
 
