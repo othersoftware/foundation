@@ -1618,6 +1618,11 @@
         required: false,
         default: false
       },
+      continuous: {
+        type: Boolean,
+        required: false,
+        default: false
+      },
       onSubmit: {
         type: Function,
         required: false
@@ -1657,7 +1662,9 @@
           event.preventDefault();
         }
         processing.value = true;
-        readonly.value = true;
+        if (!props.continuous) {
+          readonly.value = true;
+        }
         errors.value = {};
         touched.value = {};
         vue.nextTick(() => dispatch().catch((error) => {
@@ -1684,12 +1691,16 @@
         }
       }
       const eventHandlers = vue.computed(() => {
+        let handlers = {};
         if (element.value === "form") {
-          return { onSubmit: handleSubmit };
+          handlers = { onSubmit: handleSubmit };
         } else if (element.value === "div") {
-          return { onKeydown };
+          handlers = { onKeydown };
         }
-        return {};
+        if (props.continuous) {
+          handlers.onChange = handleSubmit;
+        }
+        return handlers;
       });
       vue.watch(() => props.data, (values) => {
         data.value = lodashCloneDeep(vue.toValue(values));

@@ -1615,6 +1615,11 @@ const FormControllerComponent = defineComponent({
       required: false,
       default: false
     },
+    continuous: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
     onSubmit: {
       type: Function,
       required: false
@@ -1654,7 +1659,9 @@ const FormControllerComponent = defineComponent({
         event.preventDefault();
       }
       processing.value = true;
-      readonly.value = true;
+      if (!props.continuous) {
+        readonly.value = true;
+      }
       errors.value = {};
       touched.value = {};
       nextTick(() => dispatch().catch((error) => {
@@ -1681,12 +1688,16 @@ const FormControllerComponent = defineComponent({
       }
     }
     const eventHandlers = computed(() => {
+      let handlers = {};
       if (element.value === "form") {
-        return { onSubmit: handleSubmit };
+        handlers = { onSubmit: handleSubmit };
       } else if (element.value === "div") {
-        return { onKeydown };
+        handlers = { onKeydown };
       }
-      return {};
+      if (props.continuous) {
+        handlers.onChange = handleSubmit;
+      }
+      return handlers;
     });
     watch(() => props.data, (values) => {
       data.value = lodashCloneDeep(toValue(values));

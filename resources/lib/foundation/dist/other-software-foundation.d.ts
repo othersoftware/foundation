@@ -157,6 +157,11 @@ type: BooleanConstructor;
 required: false;
 default: boolean;
 };
+continuous: {
+type: BooleanConstructor;
+required: false;
+default: boolean;
+};
 onSubmit: {
 type: PropType<FormHandler>;
 required: false;
@@ -183,6 +188,11 @@ type: BooleanConstructor;
 required: false;
 default: boolean;
 };
+continuous: {
+type: BooleanConstructor;
+required: false;
+default: boolean;
+};
 onSubmit: {
 type: PropType<FormHandler>;
 required: false;
@@ -191,6 +201,7 @@ required: false;
 data: Record<string, any>;
 method: string;
 readonly: boolean;
+continuous: boolean;
 }, SlotsType<{
 default: {
 data: any;
