@@ -104,7 +104,10 @@ export const FormControllerComponent = defineComponent({
       nextTick(() => dispatch().catch((error: Response | CompleteResponse) => {
         if (error instanceof CompleteResponse) {
           errors.value = error.errors;
-          nextTick(() => document.querySelector('.control--error')?.scrollIntoView());
+
+          if (!props.continuous) {
+            nextTick(() => document.querySelector('.control--error')?.scrollIntoView());
+          }
         }
       }).finally(() => {
         processing.value = false;

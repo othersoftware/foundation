@@ -1670,7 +1670,9 @@
         vue.nextTick(() => dispatch().catch((error) => {
           if (error instanceof CompleteResponse) {
             errors.value = error.errors;
-            vue.nextTick(() => document.querySelector(".control--error")?.scrollIntoView());
+            if (!props.continuous) {
+              vue.nextTick(() => document.querySelector(".control--error")?.scrollIntoView());
+            }
           }
         }).finally(() => {
           processing.value = false;
