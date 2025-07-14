@@ -283,6 +283,11 @@ function useHttpClient() {
     document.body.classList.add("osf-loading");
     document.dispatchEvent(new Event("visit:start"));
     return await Request.send(method, url2, data, signature.value, refreshStack, location.value).then(async (response) => {
+      if (response.redirect) {
+        if (response.redirect.reload) {
+          return await handleRedirectResponse(response.redirect);
+        }
+      }
       return await state.update(response).then(async (fresh) => {
         if (response.redirect) {
           return await handleRedirectResponse(response.redirect);

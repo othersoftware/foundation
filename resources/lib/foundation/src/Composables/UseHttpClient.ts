@@ -29,6 +29,14 @@ export function useHttpClient() {
     document.dispatchEvent(new Event('visit:start'));
 
     return await Request.send(method, url, data, signature.value, refreshStack, location.value).then(async (response: CompleteResponse) => {
+      // For hard reload redirects skip updating the app.
+      // There is no need for that, as the app will be fully reloaded anyway.
+      if (response.redirect) {
+        if (response.redirect.reload) {
+          return await handleRedirectResponse(response.redirect);
+        }
+      }
+
       return await state.update(response).then(async (fresh): Promise<any> => {
         if (response.redirect) {
           return await handleRedirectResponse(response.redirect);
@@ -78,7 +86,7 @@ export function useHttpClient() {
     window.scroll(0, 0);
   }
 
-  async function handleRedirectResponse(redirect: RouterRedirect) {
+  async function handleRedirectResponse(redirect: RouterRedirect): Promise<any> {
     if (redirect.reload) {
       return await new Promise(() => {
         window.location.href = redirect.target;
