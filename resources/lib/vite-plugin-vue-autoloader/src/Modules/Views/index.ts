@@ -15,11 +15,11 @@ export function provideVirtualViewsModule(config: ResolvedConfig, options: Optio
   const views = collect(config, options.views, options.namespace);
 
   if (vendor) {
-    writeComponentsDeclarations(config, vendor);
+    writeComponentsDeclarations(config, options, vendor);
     writePhpstormMeta(config, vendor, views.vendors);
   }
 
-  writeComponentsDeclarations(config, local);
+  writeComponentsDeclarations(config, options, local);
   writePhpstormMeta(config, local, views.components);
 
   if (compile) {
