@@ -15,11 +15,11 @@ export function provideVirtualComponentsModule(config: ResolvedConfig, options: 
   let views = collect(config, options.components);
 
   if (vendor) {
-    writeComponentsDeclarations(config, vendor, views.vendors);
+    writeComponentsDeclarations(config, options, vendor, views.vendors);
     writeVueDeclarations(config, vendor, views.vendors);
   }
 
-  writeComponentsDeclarations(config, local, views.components);
+  writeComponentsDeclarations(config, options, local, views.components);
   writeVueDeclarations(config, local, views.components);
 
   if (compile) {

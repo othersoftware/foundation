@@ -14,8 +14,8 @@ export default function autoloader(options: Options): Plugin {
 
     resetViewsSet(config, options);
 
-    const components = server.moduleGraph.getModuleById('\0@app/components');
-    const views = server.moduleGraph.getModuleById('\0@app/views');
+    const components = server.moduleGraph.getModuleById('\0@' + options.namespace + '/components');
+    const views = server.moduleGraph.getModuleById('\0@' + options.namespace + '/views');
 
     if (components) {
       server.reloadModule(components);
@@ -35,13 +35,13 @@ export default function autoloader(options: Options): Plugin {
     },
 
     resolveId(id) {
-      if (id === '@app/components') return '\0@app/components';
-      if (id === '@app/views') return '\0@app/views';
+      if (id === '@' + options.namespace + '/components') return '\0@' + options.namespace + '/components';
+      if (id === '@' + options.namespace + '/views') return '\0@' + options.namespace + '/views';
     },
 
     load(id) {
-      if (id === '\0@app/components') return provideVirtualComponentsModule(config, options);
-      if (id === '\0@app/views') return provideVirtualViewsModule(config, options);
+      if (id === '\0@' + options.namespace + '/components') return provideVirtualComponentsModule(config, options);
+      if (id === '\0@' + options.namespace + '/views') return provideVirtualViewsModule(config, options);
     },
 
     async transform(code, id) {
