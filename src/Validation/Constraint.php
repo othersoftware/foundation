@@ -792,7 +792,7 @@ final readonly class Constraint
      *
      * @return ConditionalRules
      */
-    public function requiredWhen($condition): ConditionalRules
+    public static function requiredWhen($condition): ConditionalRules
     {
         return self::when($condition, self::required());
     }
