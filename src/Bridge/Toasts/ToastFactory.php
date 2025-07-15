@@ -24,12 +24,34 @@ final class ToastFactory implements Arrayable, Jsonable, JsonSerializable
     private ToastKind $kind;
 
 
-    public function __construct(string $description, ToastKind $kind = ToastKind::SUCCESS, int $duration = 3)
+    public function __construct(string $description, ToastKind $kind = ToastKind::SUCCESS, ?int $duration = null)
     {
         $this->id = Str::random(6);
         $this->description = $description;
-        $this->duration = $duration;
+        $this->duration = $duration ?: $this->getAverageDuration($description);
         $this->kind = $kind;
+    }
+
+
+    /**
+     * This function computes a toast duration, based on an average reading
+     * speed of 180 words per minute. For short toasts, a minimum 3-second
+     * duration is always returned, to avoid toasts only blinking
+     * on the screen.
+     *
+     * @param string $description
+     *
+     * @return int
+     */
+    private function getAverageDuration(string $description): int
+    {
+        $words = (int) preg_match_all('/\p{L}+/u', $description);
+        $rate = 180;
+
+        $minutes = $words / $rate;
+        $seconds = round($minutes * 60);
+
+        return max($seconds, 3);
     }
 
 
