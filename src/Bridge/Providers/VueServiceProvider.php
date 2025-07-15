@@ -32,13 +32,9 @@ class VueServiceProvider extends ServiceProvider
     }
 
 
-    public function register(): void
+    private function bootPublishable(): void
     {
-        $this->mergeFoundationConfig();
-        $this->mergeCacheStores();
-
-        $this->registerServices();
-        $this->registerBladeDirectives();
+        $this->publishes([$this->getConfigurationPath() => config_path('foundation.php')], ['config']);
     }
 
 
@@ -56,17 +52,11 @@ class VueServiceProvider extends ServiceProvider
     }
 
 
-    private function bootPublishable(): void
-    {
-        $this->publishes([$this->getConfigurationPath() => config_path('foundation.php')], ['config']);
-    }
-
-
     private function bootValidationRenderable(Handler $instance): void
     {
         $instance->renderable(function (ValidationException $exception, Request $request) {
             if ($request->header('X-Stack-Router')) {
-                Vue::setErrors($exception->errors());
+                Vue::withErrors($exception->errors(), $request->input('_error_bag', $exception->errorBag));
                 Toast::danger(trans('validation.errors'));
 
                 return Vue::toResponse($request)->setStatusCode($exception->status);
@@ -80,6 +70,22 @@ class VueServiceProvider extends ServiceProvider
     private function getConfigurationPath(): string
     {
         return __DIR__ . '/../../../config/foundation.php';
+    }
+
+
+    public function register(): void
+    {
+        $this->mergeFoundationConfig();
+        $this->mergeCacheStores();
+
+        $this->registerServices();
+        $this->registerBladeDirectives();
+    }
+
+
+    private function mergeFoundationConfig(): void
+    {
+        $this->mergeConfigFrom($this->getConfigurationPath(), 'foundation');
     }
 
 
@@ -104,9 +110,12 @@ class VueServiceProvider extends ServiceProvider
     }
 
 
-    private function mergeFoundationConfig(): void
+    private function registerServices(): void
     {
-        $this->mergeConfigFrom($this->getConfigurationPath(), 'foundation');
+        $this->app->singleton(ServerConfiguration::class);
+
+        $this->app->scoped('frontend', ResponseFactory::class);
+        $this->app->scoped('toasts', ToastsManager::class);
     }
 
 
@@ -117,14 +126,5 @@ class VueServiceProvider extends ServiceProvider
             $blade->directive('foundationHead', [RenderFoundationHead::class, 'compile']);
             $blade->directive('foundationScript', [RenderFoundationScript::class, 'compile']);
         });
-    }
-
-
-    private function registerServices(): void
-    {
-        $this->app->singleton(ServerConfiguration::class);
-
-        $this->app->scoped('frontend', ResponseFactory::class);
-        $this->app->scoped('toasts', ToastsManager::class);
     }
 }

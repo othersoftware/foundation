@@ -1,9 +1,9 @@
 import { defineComponent, provide, h, ref, nextTick, toValue, toRaw, computed, inject, type Ref, type SlotsType } from 'vue';
-import { type State, type Abilities } from '../../Types/State';
+import { type State, type Abilities, type ViewErrorsBag } from '../../Types/State';
 import { type StackedViewResolved } from '../../Types/StackedView';
 import { type CompleteResponse } from '../../Http/Client/Response';
 import { StackedViewInjectionKey, StackedViewDepthInjectionKey } from '../../Services/StackedView';
-import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities, StateHistoryInjectionKey, StateShared } from '../../Services/StateManager';
+import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities, StateHistoryInjectionKey, StateShared, StateErrorsInjectionKey } from '../../Services/StateManager';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
 import { HttpClientForceScrollPreservation } from '../../Composables/UseHttpClient';
 import { RouterNestedViewComponent } from './RouterNestedViewComponent';
@@ -23,6 +23,7 @@ export const RouterNestedComponent = defineComponent({
     const abilities = ref(undefined) as unknown as Ref<Abilities>;
     const stack = ref(undefined) as unknown as Ref<StackedViewResolved>;
     const signature = ref(undefined) as unknown as Ref<string>;
+    const errors = ref({}) as Ref<ViewErrorsBag>;
 
     const shared = inject(StateShared)!;
     const authenticated = inject(StateAuthenticated)!;
@@ -39,6 +40,7 @@ export const RouterNestedComponent = defineComponent({
     async function update(fresh: CompleteResponse): Promise<State> {
       abilities.value = { ...abilities.value, ...fresh.abilities };
       authenticated.value = fresh.authenticated;
+      errors.value = fresh.errors;
 
       if (fresh.shared) {
         shared.value = { ...shared.value, ...fresh.shared };
@@ -68,6 +70,7 @@ export const RouterNestedComponent = defineComponent({
     provide(StateAuthenticated, authenticated);
     provide(StateLocationInjectionKey, location);
     provide(StateStackSignatureInjectionKey, signature);
+    provide(StateErrorsInjectionKey, errors);
     provide(StateManagerInjectionKey, update);
     provide(StackedViewDepthInjectionKey, computed(() => 0));
     provide(StackedViewInjectionKey, stack);

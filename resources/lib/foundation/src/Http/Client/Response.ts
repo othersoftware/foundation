@@ -1,7 +1,7 @@
 import type { StackedView } from '../../Types/StackedView';
 import type { RouterRedirect } from '../../Types/RouterRedirect';
 import type { ToastRegistry } from '../../Types/Toast';
-import type { Authenticated, Abilities, SharedState, Meta } from '../../Types/State';
+import type { Authenticated, Abilities, SharedState, Meta, ViewErrorsBag } from '../../Types/State';
 
 export class Response {
   protected readonly xhr: XMLHttpRequest;
@@ -42,7 +42,7 @@ export class CompleteResponse extends Response {
   public readonly redirect: RouterRedirect;
   public readonly stack: StackedView;
   public readonly toasts: ToastRegistry;
-  public readonly errors: Record<string, string[]>;
+  public readonly errors: ViewErrorsBag;
   public readonly data: any;
 
   constructor(xhr: XMLHttpRequest) {

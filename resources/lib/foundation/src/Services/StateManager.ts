@@ -1,5 +1,5 @@
 import { type InjectionKey, inject, type Ref } from 'vue';
-import type { StateManager, Authenticated, Abilities, StateHistory, SharedState } from '../Types/State';
+import type { StateManager, Authenticated, Abilities, StateHistory, SharedState, ViewErrorsBag } from '../Types/State';
 import type { StackedView, StackedViewResolved } from '../Types/StackedView';
 
 export const StateLocationInjectionKey = Symbol('StateLocation') as InjectionKey<Ref<string>>;
@@ -9,6 +9,7 @@ export const StateAuthenticated = Symbol('StateAuthenticated') as InjectionKey<R
 export const StateAbilities = Symbol('StateAbilities') as InjectionKey<Ref<Abilities>>;
 export const StateManagerInjectionKey = Symbol('StateManager') as InjectionKey<StateManager>;
 export const StateHistoryInjectionKey = Symbol('StateHistory') as InjectionKey<StateHistory>;
+export const StateErrorsInjectionKey = Symbol('StateErrors') as InjectionKey<Ref<ViewErrorsBag>>;
 
 export function useAbilities() {
   let abilities = inject(StateAbilities);
@@ -78,6 +79,16 @@ export function useStateHistory() {
   }
 
   return history;
+}
+
+export function useErrors() {
+  let errors = inject(StateErrorsInjectionKey);
+
+  if (!errors) {
+    throw new Error('State errors is used out of router context!');
+  }
+
+  return errors;
 }
 
 export function updateStack(current: StackedViewResolved, fresh: StackedView): StackedViewResolved {

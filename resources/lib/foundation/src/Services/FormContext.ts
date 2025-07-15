@@ -1,15 +1,26 @@
-import { ref, type Ref, type InjectionKey } from 'vue';
+import { ref, type Ref, type InjectionKey, computed, type MaybeRefOrGetter, toValue, watch } from 'vue';
+import lodashCloneDeep from 'lodash.clonedeep';
 import lodashSet from 'lodash.set';
 import lodashGet from 'lodash.get';
+import { useErrors } from './StateManager.ts';
 
 export const FormContextInjectionKey = Symbol('FormContext') as InjectionKey<FormContextInterface>;
 
-export function createFormContext(initial: Record<string, any> = {}, initialReadonly: boolean = false) {
-  const data = ref(initial) as Ref<Record<string, any>>;
-  const errors = ref({}) as Ref<Record<string, string[]>>;
+export function createFormContext(
+  initialData: MaybeRefOrGetter<Record<string, any>>,
+  initialBag: MaybeRefOrGetter<string>,
+  initialReadonly: MaybeRefOrGetter<boolean>,
+) {
+  const bags = useErrors();
+
+  const data = ref(lodashCloneDeep(toValue(initialData)));
+  const readonly = ref(toValue(initialReadonly));
+  const bag = ref(toValue(initialBag));
+
   const touched = ref({}) as Ref<Record<string, boolean>>;
   const processing = ref(false);
-  const readonly = ref(initialReadonly);
+
+  const errors = computed(() => bags.value[bag.value] || {});
 
   function touch(name: string) {
     lodashSet(touched.value, name, true);
@@ -22,6 +33,10 @@ export function createFormContext(initial: Record<string, any> = {}, initialRead
   function fill(name: string, value: any) {
     lodashSet(data.value, name, value);
   }
+
+  watch(() => toValue(initialData), (value) => data.value = lodashCloneDeep(value));
+  watch(() => toValue(initialBag), (value) => bag.value = value);
+  watch(() => toValue(initialReadonly), (value) => readonly.value = value);
 
   return {
     data,

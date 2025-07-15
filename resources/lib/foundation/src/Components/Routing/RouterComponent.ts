@@ -3,7 +3,7 @@ import { type ViewResolver } from '../../Types/ViewResolver';
 import { type State, type InitialState } from '../../Types/State';
 import type { CompleteResponse } from '../../Http/Client/Response';
 import { StackedViewResolverInjectionKey, StackedViewInjectionKey, StackedViewDepthInjectionKey } from '../../Services/StackedView';
-import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities, StateHistoryInjectionKey, StateShared } from '../../Services/StateManager';
+import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities, StateHistoryInjectionKey, StateShared, StateErrorsInjectionKey } from '../../Services/StateManager';
 import { RouterViewComponent } from './RouterViewComponent';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
 import { updateHead } from '../../Services/MetaManager.ts';
@@ -24,6 +24,7 @@ export const RouterComponent = defineComponent({
   },
   setup(props) {
     const abilities = ref(props.state.abilities);
+    const errors = ref(props.state.errors);
     const meta = ref(props.state.meta);
     const shared = ref(props.state.shared || {});
     const authenticated = ref(props.state.authenticated);
@@ -44,6 +45,7 @@ export const RouterComponent = defineComponent({
     async function update(fresh: CompleteResponse): Promise<State> {
       abilities.value = { ...abilities.value, ...fresh.abilities };
       authenticated.value = fresh.authenticated;
+      errors.value = fresh.errors;
 
       if (fresh.meta) {
         meta.value = updateHead(fresh.meta);
@@ -77,6 +79,7 @@ export const RouterComponent = defineComponent({
     provide(StateShared, shared);
     provide(StateLocationInjectionKey, location);
     provide(StateStackSignatureInjectionKey, signature);
+    provide(StateErrorsInjectionKey, errors);
     provide(StateManagerInjectionKey, update);
     provide(StackedViewResolverInjectionKey, props.resolver);
     provide(StackedViewDepthInjectionKey, computed(() => 0));

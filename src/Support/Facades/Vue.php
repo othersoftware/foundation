@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @method static View staticView(string $view, Closure|array $props = [])
  * @method static ResponseFactory share(Arrayable|array|string $key, mixed $value = null)
  * @method static ResponseFactory getFacadeRoot()
- * @method static ResponseFactory setErrors(array $errors)
+ * @method static ResponseFactory setGuard(string $guard)
  * @method static ResponseFactory raw(mixed $raw)
  * @method static ResponseFactory setRedirect(string $target, bool $reload = false)
  * @method static ResponseFactory setStack(View $stack)
@@ -30,6 +30,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @method static ResponseFactory setAbilities(array $abilities)
  * @method static ResponseFactory setMeta(array $meta)
  * @method static ResponseFactory noContent()
+ * @method static ResponseFactory withErrors($provider, $key = 'default')
  * @method static Response toResponse(Request $request)
  */
 final class Vue extends Facade

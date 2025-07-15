@@ -50,8 +50,17 @@ export interface State {
   meta?: Meta[],
 }
 
+export interface MessageBag {
+  [field: string]: string[];
+}
+
+export interface ViewErrorsBag {
+  [bag: string]: MessageBag;
+}
+
 export interface InitialState extends State {
   abilities: Abilities,
+  errors: ViewErrorsBag,
   authenticated: Authenticated | null,
   shared: SharedState,
   toasts: ToastRegistry,

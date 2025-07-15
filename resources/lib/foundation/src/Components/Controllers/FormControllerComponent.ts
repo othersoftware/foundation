@@ -1,10 +1,10 @@
-import { type PropType, nextTick, watch, provide, defineComponent, h, type SlotsType, toValue, inject, computed, mergeProps } from 'vue';
+import { type PropType, nextTick, provide, defineComponent, h, type SlotsType, inject, computed, mergeProps } from 'vue';
 import type { Method } from '../../Http/Client/Request';
 import type { Response } from '../../Http/Client/Response';
 import { CompleteResponse } from '../../Http/Client/Response';
 import { useHttpClient } from '../../Composables/UseHttpClient';
 import { createFormContext, FormContextInjectionKey, type FormContextInterface } from '../../Services/FormContext';
-import lodashCloneDeep from 'lodash.clonedeep';
+import { useErrors } from '../../Services/StateManager.ts';
 
 type FormHandler = (data: any, ctx: FormContextInterface) => Promise<any>;
 
@@ -35,6 +35,11 @@ export const FormControllerComponent = defineComponent({
       required: false,
       default: false,
     },
+    bag: {
+      type: String,
+      required: false,
+      default: 'default',
+    },
     onSubmit: {
       type: Function as PropType<FormHandler>,
       required: false,
@@ -51,9 +56,11 @@ export const FormControllerComponent = defineComponent({
     },
   }>,
   setup(props, { attrs, slots, expose }) {
-    const ctx = createFormContext(lodashCloneDeep(toValue(props.data)), toValue(props.readonly));
-    const http = useHttpClient();
     const parent = inject(FormContextInjectionKey, null);
+
+    const ctx = createFormContext(() => props.data, () => props.bag, () => props.readonly);
+    const http = useHttpClient();
+    const bags = useErrors();
 
     const { data, processing, readonly, errors, touched } = ctx;
 
@@ -97,22 +104,26 @@ export const FormControllerComponent = defineComponent({
         readonly.value = true;
       }
 
-      errors.value = {};
+      bags.value = {};
       touched.value = {};
 
       // noinspection JSIgnoredPromiseFromCall
-      nextTick(() => dispatch().catch((error: Response | CompleteResponse) => {
-        if (error instanceof CompleteResponse) {
-          errors.value = error.errors;
+      nextTick(() => {
+        dispatch().catch((error: Response | CompleteResponse) => {
+          if (error instanceof CompleteResponse) {
+            bags.value = error.errors;
 
-          if (!props.continuous) {
-            nextTick(() => document.querySelector('.control--error')?.scrollIntoView());
+            if (!props.continuous) {
+              nextTick(() => {
+                document.querySelector('.control--error')?.scrollIntoView();
+              });
+            }
           }
-        }
-      }).finally(() => {
-        processing.value = false;
-        readonly.value = beforeReadonly;
-      }));
+        }).finally(() => {
+          processing.value = false;
+          readonly.value = beforeReadonly;
+        });
+      });
     }
 
     function handleSubmit(event: Event) {
@@ -146,14 +157,6 @@ export const FormControllerComponent = defineComponent({
       }
 
       return handlers;
-    });
-
-    watch(() => props.data, (values) => {
-      data.value = lodashCloneDeep(toValue(values));
-    });
-
-    watch(() => props.readonly, (value) => {
-      readonly.value = toValue(value);
     });
 
     expose({

@@ -60,6 +60,7 @@
   const StateAbilities = Symbol("StateAbilities");
   const StateManagerInjectionKey = Symbol("StateManager");
   const StateHistoryInjectionKey = Symbol("StateHistory");
+  const StateErrorsInjectionKey = Symbol("StateErrors");
   function useAbilities() {
     let abilities = vue.inject(StateAbilities);
     if (!abilities) {
@@ -108,6 +109,13 @@
       throw new Error("State history is used out of router context!");
     }
     return history;
+  }
+  function useErrors() {
+    let errors = vue.inject(StateErrorsInjectionKey);
+    if (!errors) {
+      throw new Error("State errors is used out of router context!");
+    }
+    return errors;
   }
   function updateStack(current, fresh) {
     if ("keep" in fresh) {
@@ -364,6 +372,586 @@
   function getDefaultExportFromCjs(x) {
     return x && x.__esModule && Object.prototype.hasOwnProperty.call(x, "default") ? x["default"] : x;
   }
+  var lodash_clonedeep = { exports: {} };
+  lodash_clonedeep.exports;
+  var hasRequiredLodash_clonedeep;
+  function requireLodash_clonedeep() {
+    if (hasRequiredLodash_clonedeep) return lodash_clonedeep.exports;
+    hasRequiredLodash_clonedeep = 1;
+    (function(module2, exports3) {
+      var LARGE_ARRAY_SIZE = 200;
+      var HASH_UNDEFINED = "__lodash_hash_undefined__";
+      var MAX_SAFE_INTEGER = 9007199254740991;
+      var argsTag = "[object Arguments]", arrayTag = "[object Array]", boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", mapTag = "[object Map]", numberTag = "[object Number]", objectTag = "[object Object]", promiseTag = "[object Promise]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", symbolTag = "[object Symbol]", weakMapTag = "[object WeakMap]";
+      var arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]", float32Tag = "[object Float32Array]", float64Tag = "[object Float64Array]", int8Tag = "[object Int8Array]", int16Tag = "[object Int16Array]", int32Tag = "[object Int32Array]", uint8Tag = "[object Uint8Array]", uint8ClampedTag = "[object Uint8ClampedArray]", uint16Tag = "[object Uint16Array]", uint32Tag = "[object Uint32Array]";
+      var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+      var reFlags = /\w*$/;
+      var reIsHostCtor = /^\[object .+?Constructor\]$/;
+      var reIsUint = /^(?:0|[1-9]\d*)$/;
+      var cloneableTags = {};
+      cloneableTags[argsTag] = cloneableTags[arrayTag] = cloneableTags[arrayBufferTag] = cloneableTags[dataViewTag] = cloneableTags[boolTag] = cloneableTags[dateTag] = cloneableTags[float32Tag] = cloneableTags[float64Tag] = cloneableTags[int8Tag] = cloneableTags[int16Tag] = cloneableTags[int32Tag] = cloneableTags[mapTag] = cloneableTags[numberTag] = cloneableTags[objectTag] = cloneableTags[regexpTag] = cloneableTags[setTag] = cloneableTags[stringTag] = cloneableTags[symbolTag] = cloneableTags[uint8Tag] = cloneableTags[uint8ClampedTag] = cloneableTags[uint16Tag] = cloneableTags[uint32Tag] = true;
+      cloneableTags[errorTag] = cloneableTags[funcTag] = cloneableTags[weakMapTag] = false;
+      var freeGlobal = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+      var freeSelf = typeof self == "object" && self && self.Object === Object && self;
+      var root = freeGlobal || freeSelf || Function("return this")();
+      var freeExports = exports3 && !exports3.nodeType && exports3;
+      var freeModule = freeExports && true && module2 && !module2.nodeType && module2;
+      var moduleExports = freeModule && freeModule.exports === freeExports;
+      function addMapEntry(map, pair) {
+        map.set(pair[0], pair[1]);
+        return map;
+      }
+      function addSetEntry(set, value) {
+        set.add(value);
+        return set;
+      }
+      function arrayEach(array, iteratee) {
+        var index = -1, length = array ? array.length : 0;
+        while (++index < length) {
+          if (iteratee(array[index], index, array) === false) {
+            break;
+          }
+        }
+        return array;
+      }
+      function arrayPush(array, values) {
+        var index = -1, length = values.length, offset = array.length;
+        while (++index < length) {
+          array[offset + index] = values[index];
+        }
+        return array;
+      }
+      function arrayReduce(array, iteratee, accumulator, initAccum) {
+        var index = -1, length = array ? array.length : 0;
+        while (++index < length) {
+          accumulator = iteratee(accumulator, array[index], index, array);
+        }
+        return accumulator;
+      }
+      function baseTimes(n, iteratee) {
+        var index = -1, result = Array(n);
+        while (++index < n) {
+          result[index] = iteratee(index);
+        }
+        return result;
+      }
+      function getValue(object, key) {
+        return object == null ? void 0 : object[key];
+      }
+      function isHostObject(value) {
+        var result = false;
+        if (value != null && typeof value.toString != "function") {
+          try {
+            result = !!(value + "");
+          } catch (e) {
+          }
+        }
+        return result;
+      }
+      function mapToArray(map) {
+        var index = -1, result = Array(map.size);
+        map.forEach(function(value, key) {
+          result[++index] = [key, value];
+        });
+        return result;
+      }
+      function overArg(func, transform) {
+        return function(arg) {
+          return func(transform(arg));
+        };
+      }
+      function setToArray(set) {
+        var index = -1, result = Array(set.size);
+        set.forEach(function(value) {
+          result[++index] = value;
+        });
+        return result;
+      }
+      var arrayProto = Array.prototype, funcProto = Function.prototype, objectProto = Object.prototype;
+      var coreJsData = root["__core-js_shared__"];
+      var maskSrcKey = function() {
+        var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || "");
+        return uid ? "Symbol(src)_1." + uid : "";
+      }();
+      var funcToString = funcProto.toString;
+      var hasOwnProperty = objectProto.hasOwnProperty;
+      var objectToString = objectProto.toString;
+      var reIsNative = RegExp(
+        "^" + funcToString.call(hasOwnProperty).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
+      );
+      var Buffer = moduleExports ? root.Buffer : void 0, Symbol2 = root.Symbol, Uint8Array2 = root.Uint8Array, getPrototype = overArg(Object.getPrototypeOf, Object), objectCreate = Object.create, propertyIsEnumerable = objectProto.propertyIsEnumerable, splice = arrayProto.splice;
+      var nativeGetSymbols = Object.getOwnPropertySymbols, nativeIsBuffer = Buffer ? Buffer.isBuffer : void 0, nativeKeys = overArg(Object.keys, Object);
+      var DataView = getNative(root, "DataView"), Map2 = getNative(root, "Map"), Promise2 = getNative(root, "Promise"), Set2 = getNative(root, "Set"), WeakMap = getNative(root, "WeakMap"), nativeCreate = getNative(Object, "create");
+      var dataViewCtorString = toSource(DataView), mapCtorString = toSource(Map2), promiseCtorString = toSource(Promise2), setCtorString = toSource(Set2), weakMapCtorString = toSource(WeakMap);
+      var symbolProto = Symbol2 ? Symbol2.prototype : void 0, symbolValueOf = symbolProto ? symbolProto.valueOf : void 0;
+      function Hash(entries) {
+        var index = -1, length = entries ? entries.length : 0;
+        this.clear();
+        while (++index < length) {
+          var entry = entries[index];
+          this.set(entry[0], entry[1]);
+        }
+      }
+      function hashClear() {
+        this.__data__ = nativeCreate ? nativeCreate(null) : {};
+      }
+      function hashDelete(key) {
+        return this.has(key) && delete this.__data__[key];
+      }
+      function hashGet(key) {
+        var data = this.__data__;
+        if (nativeCreate) {
+          var result = data[key];
+          return result === HASH_UNDEFINED ? void 0 : result;
+        }
+        return hasOwnProperty.call(data, key) ? data[key] : void 0;
+      }
+      function hashHas(key) {
+        var data = this.__data__;
+        return nativeCreate ? data[key] !== void 0 : hasOwnProperty.call(data, key);
+      }
+      function hashSet(key, value) {
+        var data = this.__data__;
+        data[key] = nativeCreate && value === void 0 ? HASH_UNDEFINED : value;
+        return this;
+      }
+      Hash.prototype.clear = hashClear;
+      Hash.prototype["delete"] = hashDelete;
+      Hash.prototype.get = hashGet;
+      Hash.prototype.has = hashHas;
+      Hash.prototype.set = hashSet;
+      function ListCache(entries) {
+        var index = -1, length = entries ? entries.length : 0;
+        this.clear();
+        while (++index < length) {
+          var entry = entries[index];
+          this.set(entry[0], entry[1]);
+        }
+      }
+      function listCacheClear() {
+        this.__data__ = [];
+      }
+      function listCacheDelete(key) {
+        var data = this.__data__, index = assocIndexOf(data, key);
+        if (index < 0) {
+          return false;
+        }
+        var lastIndex = data.length - 1;
+        if (index == lastIndex) {
+          data.pop();
+        } else {
+          splice.call(data, index, 1);
+        }
+        return true;
+      }
+      function listCacheGet(key) {
+        var data = this.__data__, index = assocIndexOf(data, key);
+        return index < 0 ? void 0 : data[index][1];
+      }
+      function listCacheHas(key) {
+        return assocIndexOf(this.__data__, key) > -1;
+      }
+      function listCacheSet(key, value) {
+        var data = this.__data__, index = assocIndexOf(data, key);
+        if (index < 0) {
+          data.push([key, value]);
+        } else {
+          data[index][1] = value;
+        }
+        return this;
+      }
+      ListCache.prototype.clear = listCacheClear;
+      ListCache.prototype["delete"] = listCacheDelete;
+      ListCache.prototype.get = listCacheGet;
+      ListCache.prototype.has = listCacheHas;
+      ListCache.prototype.set = listCacheSet;
+      function MapCache(entries) {
+        var index = -1, length = entries ? entries.length : 0;
+        this.clear();
+        while (++index < length) {
+          var entry = entries[index];
+          this.set(entry[0], entry[1]);
+        }
+      }
+      function mapCacheClear() {
+        this.__data__ = {
+          "hash": new Hash(),
+          "map": new (Map2 || ListCache)(),
+          "string": new Hash()
+        };
+      }
+      function mapCacheDelete(key) {
+        return getMapData(this, key)["delete"](key);
+      }
+      function mapCacheGet(key) {
+        return getMapData(this, key).get(key);
+      }
+      function mapCacheHas(key) {
+        return getMapData(this, key).has(key);
+      }
+      function mapCacheSet(key, value) {
+        getMapData(this, key).set(key, value);
+        return this;
+      }
+      MapCache.prototype.clear = mapCacheClear;
+      MapCache.prototype["delete"] = mapCacheDelete;
+      MapCache.prototype.get = mapCacheGet;
+      MapCache.prototype.has = mapCacheHas;
+      MapCache.prototype.set = mapCacheSet;
+      function Stack(entries) {
+        this.__data__ = new ListCache(entries);
+      }
+      function stackClear() {
+        this.__data__ = new ListCache();
+      }
+      function stackDelete(key) {
+        return this.__data__["delete"](key);
+      }
+      function stackGet(key) {
+        return this.__data__.get(key);
+      }
+      function stackHas(key) {
+        return this.__data__.has(key);
+      }
+      function stackSet(key, value) {
+        var cache = this.__data__;
+        if (cache instanceof ListCache) {
+          var pairs = cache.__data__;
+          if (!Map2 || pairs.length < LARGE_ARRAY_SIZE - 1) {
+            pairs.push([key, value]);
+            return this;
+          }
+          cache = this.__data__ = new MapCache(pairs);
+        }
+        cache.set(key, value);
+        return this;
+      }
+      Stack.prototype.clear = stackClear;
+      Stack.prototype["delete"] = stackDelete;
+      Stack.prototype.get = stackGet;
+      Stack.prototype.has = stackHas;
+      Stack.prototype.set = stackSet;
+      function arrayLikeKeys(value, inherited) {
+        var result = isArray2(value) || isArguments(value) ? baseTimes(value.length, String) : [];
+        var length = result.length, skipIndexes = !!length;
+        for (var key in value) {
+          if (hasOwnProperty.call(value, key) && !(skipIndexes && (key == "length" || isIndex(key, length)))) {
+            result.push(key);
+          }
+        }
+        return result;
+      }
+      function assignValue(object, key, value) {
+        var objValue = object[key];
+        if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) || value === void 0 && !(key in object)) {
+          object[key] = value;
+        }
+      }
+      function assocIndexOf(array, key) {
+        var length = array.length;
+        while (length--) {
+          if (eq(array[length][0], key)) {
+            return length;
+          }
+        }
+        return -1;
+      }
+      function baseAssign(object, source) {
+        return object && copyObject(source, keys(source), object);
+      }
+      function baseClone(value, isDeep, isFull, customizer, key, object, stack2) {
+        var result;
+        if (customizer) {
+          result = object ? customizer(value, key, object, stack2) : customizer(value);
+        }
+        if (result !== void 0) {
+          return result;
+        }
+        if (!isObject2(value)) {
+          return value;
+        }
+        var isArr = isArray2(value);
+        if (isArr) {
+          result = initCloneArray(value);
+          if (!isDeep) {
+            return copyArray(value, result);
+          }
+        } else {
+          var tag = getTag(value), isFunc = tag == funcTag || tag == genTag;
+          if (isBuffer(value)) {
+            return cloneBuffer(value, isDeep);
+          }
+          if (tag == objectTag || tag == argsTag || isFunc && !object) {
+            if (isHostObject(value)) {
+              return object ? value : {};
+            }
+            result = initCloneObject(isFunc ? {} : value);
+            if (!isDeep) {
+              return copySymbols(value, baseAssign(result, value));
+            }
+          } else {
+            if (!cloneableTags[tag]) {
+              return object ? value : {};
+            }
+            result = initCloneByTag(value, tag, baseClone, isDeep);
+          }
+        }
+        stack2 || (stack2 = new Stack());
+        var stacked = stack2.get(value);
+        if (stacked) {
+          return stacked;
+        }
+        stack2.set(value, result);
+        if (!isArr) {
+          var props = isFull ? getAllKeys(value) : keys(value);
+        }
+        arrayEach(props || value, function(subValue, key2) {
+          if (props) {
+            key2 = subValue;
+            subValue = value[key2];
+          }
+          assignValue(result, key2, baseClone(subValue, isDeep, isFull, customizer, key2, value, stack2));
+        });
+        return result;
+      }
+      function baseCreate(proto) {
+        return isObject2(proto) ? objectCreate(proto) : {};
+      }
+      function baseGetAllKeys(object, keysFunc, symbolsFunc) {
+        var result = keysFunc(object);
+        return isArray2(object) ? result : arrayPush(result, symbolsFunc(object));
+      }
+      function baseGetTag(value) {
+        return objectToString.call(value);
+      }
+      function baseIsNative(value) {
+        if (!isObject2(value) || isMasked(value)) {
+          return false;
+        }
+        var pattern = isFunction2(value) || isHostObject(value) ? reIsNative : reIsHostCtor;
+        return pattern.test(toSource(value));
+      }
+      function baseKeys(object) {
+        if (!isPrototype(object)) {
+          return nativeKeys(object);
+        }
+        var result = [];
+        for (var key in Object(object)) {
+          if (hasOwnProperty.call(object, key) && key != "constructor") {
+            result.push(key);
+          }
+        }
+        return result;
+      }
+      function cloneBuffer(buffer2, isDeep) {
+        if (isDeep) {
+          return buffer2.slice();
+        }
+        var result = new buffer2.constructor(buffer2.length);
+        buffer2.copy(result);
+        return result;
+      }
+      function cloneArrayBuffer(arrayBuffer) {
+        var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
+        new Uint8Array2(result).set(new Uint8Array2(arrayBuffer));
+        return result;
+      }
+      function cloneDataView(dataView, isDeep) {
+        var buffer2 = isDeep ? cloneArrayBuffer(dataView.buffer) : dataView.buffer;
+        return new dataView.constructor(buffer2, dataView.byteOffset, dataView.byteLength);
+      }
+      function cloneMap(map, isDeep, cloneFunc) {
+        var array = isDeep ? cloneFunc(mapToArray(map), true) : mapToArray(map);
+        return arrayReduce(array, addMapEntry, new map.constructor());
+      }
+      function cloneRegExp(regexp) {
+        var result = new regexp.constructor(regexp.source, reFlags.exec(regexp));
+        result.lastIndex = regexp.lastIndex;
+        return result;
+      }
+      function cloneSet(set, isDeep, cloneFunc) {
+        var array = isDeep ? cloneFunc(setToArray(set), true) : setToArray(set);
+        return arrayReduce(array, addSetEntry, new set.constructor());
+      }
+      function cloneSymbol(symbol) {
+        return symbolValueOf ? Object(symbolValueOf.call(symbol)) : {};
+      }
+      function cloneTypedArray(typedArray, isDeep) {
+        var buffer2 = isDeep ? cloneArrayBuffer(typedArray.buffer) : typedArray.buffer;
+        return new typedArray.constructor(buffer2, typedArray.byteOffset, typedArray.length);
+      }
+      function copyArray(source, array) {
+        var index = -1, length = source.length;
+        array || (array = Array(length));
+        while (++index < length) {
+          array[index] = source[index];
+        }
+        return array;
+      }
+      function copyObject(source, props, object, customizer) {
+        object || (object = {});
+        var index = -1, length = props.length;
+        while (++index < length) {
+          var key = props[index];
+          var newValue = void 0;
+          assignValue(object, key, newValue === void 0 ? source[key] : newValue);
+        }
+        return object;
+      }
+      function copySymbols(source, object) {
+        return copyObject(source, getSymbols(source), object);
+      }
+      function getAllKeys(object) {
+        return baseGetAllKeys(object, keys, getSymbols);
+      }
+      function getMapData(map, key) {
+        var data = map.__data__;
+        return isKeyable(key) ? data[typeof key == "string" ? "string" : "hash"] : data.map;
+      }
+      function getNative(object, key) {
+        var value = getValue(object, key);
+        return baseIsNative(value) ? value : void 0;
+      }
+      var getSymbols = nativeGetSymbols ? overArg(nativeGetSymbols, Object) : stubArray;
+      var getTag = baseGetTag;
+      if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap && getTag(new WeakMap()) != weakMapTag) {
+        getTag = function(value) {
+          var result = objectToString.call(value), Ctor = result == objectTag ? value.constructor : void 0, ctorString = Ctor ? toSource(Ctor) : void 0;
+          if (ctorString) {
+            switch (ctorString) {
+              case dataViewCtorString:
+                return dataViewTag;
+              case mapCtorString:
+                return mapTag;
+              case promiseCtorString:
+                return promiseTag;
+              case setCtorString:
+                return setTag;
+              case weakMapCtorString:
+                return weakMapTag;
+            }
+          }
+          return result;
+        };
+      }
+      function initCloneArray(array) {
+        var length = array.length, result = array.constructor(length);
+        if (length && typeof array[0] == "string" && hasOwnProperty.call(array, "index")) {
+          result.index = array.index;
+          result.input = array.input;
+        }
+        return result;
+      }
+      function initCloneObject(object) {
+        return typeof object.constructor == "function" && !isPrototype(object) ? baseCreate(getPrototype(object)) : {};
+      }
+      function initCloneByTag(object, tag, cloneFunc, isDeep) {
+        var Ctor = object.constructor;
+        switch (tag) {
+          case arrayBufferTag:
+            return cloneArrayBuffer(object);
+          case boolTag:
+          case dateTag:
+            return new Ctor(+object);
+          case dataViewTag:
+            return cloneDataView(object, isDeep);
+          case float32Tag:
+          case float64Tag:
+          case int8Tag:
+          case int16Tag:
+          case int32Tag:
+          case uint8Tag:
+          case uint8ClampedTag:
+          case uint16Tag:
+          case uint32Tag:
+            return cloneTypedArray(object, isDeep);
+          case mapTag:
+            return cloneMap(object, isDeep, cloneFunc);
+          case numberTag:
+          case stringTag:
+            return new Ctor(object);
+          case regexpTag:
+            return cloneRegExp(object);
+          case setTag:
+            return cloneSet(object, isDeep, cloneFunc);
+          case symbolTag:
+            return cloneSymbol(object);
+        }
+      }
+      function isIndex(value, length) {
+        length = length == null ? MAX_SAFE_INTEGER : length;
+        return !!length && (typeof value == "number" || reIsUint.test(value)) && (value > -1 && value % 1 == 0 && value < length);
+      }
+      function isKeyable(value) {
+        var type = typeof value;
+        return type == "string" || type == "number" || type == "symbol" || type == "boolean" ? value !== "__proto__" : value === null;
+      }
+      function isMasked(func) {
+        return !!maskSrcKey && maskSrcKey in func;
+      }
+      function isPrototype(value) {
+        var Ctor = value && value.constructor, proto = typeof Ctor == "function" && Ctor.prototype || objectProto;
+        return value === proto;
+      }
+      function toSource(func) {
+        if (func != null) {
+          try {
+            return funcToString.call(func);
+          } catch (e) {
+          }
+          try {
+            return func + "";
+          } catch (e) {
+          }
+        }
+        return "";
+      }
+      function cloneDeep(value) {
+        return baseClone(value, true, true);
+      }
+      function eq(value, other) {
+        return value === other || value !== value && other !== other;
+      }
+      function isArguments(value) {
+        return isArrayLikeObject(value) && hasOwnProperty.call(value, "callee") && (!propertyIsEnumerable.call(value, "callee") || objectToString.call(value) == argsTag);
+      }
+      var isArray2 = Array.isArray;
+      function isArrayLike(value) {
+        return value != null && isLength(value.length) && !isFunction2(value);
+      }
+      function isArrayLikeObject(value) {
+        return isObjectLike(value) && isArrayLike(value);
+      }
+      var isBuffer = nativeIsBuffer || stubFalse;
+      function isFunction2(value) {
+        var tag = isObject2(value) ? objectToString.call(value) : "";
+        return tag == funcTag || tag == genTag;
+      }
+      function isLength(value) {
+        return typeof value == "number" && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+      }
+      function isObject2(value) {
+        var type = typeof value;
+        return !!value && (type == "object" || type == "function");
+      }
+      function isObjectLike(value) {
+        return !!value && typeof value == "object";
+      }
+      function keys(object) {
+        return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
+      }
+      function stubArray() {
+        return [];
+      }
+      function stubFalse() {
+        return false;
+      }
+      module2.exports = cloneDeep;
+    })(lodash_clonedeep, lodash_clonedeep.exports);
+    return lodash_clonedeep.exports;
+  }
+  var lodash_clonedeepExports = requireLodash_clonedeep();
+  const lodashCloneDeep = /* @__PURE__ */ getDefaultExportFromCjs(lodash_clonedeepExports);
   var lodash_set;
   var hasRequiredLodash_set;
   function requireLodash_set() {
@@ -982,12 +1570,14 @@
   var lodash_getExports = requireLodash_get();
   const lodashGet = /* @__PURE__ */ getDefaultExportFromCjs(lodash_getExports);
   const FormContextInjectionKey = Symbol("FormContext");
-  function createFormContext(initial = {}, initialReadonly = false) {
-    const data = vue.ref(initial);
-    const errors = vue.ref({});
+  function createFormContext(initialData, initialBag, initialReadonly) {
+    const bags = useErrors();
+    const data = vue.ref(lodashCloneDeep(vue.toValue(initialData)));
+    const readonly = vue.ref(vue.toValue(initialReadonly));
+    const bag = vue.ref(vue.toValue(initialBag));
     const touched = vue.ref({});
     const processing = vue.ref(false);
-    const readonly = vue.ref(initialReadonly);
+    const errors = vue.computed(() => bags.value[bag.value] || {});
     function touch(name) {
       lodashSet(touched.value, name, true);
     }
@@ -997,6 +1587,9 @@
     function fill(name, value2) {
       lodashSet(data.value, name, value2);
     }
+    vue.watch(() => vue.toValue(initialData), (value2) => data.value = lodashCloneDeep(value2));
+    vue.watch(() => vue.toValue(initialBag), (value2) => bag.value = value2);
+    vue.watch(() => vue.toValue(initialReadonly), (value2) => readonly.value = value2);
     return {
       data,
       errors,
@@ -1021,586 +1614,6 @@
     }
     return value;
   }
-  var lodash_clonedeep = { exports: {} };
-  lodash_clonedeep.exports;
-  var hasRequiredLodash_clonedeep;
-  function requireLodash_clonedeep() {
-    if (hasRequiredLodash_clonedeep) return lodash_clonedeep.exports;
-    hasRequiredLodash_clonedeep = 1;
-    (function(module2, exports3) {
-      var LARGE_ARRAY_SIZE = 200;
-      var HASH_UNDEFINED = "__lodash_hash_undefined__";
-      var MAX_SAFE_INTEGER = 9007199254740991;
-      var argsTag = "[object Arguments]", arrayTag = "[object Array]", boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", mapTag = "[object Map]", numberTag = "[object Number]", objectTag = "[object Object]", promiseTag = "[object Promise]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", symbolTag = "[object Symbol]", weakMapTag = "[object WeakMap]";
-      var arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]", float32Tag = "[object Float32Array]", float64Tag = "[object Float64Array]", int8Tag = "[object Int8Array]", int16Tag = "[object Int16Array]", int32Tag = "[object Int32Array]", uint8Tag = "[object Uint8Array]", uint8ClampedTag = "[object Uint8ClampedArray]", uint16Tag = "[object Uint16Array]", uint32Tag = "[object Uint32Array]";
-      var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
-      var reFlags = /\w*$/;
-      var reIsHostCtor = /^\[object .+?Constructor\]$/;
-      var reIsUint = /^(?:0|[1-9]\d*)$/;
-      var cloneableTags = {};
-      cloneableTags[argsTag] = cloneableTags[arrayTag] = cloneableTags[arrayBufferTag] = cloneableTags[dataViewTag] = cloneableTags[boolTag] = cloneableTags[dateTag] = cloneableTags[float32Tag] = cloneableTags[float64Tag] = cloneableTags[int8Tag] = cloneableTags[int16Tag] = cloneableTags[int32Tag] = cloneableTags[mapTag] = cloneableTags[numberTag] = cloneableTags[objectTag] = cloneableTags[regexpTag] = cloneableTags[setTag] = cloneableTags[stringTag] = cloneableTags[symbolTag] = cloneableTags[uint8Tag] = cloneableTags[uint8ClampedTag] = cloneableTags[uint16Tag] = cloneableTags[uint32Tag] = true;
-      cloneableTags[errorTag] = cloneableTags[funcTag] = cloneableTags[weakMapTag] = false;
-      var freeGlobal = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
-      var freeSelf = typeof self == "object" && self && self.Object === Object && self;
-      var root = freeGlobal || freeSelf || Function("return this")();
-      var freeExports = exports3 && !exports3.nodeType && exports3;
-      var freeModule = freeExports && true && module2 && !module2.nodeType && module2;
-      var moduleExports = freeModule && freeModule.exports === freeExports;
-      function addMapEntry(map, pair) {
-        map.set(pair[0], pair[1]);
-        return map;
-      }
-      function addSetEntry(set, value) {
-        set.add(value);
-        return set;
-      }
-      function arrayEach(array, iteratee) {
-        var index = -1, length = array ? array.length : 0;
-        while (++index < length) {
-          if (iteratee(array[index], index, array) === false) {
-            break;
-          }
-        }
-        return array;
-      }
-      function arrayPush(array, values) {
-        var index = -1, length = values.length, offset = array.length;
-        while (++index < length) {
-          array[offset + index] = values[index];
-        }
-        return array;
-      }
-      function arrayReduce(array, iteratee, accumulator, initAccum) {
-        var index = -1, length = array ? array.length : 0;
-        while (++index < length) {
-          accumulator = iteratee(accumulator, array[index], index, array);
-        }
-        return accumulator;
-      }
-      function baseTimes(n, iteratee) {
-        var index = -1, result = Array(n);
-        while (++index < n) {
-          result[index] = iteratee(index);
-        }
-        return result;
-      }
-      function getValue(object, key) {
-        return object == null ? void 0 : object[key];
-      }
-      function isHostObject(value) {
-        var result = false;
-        if (value != null && typeof value.toString != "function") {
-          try {
-            result = !!(value + "");
-          } catch (e) {
-          }
-        }
-        return result;
-      }
-      function mapToArray(map) {
-        var index = -1, result = Array(map.size);
-        map.forEach(function(value, key) {
-          result[++index] = [key, value];
-        });
-        return result;
-      }
-      function overArg(func, transform) {
-        return function(arg) {
-          return func(transform(arg));
-        };
-      }
-      function setToArray(set) {
-        var index = -1, result = Array(set.size);
-        set.forEach(function(value) {
-          result[++index] = value;
-        });
-        return result;
-      }
-      var arrayProto = Array.prototype, funcProto = Function.prototype, objectProto = Object.prototype;
-      var coreJsData = root["__core-js_shared__"];
-      var maskSrcKey = function() {
-        var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || "");
-        return uid ? "Symbol(src)_1." + uid : "";
-      }();
-      var funcToString = funcProto.toString;
-      var hasOwnProperty = objectProto.hasOwnProperty;
-      var objectToString = objectProto.toString;
-      var reIsNative = RegExp(
-        "^" + funcToString.call(hasOwnProperty).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
-      );
-      var Buffer = moduleExports ? root.Buffer : void 0, Symbol2 = root.Symbol, Uint8Array2 = root.Uint8Array, getPrototype = overArg(Object.getPrototypeOf, Object), objectCreate = Object.create, propertyIsEnumerable = objectProto.propertyIsEnumerable, splice = arrayProto.splice;
-      var nativeGetSymbols = Object.getOwnPropertySymbols, nativeIsBuffer = Buffer ? Buffer.isBuffer : void 0, nativeKeys = overArg(Object.keys, Object);
-      var DataView = getNative(root, "DataView"), Map2 = getNative(root, "Map"), Promise2 = getNative(root, "Promise"), Set2 = getNative(root, "Set"), WeakMap = getNative(root, "WeakMap"), nativeCreate = getNative(Object, "create");
-      var dataViewCtorString = toSource(DataView), mapCtorString = toSource(Map2), promiseCtorString = toSource(Promise2), setCtorString = toSource(Set2), weakMapCtorString = toSource(WeakMap);
-      var symbolProto = Symbol2 ? Symbol2.prototype : void 0, symbolValueOf = symbolProto ? symbolProto.valueOf : void 0;
-      function Hash(entries) {
-        var index = -1, length = entries ? entries.length : 0;
-        this.clear();
-        while (++index < length) {
-          var entry = entries[index];
-          this.set(entry[0], entry[1]);
-        }
-      }
-      function hashClear() {
-        this.__data__ = nativeCreate ? nativeCreate(null) : {};
-      }
-      function hashDelete(key) {
-        return this.has(key) && delete this.__data__[key];
-      }
-      function hashGet(key) {
-        var data = this.__data__;
-        if (nativeCreate) {
-          var result = data[key];
-          return result === HASH_UNDEFINED ? void 0 : result;
-        }
-        return hasOwnProperty.call(data, key) ? data[key] : void 0;
-      }
-      function hashHas(key) {
-        var data = this.__data__;
-        return nativeCreate ? data[key] !== void 0 : hasOwnProperty.call(data, key);
-      }
-      function hashSet(key, value) {
-        var data = this.__data__;
-        data[key] = nativeCreate && value === void 0 ? HASH_UNDEFINED : value;
-        return this;
-      }
-      Hash.prototype.clear = hashClear;
-      Hash.prototype["delete"] = hashDelete;
-      Hash.prototype.get = hashGet;
-      Hash.prototype.has = hashHas;
-      Hash.prototype.set = hashSet;
-      function ListCache(entries) {
-        var index = -1, length = entries ? entries.length : 0;
-        this.clear();
-        while (++index < length) {
-          var entry = entries[index];
-          this.set(entry[0], entry[1]);
-        }
-      }
-      function listCacheClear() {
-        this.__data__ = [];
-      }
-      function listCacheDelete(key) {
-        var data = this.__data__, index = assocIndexOf(data, key);
-        if (index < 0) {
-          return false;
-        }
-        var lastIndex = data.length - 1;
-        if (index == lastIndex) {
-          data.pop();
-        } else {
-          splice.call(data, index, 1);
-        }
-        return true;
-      }
-      function listCacheGet(key) {
-        var data = this.__data__, index = assocIndexOf(data, key);
-        return index < 0 ? void 0 : data[index][1];
-      }
-      function listCacheHas(key) {
-        return assocIndexOf(this.__data__, key) > -1;
-      }
-      function listCacheSet(key, value) {
-        var data = this.__data__, index = assocIndexOf(data, key);
-        if (index < 0) {
-          data.push([key, value]);
-        } else {
-          data[index][1] = value;
-        }
-        return this;
-      }
-      ListCache.prototype.clear = listCacheClear;
-      ListCache.prototype["delete"] = listCacheDelete;
-      ListCache.prototype.get = listCacheGet;
-      ListCache.prototype.has = listCacheHas;
-      ListCache.prototype.set = listCacheSet;
-      function MapCache(entries) {
-        var index = -1, length = entries ? entries.length : 0;
-        this.clear();
-        while (++index < length) {
-          var entry = entries[index];
-          this.set(entry[0], entry[1]);
-        }
-      }
-      function mapCacheClear() {
-        this.__data__ = {
-          "hash": new Hash(),
-          "map": new (Map2 || ListCache)(),
-          "string": new Hash()
-        };
-      }
-      function mapCacheDelete(key) {
-        return getMapData(this, key)["delete"](key);
-      }
-      function mapCacheGet(key) {
-        return getMapData(this, key).get(key);
-      }
-      function mapCacheHas(key) {
-        return getMapData(this, key).has(key);
-      }
-      function mapCacheSet(key, value) {
-        getMapData(this, key).set(key, value);
-        return this;
-      }
-      MapCache.prototype.clear = mapCacheClear;
-      MapCache.prototype["delete"] = mapCacheDelete;
-      MapCache.prototype.get = mapCacheGet;
-      MapCache.prototype.has = mapCacheHas;
-      MapCache.prototype.set = mapCacheSet;
-      function Stack(entries) {
-        this.__data__ = new ListCache(entries);
-      }
-      function stackClear() {
-        this.__data__ = new ListCache();
-      }
-      function stackDelete(key) {
-        return this.__data__["delete"](key);
-      }
-      function stackGet(key) {
-        return this.__data__.get(key);
-      }
-      function stackHas(key) {
-        return this.__data__.has(key);
-      }
-      function stackSet(key, value) {
-        var cache = this.__data__;
-        if (cache instanceof ListCache) {
-          var pairs = cache.__data__;
-          if (!Map2 || pairs.length < LARGE_ARRAY_SIZE - 1) {
-            pairs.push([key, value]);
-            return this;
-          }
-          cache = this.__data__ = new MapCache(pairs);
-        }
-        cache.set(key, value);
-        return this;
-      }
-      Stack.prototype.clear = stackClear;
-      Stack.prototype["delete"] = stackDelete;
-      Stack.prototype.get = stackGet;
-      Stack.prototype.has = stackHas;
-      Stack.prototype.set = stackSet;
-      function arrayLikeKeys(value, inherited) {
-        var result = isArray2(value) || isArguments(value) ? baseTimes(value.length, String) : [];
-        var length = result.length, skipIndexes = !!length;
-        for (var key in value) {
-          if (hasOwnProperty.call(value, key) && !(skipIndexes && (key == "length" || isIndex(key, length)))) {
-            result.push(key);
-          }
-        }
-        return result;
-      }
-      function assignValue(object, key, value) {
-        var objValue = object[key];
-        if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) || value === void 0 && !(key in object)) {
-          object[key] = value;
-        }
-      }
-      function assocIndexOf(array, key) {
-        var length = array.length;
-        while (length--) {
-          if (eq(array[length][0], key)) {
-            return length;
-          }
-        }
-        return -1;
-      }
-      function baseAssign(object, source) {
-        return object && copyObject(source, keys(source), object);
-      }
-      function baseClone(value, isDeep, isFull, customizer, key, object, stack2) {
-        var result;
-        if (customizer) {
-          result = object ? customizer(value, key, object, stack2) : customizer(value);
-        }
-        if (result !== void 0) {
-          return result;
-        }
-        if (!isObject2(value)) {
-          return value;
-        }
-        var isArr = isArray2(value);
-        if (isArr) {
-          result = initCloneArray(value);
-          if (!isDeep) {
-            return copyArray(value, result);
-          }
-        } else {
-          var tag = getTag(value), isFunc = tag == funcTag || tag == genTag;
-          if (isBuffer(value)) {
-            return cloneBuffer(value, isDeep);
-          }
-          if (tag == objectTag || tag == argsTag || isFunc && !object) {
-            if (isHostObject(value)) {
-              return object ? value : {};
-            }
-            result = initCloneObject(isFunc ? {} : value);
-            if (!isDeep) {
-              return copySymbols(value, baseAssign(result, value));
-            }
-          } else {
-            if (!cloneableTags[tag]) {
-              return object ? value : {};
-            }
-            result = initCloneByTag(value, tag, baseClone, isDeep);
-          }
-        }
-        stack2 || (stack2 = new Stack());
-        var stacked = stack2.get(value);
-        if (stacked) {
-          return stacked;
-        }
-        stack2.set(value, result);
-        if (!isArr) {
-          var props = isFull ? getAllKeys(value) : keys(value);
-        }
-        arrayEach(props || value, function(subValue, key2) {
-          if (props) {
-            key2 = subValue;
-            subValue = value[key2];
-          }
-          assignValue(result, key2, baseClone(subValue, isDeep, isFull, customizer, key2, value, stack2));
-        });
-        return result;
-      }
-      function baseCreate(proto) {
-        return isObject2(proto) ? objectCreate(proto) : {};
-      }
-      function baseGetAllKeys(object, keysFunc, symbolsFunc) {
-        var result = keysFunc(object);
-        return isArray2(object) ? result : arrayPush(result, symbolsFunc(object));
-      }
-      function baseGetTag(value) {
-        return objectToString.call(value);
-      }
-      function baseIsNative(value) {
-        if (!isObject2(value) || isMasked(value)) {
-          return false;
-        }
-        var pattern = isFunction2(value) || isHostObject(value) ? reIsNative : reIsHostCtor;
-        return pattern.test(toSource(value));
-      }
-      function baseKeys(object) {
-        if (!isPrototype(object)) {
-          return nativeKeys(object);
-        }
-        var result = [];
-        for (var key in Object(object)) {
-          if (hasOwnProperty.call(object, key) && key != "constructor") {
-            result.push(key);
-          }
-        }
-        return result;
-      }
-      function cloneBuffer(buffer2, isDeep) {
-        if (isDeep) {
-          return buffer2.slice();
-        }
-        var result = new buffer2.constructor(buffer2.length);
-        buffer2.copy(result);
-        return result;
-      }
-      function cloneArrayBuffer(arrayBuffer) {
-        var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
-        new Uint8Array2(result).set(new Uint8Array2(arrayBuffer));
-        return result;
-      }
-      function cloneDataView(dataView, isDeep) {
-        var buffer2 = isDeep ? cloneArrayBuffer(dataView.buffer) : dataView.buffer;
-        return new dataView.constructor(buffer2, dataView.byteOffset, dataView.byteLength);
-      }
-      function cloneMap(map, isDeep, cloneFunc) {
-        var array = isDeep ? cloneFunc(mapToArray(map), true) : mapToArray(map);
-        return arrayReduce(array, addMapEntry, new map.constructor());
-      }
-      function cloneRegExp(regexp) {
-        var result = new regexp.constructor(regexp.source, reFlags.exec(regexp));
-        result.lastIndex = regexp.lastIndex;
-        return result;
-      }
-      function cloneSet(set, isDeep, cloneFunc) {
-        var array = isDeep ? cloneFunc(setToArray(set), true) : setToArray(set);
-        return arrayReduce(array, addSetEntry, new set.constructor());
-      }
-      function cloneSymbol(symbol) {
-        return symbolValueOf ? Object(symbolValueOf.call(symbol)) : {};
-      }
-      function cloneTypedArray(typedArray, isDeep) {
-        var buffer2 = isDeep ? cloneArrayBuffer(typedArray.buffer) : typedArray.buffer;
-        return new typedArray.constructor(buffer2, typedArray.byteOffset, typedArray.length);
-      }
-      function copyArray(source, array) {
-        var index = -1, length = source.length;
-        array || (array = Array(length));
-        while (++index < length) {
-          array[index] = source[index];
-        }
-        return array;
-      }
-      function copyObject(source, props, object, customizer) {
-        object || (object = {});
-        var index = -1, length = props.length;
-        while (++index < length) {
-          var key = props[index];
-          var newValue = void 0;
-          assignValue(object, key, newValue === void 0 ? source[key] : newValue);
-        }
-        return object;
-      }
-      function copySymbols(source, object) {
-        return copyObject(source, getSymbols(source), object);
-      }
-      function getAllKeys(object) {
-        return baseGetAllKeys(object, keys, getSymbols);
-      }
-      function getMapData(map, key) {
-        var data = map.__data__;
-        return isKeyable(key) ? data[typeof key == "string" ? "string" : "hash"] : data.map;
-      }
-      function getNative(object, key) {
-        var value = getValue(object, key);
-        return baseIsNative(value) ? value : void 0;
-      }
-      var getSymbols = nativeGetSymbols ? overArg(nativeGetSymbols, Object) : stubArray;
-      var getTag = baseGetTag;
-      if (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map2 && getTag(new Map2()) != mapTag || Promise2 && getTag(Promise2.resolve()) != promiseTag || Set2 && getTag(new Set2()) != setTag || WeakMap && getTag(new WeakMap()) != weakMapTag) {
-        getTag = function(value) {
-          var result = objectToString.call(value), Ctor = result == objectTag ? value.constructor : void 0, ctorString = Ctor ? toSource(Ctor) : void 0;
-          if (ctorString) {
-            switch (ctorString) {
-              case dataViewCtorString:
-                return dataViewTag;
-              case mapCtorString:
-                return mapTag;
-              case promiseCtorString:
-                return promiseTag;
-              case setCtorString:
-                return setTag;
-              case weakMapCtorString:
-                return weakMapTag;
-            }
-          }
-          return result;
-        };
-      }
-      function initCloneArray(array) {
-        var length = array.length, result = array.constructor(length);
-        if (length && typeof array[0] == "string" && hasOwnProperty.call(array, "index")) {
-          result.index = array.index;
-          result.input = array.input;
-        }
-        return result;
-      }
-      function initCloneObject(object) {
-        return typeof object.constructor == "function" && !isPrototype(object) ? baseCreate(getPrototype(object)) : {};
-      }
-      function initCloneByTag(object, tag, cloneFunc, isDeep) {
-        var Ctor = object.constructor;
-        switch (tag) {
-          case arrayBufferTag:
-            return cloneArrayBuffer(object);
-          case boolTag:
-          case dateTag:
-            return new Ctor(+object);
-          case dataViewTag:
-            return cloneDataView(object, isDeep);
-          case float32Tag:
-          case float64Tag:
-          case int8Tag:
-          case int16Tag:
-          case int32Tag:
-          case uint8Tag:
-          case uint8ClampedTag:
-          case uint16Tag:
-          case uint32Tag:
-            return cloneTypedArray(object, isDeep);
-          case mapTag:
-            return cloneMap(object, isDeep, cloneFunc);
-          case numberTag:
-          case stringTag:
-            return new Ctor(object);
-          case regexpTag:
-            return cloneRegExp(object);
-          case setTag:
-            return cloneSet(object, isDeep, cloneFunc);
-          case symbolTag:
-            return cloneSymbol(object);
-        }
-      }
-      function isIndex(value, length) {
-        length = length == null ? MAX_SAFE_INTEGER : length;
-        return !!length && (typeof value == "number" || reIsUint.test(value)) && (value > -1 && value % 1 == 0 && value < length);
-      }
-      function isKeyable(value) {
-        var type = typeof value;
-        return type == "string" || type == "number" || type == "symbol" || type == "boolean" ? value !== "__proto__" : value === null;
-      }
-      function isMasked(func) {
-        return !!maskSrcKey && maskSrcKey in func;
-      }
-      function isPrototype(value) {
-        var Ctor = value && value.constructor, proto = typeof Ctor == "function" && Ctor.prototype || objectProto;
-        return value === proto;
-      }
-      function toSource(func) {
-        if (func != null) {
-          try {
-            return funcToString.call(func);
-          } catch (e) {
-          }
-          try {
-            return func + "";
-          } catch (e) {
-          }
-        }
-        return "";
-      }
-      function cloneDeep(value) {
-        return baseClone(value, true, true);
-      }
-      function eq(value, other) {
-        return value === other || value !== value && other !== other;
-      }
-      function isArguments(value) {
-        return isArrayLikeObject(value) && hasOwnProperty.call(value, "callee") && (!propertyIsEnumerable.call(value, "callee") || objectToString.call(value) == argsTag);
-      }
-      var isArray2 = Array.isArray;
-      function isArrayLike(value) {
-        return value != null && isLength(value.length) && !isFunction2(value);
-      }
-      function isArrayLikeObject(value) {
-        return isObjectLike(value) && isArrayLike(value);
-      }
-      var isBuffer = nativeIsBuffer || stubFalse;
-      function isFunction2(value) {
-        var tag = isObject2(value) ? objectToString.call(value) : "";
-        return tag == funcTag || tag == genTag;
-      }
-      function isLength(value) {
-        return typeof value == "number" && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
-      }
-      function isObject2(value) {
-        var type = typeof value;
-        return !!value && (type == "object" || type == "function");
-      }
-      function isObjectLike(value) {
-        return !!value && typeof value == "object";
-      }
-      function keys(object) {
-        return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
-      }
-      function stubArray() {
-        return [];
-      }
-      function stubFalse() {
-        return false;
-      }
-      module2.exports = cloneDeep;
-    })(lodash_clonedeep, lodash_clonedeep.exports);
-    return lodash_clonedeep.exports;
-  }
-  var lodash_clonedeepExports = requireLodash_clonedeep();
-  const lodashCloneDeep = /* @__PURE__ */ getDefaultExportFromCjs(lodash_clonedeepExports);
   const FormControllerComponent = vue.defineComponent({
     name: "FormController",
     props: {
@@ -1628,6 +1641,11 @@
         required: false,
         default: false
       },
+      bag: {
+        type: String,
+        required: false,
+        default: "default"
+      },
       onSubmit: {
         type: Function,
         required: false
@@ -1635,9 +1653,10 @@
     },
     slots: Object,
     setup(props, { attrs, slots, expose }) {
-      const ctx = createFormContext(lodashCloneDeep(vue.toValue(props.data)), vue.toValue(props.readonly));
-      const http = useHttpClient();
+      const ctx = createFormContext(() => props.data, () => props.bag, () => props.readonly);
       const parent = vue.inject(FormContextInjectionKey, null);
+      const http = useHttpClient();
+      const bags = useErrors();
       const { data, processing, readonly, errors, touched } = ctx;
       const element = vue.computed(() => {
         return parent ? "div" : "form";
@@ -1670,11 +1689,11 @@
         if (!props.continuous) {
           readonly.value = true;
         }
-        errors.value = {};
+        bags.value = {};
         touched.value = {};
         vue.nextTick(() => dispatch().catch((error) => {
           if (error instanceof CompleteResponse) {
-            errors.value = error.errors;
+            bags.value = error.errors;
             if (!props.continuous) {
               vue.nextTick(() => document.querySelector(".control--error")?.scrollIntoView());
             }
@@ -1708,12 +1727,6 @@
           handlers.onChange = handleSubmit;
         }
         return handlers;
-      });
-      vue.watch(() => props.data, (values) => {
-        data.value = lodashCloneDeep(vue.toValue(values));
-      });
-      vue.watch(() => props.readonly, (value) => {
-        readonly.value = vue.toValue(value);
       });
       expose({
         ctx,
@@ -1946,6 +1959,7 @@
       const abilities = vue.ref(void 0);
       const stack2 = vue.ref(void 0);
       const signature = vue.ref(void 0);
+      const errors = vue.ref({});
       const shared = vue.inject(StateShared);
       const authenticated = vue.inject(StateAuthenticated);
       const toasts = vue.inject(ToastRegistryInjectionKey);
@@ -1959,6 +1973,7 @@
       async function update(fresh) {
         abilities.value = { ...abilities.value, ...fresh.abilities };
         authenticated.value = fresh.authenticated;
+        errors.value = fresh.errors;
         if (fresh.shared) {
           shared.value = { ...shared.value, ...fresh.shared };
         }
@@ -1981,6 +1996,7 @@
       vue.provide(StateAuthenticated, authenticated);
       vue.provide(StateLocationInjectionKey, location);
       vue.provide(StateStackSignatureInjectionKey, signature);
+      vue.provide(StateErrorsInjectionKey, errors);
       vue.provide(StateManagerInjectionKey, update);
       vue.provide(StackedViewDepthInjectionKey, vue.computed(() => 0));
       vue.provide(StackedViewInjectionKey, stack2);
@@ -1997,6 +2013,692 @@
       };
     }
   });
+  var lodash_merge = { exports: {} };
+  lodash_merge.exports;
+  var hasRequiredLodash_merge;
+  function requireLodash_merge() {
+    if (hasRequiredLodash_merge) return lodash_merge.exports;
+    hasRequiredLodash_merge = 1;
+    (function(module2, exports3) {
+      var LARGE_ARRAY_SIZE = 200;
+      var HASH_UNDEFINED = "__lodash_hash_undefined__";
+      var HOT_COUNT = 800, HOT_SPAN = 16;
+      var MAX_SAFE_INTEGER = 9007199254740991;
+      var argsTag = "[object Arguments]", arrayTag = "[object Array]", asyncTag = "[object AsyncFunction]", boolTag = "[object Boolean]", dateTag = "[object Date]", errorTag = "[object Error]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", mapTag = "[object Map]", numberTag = "[object Number]", nullTag = "[object Null]", objectTag = "[object Object]", proxyTag = "[object Proxy]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", undefinedTag = "[object Undefined]", weakMapTag = "[object WeakMap]";
+      var arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]", float32Tag = "[object Float32Array]", float64Tag = "[object Float64Array]", int8Tag = "[object Int8Array]", int16Tag = "[object Int16Array]", int32Tag = "[object Int32Array]", uint8Tag = "[object Uint8Array]", uint8ClampedTag = "[object Uint8ClampedArray]", uint16Tag = "[object Uint16Array]", uint32Tag = "[object Uint32Array]";
+      var reRegExpChar = /[\\^$.*+?()[\]{}|]/g;
+      var reIsHostCtor = /^\[object .+?Constructor\]$/;
+      var reIsUint = /^(?:0|[1-9]\d*)$/;
+      var typedArrayTags = {};
+      typedArrayTags[float32Tag] = typedArrayTags[float64Tag] = typedArrayTags[int8Tag] = typedArrayTags[int16Tag] = typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] = typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] = typedArrayTags[uint32Tag] = true;
+      typedArrayTags[argsTag] = typedArrayTags[arrayTag] = typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] = typedArrayTags[dataViewTag] = typedArrayTags[dateTag] = typedArrayTags[errorTag] = typedArrayTags[funcTag] = typedArrayTags[mapTag] = typedArrayTags[numberTag] = typedArrayTags[objectTag] = typedArrayTags[regexpTag] = typedArrayTags[setTag] = typedArrayTags[stringTag] = typedArrayTags[weakMapTag] = false;
+      var freeGlobal = typeof commonjsGlobal == "object" && commonjsGlobal && commonjsGlobal.Object === Object && commonjsGlobal;
+      var freeSelf = typeof self == "object" && self && self.Object === Object && self;
+      var root = freeGlobal || freeSelf || Function("return this")();
+      var freeExports = exports3 && !exports3.nodeType && exports3;
+      var freeModule = freeExports && true && module2 && !module2.nodeType && module2;
+      var moduleExports = freeModule && freeModule.exports === freeExports;
+      var freeProcess = moduleExports && freeGlobal.process;
+      var nodeUtil = function() {
+        try {
+          var types = freeModule && freeModule.require && freeModule.require("util").types;
+          if (types) {
+            return types;
+          }
+          return freeProcess && freeProcess.binding && freeProcess.binding("util");
+        } catch (e) {
+        }
+      }();
+      var nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray;
+      function apply(func, thisArg, args) {
+        switch (args.length) {
+          case 0:
+            return func.call(thisArg);
+          case 1:
+            return func.call(thisArg, args[0]);
+          case 2:
+            return func.call(thisArg, args[0], args[1]);
+          case 3:
+            return func.call(thisArg, args[0], args[1], args[2]);
+        }
+        return func.apply(thisArg, args);
+      }
+      function baseTimes(n, iteratee) {
+        var index = -1, result = Array(n);
+        while (++index < n) {
+          result[index] = iteratee(index);
+        }
+        return result;
+      }
+      function baseUnary(func) {
+        return function(value) {
+          return func(value);
+        };
+      }
+      function getValue(object, key) {
+        return object == null ? void 0 : object[key];
+      }
+      function overArg(func, transform) {
+        return function(arg) {
+          return func(transform(arg));
+        };
+      }
+      var arrayProto = Array.prototype, funcProto = Function.prototype, objectProto = Object.prototype;
+      var coreJsData = root["__core-js_shared__"];
+      var funcToString = funcProto.toString;
+      var hasOwnProperty = objectProto.hasOwnProperty;
+      var maskSrcKey = function() {
+        var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || "");
+        return uid ? "Symbol(src)_1." + uid : "";
+      }();
+      var nativeObjectToString = objectProto.toString;
+      var objectCtorString = funcToString.call(Object);
+      var reIsNative = RegExp(
+        "^" + funcToString.call(hasOwnProperty).replace(reRegExpChar, "\\$&").replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, "$1.*?") + "$"
+      );
+      var Buffer = moduleExports ? root.Buffer : void 0, Symbol2 = root.Symbol, Uint8Array2 = root.Uint8Array;
+      Buffer ? Buffer.allocUnsafe : void 0;
+      var getPrototype = overArg(Object.getPrototypeOf, Object), objectCreate = Object.create, propertyIsEnumerable = objectProto.propertyIsEnumerable, splice = arrayProto.splice, symToStringTag = Symbol2 ? Symbol2.toStringTag : void 0;
+      var defineProperty = function() {
+        try {
+          var func = getNative(Object, "defineProperty");
+          func({}, "", {});
+          return func;
+        } catch (e) {
+        }
+      }();
+      var nativeIsBuffer = Buffer ? Buffer.isBuffer : void 0, nativeMax = Math.max, nativeNow = Date.now;
+      var Map2 = getNative(root, "Map"), nativeCreate = getNative(Object, "create");
+      var baseCreate = /* @__PURE__ */ function() {
+        function object() {
+        }
+        return function(proto) {
+          if (!isObject2(proto)) {
+            return {};
+          }
+          if (objectCreate) {
+            return objectCreate(proto);
+          }
+          object.prototype = proto;
+          var result = new object();
+          object.prototype = void 0;
+          return result;
+        };
+      }();
+      function Hash(entries) {
+        var index = -1, length = entries == null ? 0 : entries.length;
+        this.clear();
+        while (++index < length) {
+          var entry = entries[index];
+          this.set(entry[0], entry[1]);
+        }
+      }
+      function hashClear() {
+        this.__data__ = nativeCreate ? nativeCreate(null) : {};
+        this.size = 0;
+      }
+      function hashDelete(key) {
+        var result = this.has(key) && delete this.__data__[key];
+        this.size -= result ? 1 : 0;
+        return result;
+      }
+      function hashGet(key) {
+        var data = this.__data__;
+        if (nativeCreate) {
+          var result = data[key];
+          return result === HASH_UNDEFINED ? void 0 : result;
+        }
+        return hasOwnProperty.call(data, key) ? data[key] : void 0;
+      }
+      function hashHas(key) {
+        var data = this.__data__;
+        return nativeCreate ? data[key] !== void 0 : hasOwnProperty.call(data, key);
+      }
+      function hashSet(key, value) {
+        var data = this.__data__;
+        this.size += this.has(key) ? 0 : 1;
+        data[key] = nativeCreate && value === void 0 ? HASH_UNDEFINED : value;
+        return this;
+      }
+      Hash.prototype.clear = hashClear;
+      Hash.prototype["delete"] = hashDelete;
+      Hash.prototype.get = hashGet;
+      Hash.prototype.has = hashHas;
+      Hash.prototype.set = hashSet;
+      function ListCache(entries) {
+        var index = -1, length = entries == null ? 0 : entries.length;
+        this.clear();
+        while (++index < length) {
+          var entry = entries[index];
+          this.set(entry[0], entry[1]);
+        }
+      }
+      function listCacheClear() {
+        this.__data__ = [];
+        this.size = 0;
+      }
+      function listCacheDelete(key) {
+        var data = this.__data__, index = assocIndexOf(data, key);
+        if (index < 0) {
+          return false;
+        }
+        var lastIndex = data.length - 1;
+        if (index == lastIndex) {
+          data.pop();
+        } else {
+          splice.call(data, index, 1);
+        }
+        --this.size;
+        return true;
+      }
+      function listCacheGet(key) {
+        var data = this.__data__, index = assocIndexOf(data, key);
+        return index < 0 ? void 0 : data[index][1];
+      }
+      function listCacheHas(key) {
+        return assocIndexOf(this.__data__, key) > -1;
+      }
+      function listCacheSet(key, value) {
+        var data = this.__data__, index = assocIndexOf(data, key);
+        if (index < 0) {
+          ++this.size;
+          data.push([key, value]);
+        } else {
+          data[index][1] = value;
+        }
+        return this;
+      }
+      ListCache.prototype.clear = listCacheClear;
+      ListCache.prototype["delete"] = listCacheDelete;
+      ListCache.prototype.get = listCacheGet;
+      ListCache.prototype.has = listCacheHas;
+      ListCache.prototype.set = listCacheSet;
+      function MapCache(entries) {
+        var index = -1, length = entries == null ? 0 : entries.length;
+        this.clear();
+        while (++index < length) {
+          var entry = entries[index];
+          this.set(entry[0], entry[1]);
+        }
+      }
+      function mapCacheClear() {
+        this.size = 0;
+        this.__data__ = {
+          "hash": new Hash(),
+          "map": new (Map2 || ListCache)(),
+          "string": new Hash()
+        };
+      }
+      function mapCacheDelete(key) {
+        var result = getMapData(this, key)["delete"](key);
+        this.size -= result ? 1 : 0;
+        return result;
+      }
+      function mapCacheGet(key) {
+        return getMapData(this, key).get(key);
+      }
+      function mapCacheHas(key) {
+        return getMapData(this, key).has(key);
+      }
+      function mapCacheSet(key, value) {
+        var data = getMapData(this, key), size = data.size;
+        data.set(key, value);
+        this.size += data.size == size ? 0 : 1;
+        return this;
+      }
+      MapCache.prototype.clear = mapCacheClear;
+      MapCache.prototype["delete"] = mapCacheDelete;
+      MapCache.prototype.get = mapCacheGet;
+      MapCache.prototype.has = mapCacheHas;
+      MapCache.prototype.set = mapCacheSet;
+      function Stack(entries) {
+        var data = this.__data__ = new ListCache(entries);
+        this.size = data.size;
+      }
+      function stackClear() {
+        this.__data__ = new ListCache();
+        this.size = 0;
+      }
+      function stackDelete(key) {
+        var data = this.__data__, result = data["delete"](key);
+        this.size = data.size;
+        return result;
+      }
+      function stackGet(key) {
+        return this.__data__.get(key);
+      }
+      function stackHas(key) {
+        return this.__data__.has(key);
+      }
+      function stackSet(key, value) {
+        var data = this.__data__;
+        if (data instanceof ListCache) {
+          var pairs = data.__data__;
+          if (!Map2 || pairs.length < LARGE_ARRAY_SIZE - 1) {
+            pairs.push([key, value]);
+            this.size = ++data.size;
+            return this;
+          }
+          data = this.__data__ = new MapCache(pairs);
+        }
+        data.set(key, value);
+        this.size = data.size;
+        return this;
+      }
+      Stack.prototype.clear = stackClear;
+      Stack.prototype["delete"] = stackDelete;
+      Stack.prototype.get = stackGet;
+      Stack.prototype.has = stackHas;
+      Stack.prototype.set = stackSet;
+      function arrayLikeKeys(value, inherited) {
+        var isArr = isArray2(value), isArg = !isArr && isArguments(value), isBuff = !isArr && !isArg && isBuffer(value), isType = !isArr && !isArg && !isBuff && isTypedArray(value), skipIndexes = isArr || isArg || isBuff || isType, result = skipIndexes ? baseTimes(value.length, String) : [], length = result.length;
+        for (var key in value) {
+          if (!(skipIndexes && // Safari 9 has enumerable `arguments.length` in strict mode.
+          (key == "length" || // Node.js 0.10 has enumerable non-index properties on buffers.
+          isBuff && (key == "offset" || key == "parent") || // PhantomJS 2 has enumerable non-index properties on typed arrays.
+          isType && (key == "buffer" || key == "byteLength" || key == "byteOffset") || // Skip index properties.
+          isIndex(key, length)))) {
+            result.push(key);
+          }
+        }
+        return result;
+      }
+      function assignMergeValue(object, key, value) {
+        if (value !== void 0 && !eq(object[key], value) || value === void 0 && !(key in object)) {
+          baseAssignValue(object, key, value);
+        }
+      }
+      function assignValue(object, key, value) {
+        var objValue = object[key];
+        if (!(hasOwnProperty.call(object, key) && eq(objValue, value)) || value === void 0 && !(key in object)) {
+          baseAssignValue(object, key, value);
+        }
+      }
+      function assocIndexOf(array, key) {
+        var length = array.length;
+        while (length--) {
+          if (eq(array[length][0], key)) {
+            return length;
+          }
+        }
+        return -1;
+      }
+      function baseAssignValue(object, key, value) {
+        if (key == "__proto__" && defineProperty) {
+          defineProperty(object, key, {
+            "configurable": true,
+            "enumerable": true,
+            "value": value,
+            "writable": true
+          });
+        } else {
+          object[key] = value;
+        }
+      }
+      var baseFor = createBaseFor();
+      function baseGetTag(value) {
+        if (value == null) {
+          return value === void 0 ? undefinedTag : nullTag;
+        }
+        return symToStringTag && symToStringTag in Object(value) ? getRawTag(value) : objectToString(value);
+      }
+      function baseIsArguments(value) {
+        return isObjectLike(value) && baseGetTag(value) == argsTag;
+      }
+      function baseIsNative(value) {
+        if (!isObject2(value) || isMasked(value)) {
+          return false;
+        }
+        var pattern = isFunction2(value) ? reIsNative : reIsHostCtor;
+        return pattern.test(toSource(value));
+      }
+      function baseIsTypedArray(value) {
+        return isObjectLike(value) && isLength(value.length) && !!typedArrayTags[baseGetTag(value)];
+      }
+      function baseKeysIn(object) {
+        if (!isObject2(object)) {
+          return nativeKeysIn(object);
+        }
+        var isProto = isPrototype(object), result = [];
+        for (var key in object) {
+          if (!(key == "constructor" && (isProto || !hasOwnProperty.call(object, key)))) {
+            result.push(key);
+          }
+        }
+        return result;
+      }
+      function baseMerge(object, source, srcIndex, customizer, stack2) {
+        if (object === source) {
+          return;
+        }
+        baseFor(source, function(srcValue, key) {
+          stack2 || (stack2 = new Stack());
+          if (isObject2(srcValue)) {
+            baseMergeDeep(object, source, key, srcIndex, baseMerge, customizer, stack2);
+          } else {
+            var newValue = customizer ? customizer(safeGet(object, key), srcValue, key + "", object, source, stack2) : void 0;
+            if (newValue === void 0) {
+              newValue = srcValue;
+            }
+            assignMergeValue(object, key, newValue);
+          }
+        }, keysIn);
+      }
+      function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack2) {
+        var objValue = safeGet(object, key), srcValue = safeGet(source, key), stacked = stack2.get(srcValue);
+        if (stacked) {
+          assignMergeValue(object, key, stacked);
+          return;
+        }
+        var newValue = customizer ? customizer(objValue, srcValue, key + "", object, source, stack2) : void 0;
+        var isCommon = newValue === void 0;
+        if (isCommon) {
+          var isArr = isArray2(srcValue), isBuff = !isArr && isBuffer(srcValue), isTyped = !isArr && !isBuff && isTypedArray(srcValue);
+          newValue = srcValue;
+          if (isArr || isBuff || isTyped) {
+            if (isArray2(objValue)) {
+              newValue = objValue;
+            } else if (isArrayLikeObject(objValue)) {
+              newValue = copyArray(objValue);
+            } else if (isBuff) {
+              isCommon = false;
+              newValue = cloneBuffer(srcValue);
+            } else if (isTyped) {
+              isCommon = false;
+              newValue = cloneTypedArray(srcValue);
+            } else {
+              newValue = [];
+            }
+          } else if (isPlainObject(srcValue) || isArguments(srcValue)) {
+            newValue = objValue;
+            if (isArguments(objValue)) {
+              newValue = toPlainObject(objValue);
+            } else if (!isObject2(objValue) || isFunction2(objValue)) {
+              newValue = initCloneObject(srcValue);
+            }
+          } else {
+            isCommon = false;
+          }
+        }
+        if (isCommon) {
+          stack2.set(srcValue, newValue);
+          mergeFunc(newValue, srcValue, srcIndex, customizer, stack2);
+          stack2["delete"](srcValue);
+        }
+        assignMergeValue(object, key, newValue);
+      }
+      function baseRest(func, start) {
+        return setToString(overRest(func, start, identity), func + "");
+      }
+      var baseSetToString = !defineProperty ? identity : function(func, string) {
+        return defineProperty(func, "toString", {
+          "configurable": true,
+          "enumerable": false,
+          "value": constant(string),
+          "writable": true
+        });
+      };
+      function cloneBuffer(buffer2, isDeep) {
+        {
+          return buffer2.slice();
+        }
+      }
+      function cloneArrayBuffer(arrayBuffer) {
+        var result = new arrayBuffer.constructor(arrayBuffer.byteLength);
+        new Uint8Array2(result).set(new Uint8Array2(arrayBuffer));
+        return result;
+      }
+      function cloneTypedArray(typedArray, isDeep) {
+        var buffer2 = cloneArrayBuffer(typedArray.buffer);
+        return new typedArray.constructor(buffer2, typedArray.byteOffset, typedArray.length);
+      }
+      function copyArray(source, array) {
+        var index = -1, length = source.length;
+        array || (array = Array(length));
+        while (++index < length) {
+          array[index] = source[index];
+        }
+        return array;
+      }
+      function copyObject(source, props, object, customizer) {
+        var isNew = !object;
+        object || (object = {});
+        var index = -1, length = props.length;
+        while (++index < length) {
+          var key = props[index];
+          var newValue = void 0;
+          if (newValue === void 0) {
+            newValue = source[key];
+          }
+          if (isNew) {
+            baseAssignValue(object, key, newValue);
+          } else {
+            assignValue(object, key, newValue);
+          }
+        }
+        return object;
+      }
+      function createAssigner(assigner) {
+        return baseRest(function(object, sources) {
+          var index = -1, length = sources.length, customizer = length > 1 ? sources[length - 1] : void 0, guard = length > 2 ? sources[2] : void 0;
+          customizer = assigner.length > 3 && typeof customizer == "function" ? (length--, customizer) : void 0;
+          if (guard && isIterateeCall(sources[0], sources[1], guard)) {
+            customizer = length < 3 ? void 0 : customizer;
+            length = 1;
+          }
+          object = Object(object);
+          while (++index < length) {
+            var source = sources[index];
+            if (source) {
+              assigner(object, source, index, customizer);
+            }
+          }
+          return object;
+        });
+      }
+      function createBaseFor(fromRight) {
+        return function(object, iteratee, keysFunc) {
+          var index = -1, iterable = Object(object), props = keysFunc(object), length = props.length;
+          while (length--) {
+            var key = props[++index];
+            if (iteratee(iterable[key], key, iterable) === false) {
+              break;
+            }
+          }
+          return object;
+        };
+      }
+      function getMapData(map, key) {
+        var data = map.__data__;
+        return isKeyable(key) ? data[typeof key == "string" ? "string" : "hash"] : data.map;
+      }
+      function getNative(object, key) {
+        var value = getValue(object, key);
+        return baseIsNative(value) ? value : void 0;
+      }
+      function getRawTag(value) {
+        var isOwn = hasOwnProperty.call(value, symToStringTag), tag = value[symToStringTag];
+        try {
+          value[symToStringTag] = void 0;
+          var unmasked = true;
+        } catch (e) {
+        }
+        var result = nativeObjectToString.call(value);
+        if (unmasked) {
+          if (isOwn) {
+            value[symToStringTag] = tag;
+          } else {
+            delete value[symToStringTag];
+          }
+        }
+        return result;
+      }
+      function initCloneObject(object) {
+        return typeof object.constructor == "function" && !isPrototype(object) ? baseCreate(getPrototype(object)) : {};
+      }
+      function isIndex(value, length) {
+        var type = typeof value;
+        length = length == null ? MAX_SAFE_INTEGER : length;
+        return !!length && (type == "number" || type != "symbol" && reIsUint.test(value)) && (value > -1 && value % 1 == 0 && value < length);
+      }
+      function isIterateeCall(value, index, object) {
+        if (!isObject2(object)) {
+          return false;
+        }
+        var type = typeof index;
+        if (type == "number" ? isArrayLike(object) && isIndex(index, object.length) : type == "string" && index in object) {
+          return eq(object[index], value);
+        }
+        return false;
+      }
+      function isKeyable(value) {
+        var type = typeof value;
+        return type == "string" || type == "number" || type == "symbol" || type == "boolean" ? value !== "__proto__" : value === null;
+      }
+      function isMasked(func) {
+        return !!maskSrcKey && maskSrcKey in func;
+      }
+      function isPrototype(value) {
+        var Ctor = value && value.constructor, proto = typeof Ctor == "function" && Ctor.prototype || objectProto;
+        return value === proto;
+      }
+      function nativeKeysIn(object) {
+        var result = [];
+        if (object != null) {
+          for (var key in Object(object)) {
+            result.push(key);
+          }
+        }
+        return result;
+      }
+      function objectToString(value) {
+        return nativeObjectToString.call(value);
+      }
+      function overRest(func, start, transform) {
+        start = nativeMax(start === void 0 ? func.length - 1 : start, 0);
+        return function() {
+          var args = arguments, index = -1, length = nativeMax(args.length - start, 0), array = Array(length);
+          while (++index < length) {
+            array[index] = args[start + index];
+          }
+          index = -1;
+          var otherArgs = Array(start + 1);
+          while (++index < start) {
+            otherArgs[index] = args[index];
+          }
+          otherArgs[start] = transform(array);
+          return apply(func, this, otherArgs);
+        };
+      }
+      function safeGet(object, key) {
+        if (key === "constructor" && typeof object[key] === "function") {
+          return;
+        }
+        if (key == "__proto__") {
+          return;
+        }
+        return object[key];
+      }
+      var setToString = shortOut(baseSetToString);
+      function shortOut(func) {
+        var count = 0, lastCalled = 0;
+        return function() {
+          var stamp = nativeNow(), remaining = HOT_SPAN - (stamp - lastCalled);
+          lastCalled = stamp;
+          if (remaining > 0) {
+            if (++count >= HOT_COUNT) {
+              return arguments[0];
+            }
+          } else {
+            count = 0;
+          }
+          return func.apply(void 0, arguments);
+        };
+      }
+      function toSource(func) {
+        if (func != null) {
+          try {
+            return funcToString.call(func);
+          } catch (e) {
+          }
+          try {
+            return func + "";
+          } catch (e) {
+          }
+        }
+        return "";
+      }
+      function eq(value, other) {
+        return value === other || value !== value && other !== other;
+      }
+      var isArguments = baseIsArguments(/* @__PURE__ */ function() {
+        return arguments;
+      }()) ? baseIsArguments : function(value) {
+        return isObjectLike(value) && hasOwnProperty.call(value, "callee") && !propertyIsEnumerable.call(value, "callee");
+      };
+      var isArray2 = Array.isArray;
+      function isArrayLike(value) {
+        return value != null && isLength(value.length) && !isFunction2(value);
+      }
+      function isArrayLikeObject(value) {
+        return isObjectLike(value) && isArrayLike(value);
+      }
+      var isBuffer = nativeIsBuffer || stubFalse;
+      function isFunction2(value) {
+        if (!isObject2(value)) {
+          return false;
+        }
+        var tag = baseGetTag(value);
+        return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
+      }
+      function isLength(value) {
+        return typeof value == "number" && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
+      }
+      function isObject2(value) {
+        var type = typeof value;
+        return value != null && (type == "object" || type == "function");
+      }
+      function isObjectLike(value) {
+        return value != null && typeof value == "object";
+      }
+      function isPlainObject(value) {
+        if (!isObjectLike(value) || baseGetTag(value) != objectTag) {
+          return false;
+        }
+        var proto = getPrototype(value);
+        if (proto === null) {
+          return true;
+        }
+        var Ctor = hasOwnProperty.call(proto, "constructor") && proto.constructor;
+        return typeof Ctor == "function" && Ctor instanceof Ctor && funcToString.call(Ctor) == objectCtorString;
+      }
+      var isTypedArray = nodeIsTypedArray ? baseUnary(nodeIsTypedArray) : baseIsTypedArray;
+      function toPlainObject(value) {
+        return copyObject(value, keysIn(value));
+      }
+      function keysIn(object) {
+        return isArrayLike(object) ? arrayLikeKeys(object) : baseKeysIn(object);
+      }
+      var merge = createAssigner(function(object, source, srcIndex) {
+        baseMerge(object, source, srcIndex);
+      });
+      function constant(value) {
+        return function() {
+          return value;
+        };
+      }
+      function identity(value) {
+        return value;
+      }
+      function stubFalse() {
+        return false;
+      }
+      module2.exports = merge;
+    })(lodash_merge, lodash_merge.exports);
+    return lodash_merge.exports;
+  }
+  var lodash_mergeExports = requireLodash_merge();
+  const lodashMerge = /* @__PURE__ */ getDefaultExportFromCjs(lodash_mergeExports);
   const RouterFrameComponent = vue.defineComponent({
     inheritAttrs: false,
     name: "RouterFrame",
@@ -2009,6 +2711,7 @@
       const abilities = vue.inject(StateAbilities);
       const authenticated = vue.inject(StateAuthenticated);
       const shared = vue.inject(StateShared);
+      const errors = vue.inject(StateErrorsInjectionKey);
       const toasts = vue.inject(ToastRegistryInjectionKey);
       const stack2 = vue.inject(StackedViewInjectionKey);
       const loading = vue.ref(true);
@@ -2024,6 +2727,7 @@
           }
           abilities.value = { ...abilities.value, ...response.abilities };
           authenticated.value = response.authenticated;
+          errors.value = { ...lodashMerge(errors.value, response.errors) };
           if (response.shared) {
             shared.value = { ...shared.value, ...response.shared };
           }
@@ -3556,6 +4260,7 @@
     },
     setup(props) {
       const abilities = vue.ref(props.state.abilities);
+      const errors = vue.ref(props.state.errors);
       const meta = vue.ref(props.state.meta);
       const shared = vue.ref(props.state.shared || {});
       const authenticated = vue.ref(props.state.authenticated);
@@ -3574,6 +4279,7 @@
       async function update(fresh) {
         abilities.value = { ...abilities.value, ...fresh.abilities };
         authenticated.value = fresh.authenticated;
+        errors.value = fresh.errors;
         if (fresh.meta) {
           meta.value = updateHead(fresh.meta);
         }
@@ -3599,6 +4305,7 @@
       vue.provide(StateShared, shared);
       vue.provide(StateLocationInjectionKey, location);
       vue.provide(StateStackSignatureInjectionKey, signature);
+      vue.provide(StateErrorsInjectionKey, errors);
       vue.provide(StateManagerInjectionKey, update);
       vue.provide(StackedViewResolverInjectionKey, props.resolver);
       vue.provide(StackedViewDepthInjectionKey, vue.computed(() => 0));
@@ -3860,6 +4567,7 @@
   exports2.StackedViewResolverInjectionKey = StackedViewResolverInjectionKey;
   exports2.StateAbilities = StateAbilities;
   exports2.StateAuthenticated = StateAuthenticated;
+  exports2.StateErrorsInjectionKey = StateErrorsInjectionKey;
   exports2.StateHistoryInjectionKey = StateHistoryInjectionKey;
   exports2.StateLocationInjectionKey = StateLocationInjectionKey;
   exports2.StateManagerInjectionKey = StateManagerInjectionKey;
@@ -3896,6 +4604,7 @@
   exports2.useAuthenticated = useAuthenticated;
   exports2.useConfirmation = useConfirmation;
   exports2.useCurrentConfirmation = useCurrentConfirmation;
+  exports2.useErrors = useErrors;
   exports2.useFormApi = useFormApi;
   exports2.useFormContext = useFormContext;
   exports2.useHttpClient = useHttpClient;

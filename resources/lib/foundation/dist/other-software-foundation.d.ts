@@ -5,6 +5,7 @@ import { ConcreteComponent } from 'vue';
 import { DefineComponent } from 'vue';
 import { ExtractPropTypes } from 'vue';
 import { InjectionKey } from 'vue';
+import { MaybeRefOrGetter } from 'vue';
 import { Plugin as Plugin_2 } from 'vue';
 import { PropType } from 'vue';
 import { PublicProps } from 'vue';
@@ -59,7 +60,7 @@ export declare class CompleteResponse extends Response_2 {
     readonly redirect: RouterRedirect;
     readonly stack: StackedView;
     readonly toasts: ToastRegistry;
-    readonly errors: Record<string, string[]>;
+    readonly errors: ViewErrorsBag;
     readonly data: any;
     constructor(xhr: XMLHttpRequest);
 }
@@ -85,9 +86,9 @@ export declare interface Confirmation extends Config {
     cancel: () => void;
 }
 
-export declare function createFormContext(initial?: Record<string, any>, initialReadonly?: boolean): {
+export declare function createFormContext(initialData: MaybeRefOrGetter<Record<string, any>>, initialBag: MaybeRefOrGetter<string>, initialReadonly: MaybeRefOrGetter<boolean>): {
     data: Ref<Record<string, any>, Record<string, any>>;
-    errors: Ref<Record<string, string[]>, Record<string, string[]>>;
+    errors: ComputedRef<MessageBag>;
     touched: Ref<Record<string, boolean>, Record<string, boolean>>;
     processing: Ref<boolean, boolean>;
     readonly: Ref<boolean, boolean>;
@@ -162,6 +163,11 @@ type: BooleanConstructor;
 required: false;
 default: boolean;
 };
+bag: {
+type: StringConstructor;
+required: false;
+default: string;
+};
 onSubmit: {
 type: PropType<FormHandler>;
 required: false;
@@ -193,6 +199,11 @@ type: BooleanConstructor;
 required: false;
 default: boolean;
 };
+bag: {
+type: StringConstructor;
+required: false;
+default: string;
+};
 onSubmit: {
 type: PropType<FormHandler>;
 required: false;
@@ -202,6 +213,7 @@ data: Record<string, any>;
 method: string;
 readonly: boolean;
 continuous: boolean;
+bag: string;
 }, SlotsType<{
 default: {
 data: any;
@@ -248,6 +260,7 @@ declare interface HttpOptions {
 
 export declare interface InitialState extends State {
     abilities: Abilities;
+    errors: ViewErrorsBag;
     authenticated: Authenticated | null;
     shared: SharedState;
     toasts: ToastRegistry;
@@ -263,6 +276,10 @@ export declare type Locale = {
     name: string;
     code: string;
 };
+
+export declare interface MessageBag {
+    [field: string]: string[];
+}
 
 export declare type Meta = {
     type: 'title';
@@ -557,6 +574,8 @@ export declare const StateAbilities: InjectionKey<Ref<Abilities>>;
 
 export declare const StateAuthenticated: InjectionKey<Ref<Authenticated | null>>;
 
+export declare const StateErrorsInjectionKey: InjectionKey<Ref<ViewErrorsBag>>;
+
 export declare type StateHistory = {
     historyPushState(state: State): void;
     historyReplaceState(state: State): void;
@@ -635,6 +654,8 @@ export declare function useConfirmation(): typeof factory;
 
 export declare function useCurrentConfirmation(): Ref<Confirmation | undefined, Confirmation | undefined>;
 
+export declare function useErrors(): Ref<ViewErrorsBag, ViewErrorsBag>;
+
 export declare function useFormApi(): Ref<FormApi>;
 
 export declare function useFormContext(): FormContextInterface | null;
@@ -679,6 +700,10 @@ export declare function useViewQuery(): Ref<Record<string, any> | undefined>;
 export declare function useViewResolver(): ViewResolver;
 
 export declare function useViewStack(): Ref<StackedViewResolved | undefined>;
+
+export declare interface ViewErrorsBag {
+    [bag: string]: MessageBag;
+}
 
 export declare type ViewResolver = (name: string) => StackedViewComponent;
 

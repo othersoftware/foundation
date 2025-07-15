@@ -5,7 +5,9 @@ namespace OtherSoftware\Bridge;
 
 use Closure;
 use Illuminate\Contracts\Cache\Factory as CacheFactory;
+use Illuminate\Contracts\Session\Session;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\MessageProvider;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
@@ -13,6 +15,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\ViewErrorBag;
 use Illuminate\View\View as IlluminateView;
 use OtherSoftware\Auth\Access\AbilityResponse;
 use OtherSoftware\Bridge\Enums\RenderMode;
@@ -27,58 +31,29 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ResponseFactory implements Responsable
 {
-    protected CacheFactory $cache;
-
-
     protected ServerConfiguration $server;
+    protected CacheFactory $cache;
+    protected Session $session;
+    protected string $guard = 'web';
+    protected RenderMode $mode = RenderMode::CLIENT;
+    protected string $view;
+    protected bool $rendersVueResponse = false;
 
 
     private array $abilities = [];
-
-
-    private array $errors = [];
-
-
-    private string $guard = 'web';
-
-
     private array $meta;
-
-
-    private RenderMode $mode = RenderMode::CLIENT;
-
-
     private mixed $raw;
-
-
+    private array $shared;
+    private Stack $stack;
     private Redirect $redirect;
-
-
     private View $rendered;
 
 
-    private bool $rendersVueResponse = false;
-
-
-    private array $shared;
-
-
-    private Stack $stack;
-
-
-    private string $view;
-
-
-    public function __construct(ServerConfiguration $server, CacheFactory $cache)
+    public function __construct(ServerConfiguration $server, CacheFactory $cache, Session $session)
     {
         $this->server = $server;
         $this->cache = $cache;
-    }
-
-
-    public function isVuePowered(?Request $request = null): bool
-    {
-        return (bool) ($request ?? request())->header('X-Stack-Router');
+        $this->session = $session;
     }
 
 
@@ -104,6 +79,12 @@ final class ResponseFactory implements Responsable
     }
 
 
+    public function isVuePowered(?Request $request = null): bool
+    {
+        return (bool) ($request ?? request())->header('X-Stack-Router');
+    }
+
+
     public function serverView(string $view, array $props = []): View
     {
         $this->mode = RenderMode::SERVER;
@@ -116,14 +97,6 @@ final class ResponseFactory implements Responsable
     public function setAbilities(array $abilities): ResponseFactory
     {
         $this->abilities = array_merge($this->abilities, collect($abilities)->mapWithKeys(fn(AbilityResponse $res) => [$res->ability => $res->toArray()])->toArray());
-
-        return $this;
-    }
-
-
-    public function setErrors(array $errors): ResponseFactory
-    {
-        $this->errors = $errors;
 
         return $this;
     }
@@ -241,7 +214,7 @@ final class ResponseFactory implements Responsable
         }
 
         $data['abilities'] = (object) $this->abilities;
-        $data['errors'] = $this->errors;
+        $data['errors'] = $this->getErrorBags($request);
 
         if (isset($this->raw)) {
             $data['raw'] = $this->raw;
@@ -268,12 +241,16 @@ final class ResponseFactory implements Responsable
     }
 
 
-    public function view(string $view, Closure|array $props = []): View
+    private function getErrorBags(Request $request): object
     {
-        $this->mode = RenderMode::CLIENT;
-        $this->rendered = new View($view, $props);
+        $errors = $request->session()->pull('errors') ?: new ViewErrorBag();
+        $result = [];
 
-        return $this->rendered;
+        foreach ($errors->getBags() as $name => $bag) {
+            $result[$name] = $bag->toArray();
+        }
+
+        return (object) $result;
     }
 
 
@@ -331,9 +308,9 @@ final class ResponseFactory implements Responsable
     }
 
 
-    private function sendServerRenderingRequest(array $data): string
+    private function shouldRenderStatic(): bool
     {
-        return App::make(ServerRenderingGateway::class)->render($data);
+        return $this->mode->isStatic() && $this->server->isServerRenderingEnabled() && App::environment('production');
     }
 
 
@@ -355,8 +332,42 @@ final class ResponseFactory implements Responsable
     }
 
 
-    private function shouldRenderStatic(): bool
+    private function sendServerRenderingRequest(array $data): string
     {
-        return $this->mode->isStatic() && $this->server->isServerRenderingEnabled() && App::environment('production');
+        return App::make(ServerRenderingGateway::class)->render($data);
+    }
+
+
+    public function withErrors($provider, $key = 'default'): self
+    {
+        $value = $this->parseErrors($provider);
+        $errors = $this->session->get('errors', new ViewErrorBag());
+
+        if (! $errors instanceof ViewErrorBag) {
+            $errors = new ViewErrorBag();
+        }
+
+        $this->session->flash('errors', $errors->put($key, $value));
+
+        return $this;
+    }
+
+
+    private function parseErrors($provider): MessageBag
+    {
+        if ($provider instanceof MessageProvider) {
+            return $provider->getMessageBag();
+        }
+
+        return new MessageBag((array) $provider);
+    }
+
+
+    public function view(string $view, Closure|array $props = []): View
+    {
+        $this->mode = RenderMode::CLIENT;
+        $this->rendered = new View($view, $props);
+
+        return $this->rendered;
     }
 }
