@@ -1,5 +1,5 @@
 import * as path from 'node:path';
-import type { ResolvedConfig } from 'vite';
+import { type ResolvedConfig, normalizePath } from 'vite';
 import { collect } from './Collector.ts';
 import type { Options } from '../Types/Options.ts';
 
@@ -13,11 +13,11 @@ function collectViewsSet(config: ResolvedConfig, options: Options) {
   viewsMap.set(namespace, views);
 
   collection.components.forEach(component => {
-    views.add(component.path);
+    views.add(normalizePath(component.path));
   });
 
   collection.vendors.forEach(component => {
-    views.add(component.path);
+    views.add(normalizePath(component.path));
   });
 }
 

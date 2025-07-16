@@ -92,9 +92,9 @@ let h = /* @__PURE__ */ new Map();
 function $(t, e) {
   let n = f(t, e.views, e.namespace), o = e.namespace || "default", a = /* @__PURE__ */ new Set();
   h.set(o, a), n.components.forEach((r) => {
-    a.add(r.path);
+    a.add(i(r.path));
   }), n.vendors.forEach((r) => {
-    a.add(r.path);
+    a.add(i(r.path));
   });
 }
 function C(t, e) {
