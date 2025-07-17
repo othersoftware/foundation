@@ -56,10 +56,12 @@ class FormResource extends JsonResource
         $data['meta']['exists'] = $this->resource->exists;
         $data['meta']['morphType'] = $this->resource->getMorphClass();
         $data['meta']['morphKey'] = $this->resource->getKey();
+        $data['meta']['unix'] = [];
 
         if ($this->resource instanceof OtherSoftwareModel) {
             foreach ($this->resource->getSerializedDates() as $key => $value) {
                 $data['meta'][$key] = $value;
+                $data['meta']['unix'][$key] = $this->resource->getAttribute($key)?->unix();
             }
 
             foreach ($this->resource->getSerializedEnums() as $key => $value) {
