@@ -62,18 +62,6 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
     }
 
 
-    public function append(StackEntry $entry): self
-    {
-        if ($offset = array_find_key($this->entries, fn(StackEntry $item) => $item->is($entry->getRouteName()))) {
-            array_splice($this->entries, $offset);
-        }
-
-        $this->entries[] = $entry;
-
-        return $this;
-    }
-
-
     public function compare(Stack $next, bool $changed = false): Stack
     {
         $previous = $this;
@@ -106,12 +94,15 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
     }
 
 
-    /**
-     * {@inheritDoc}
-     */
-    public function count(): int
+    public function append(StackEntry $entry): self
     {
-        return count($this->entries);
+        if ($offset = array_find_key($this->entries, fn(StackEntry $item) => $item->is($entry->getRouteName()))) {
+            array_splice($this->entries, $offset);
+        }
+
+        $this->entries[] = $entry;
+
+        return $this;
     }
 
 
@@ -122,6 +113,15 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
         }
 
         return null;
+    }
+
+
+    public function rewind(): ArrayIterator
+    {
+        $iterator = $this->getIterator();
+        $iterator->rewind();
+
+        return $iterator;
     }
 
 
@@ -164,15 +164,18 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
     }
 
 
-    public function isNotEmpty(): bool
+    /**
+     * {@inheritDoc}
+     */
+    public function count(): int
     {
-        return $this->count() > 0;
+        return count($this->entries);
     }
 
 
-    public function last(): ?StackEntry
+    public function isNotEmpty(): bool
     {
-        return Arr::last($this->entries);
+        return $this->count() > 0;
     }
 
 
@@ -244,6 +247,12 @@ final class Stack implements Countable, ArrayAccess, Serializable, Arrayable
             return $this->entries[$this->iterator->key() - 1] ?? null;
         }
 
+        return Arr::last($this->entries);
+    }
+
+
+    public function last(): ?StackEntry
+    {
         return Arr::last($this->entries);
     }
 

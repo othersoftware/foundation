@@ -153,7 +153,7 @@ final class Router extends BaseRouter
         }
 
         /** @var StackEntry $entry */
-        foreach ($this->stack->getIterator() as $entry) {
+        foreach ($this->stack->rewind() as $entry) {
             $this->running = $entry->getRoute();
 
             if ($entry->shouldKeep()) {

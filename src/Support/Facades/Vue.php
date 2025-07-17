@@ -8,6 +8,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Facade;
 use OtherSoftware\Bridge\ResponseFactory;
+use OtherSoftware\Bridge\Stack\Stack;
 use OtherSoftware\Bridge\Stack\StackMeta;
 use OtherSoftware\Bridge\Stack\View;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,7 +25,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @method static ResponseFactory setGuard(string $guard)
  * @method static ResponseFactory raw(mixed $raw)
  * @method static ResponseFactory setRedirect(string $target, bool $reload = false)
- * @method static ResponseFactory setStack(View $stack)
+ * @method static ResponseFactory setStack(Stack $stack)
+ * @method static ResponseFactory setRendered(View $stack)
  * @method static ResponseFactory setStackMeta(StackMeta $meta)
  * @method static ResponseFactory setView(string $view)
  * @method static ResponseFactory setAbilities(array $abilities)
