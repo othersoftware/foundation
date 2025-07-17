@@ -101,6 +101,12 @@ final readonly class Cast
     }
 
 
+    public static function object(): string
+    {
+        return 'object';
+    }
+
+
     /**
      * @param string|null $country Name of country field for which phone should be validated.
      *
