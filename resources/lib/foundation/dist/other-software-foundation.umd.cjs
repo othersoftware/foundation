@@ -1653,8 +1653,8 @@
     },
     slots: Object,
     setup(props, { attrs, slots, expose }) {
-      const ctx = createFormContext(() => props.data, () => props.bag, () => props.readonly);
       const parent = vue.inject(FormContextInjectionKey, null);
+      const ctx = createFormContext(() => props.data, () => props.bag, () => props.readonly);
       const http = useHttpClient();
       const bags = useErrors();
       const { data, processing, readonly, errors, touched } = ctx;
@@ -1691,17 +1691,21 @@
         }
         bags.value = {};
         touched.value = {};
-        vue.nextTick(() => dispatch().catch((error) => {
-          if (error instanceof CompleteResponse) {
-            bags.value = error.errors;
-            if (!props.continuous) {
-              vue.nextTick(() => document.querySelector(".control--error")?.scrollIntoView());
+        vue.nextTick(() => {
+          dispatch().catch((error) => {
+            if (error instanceof CompleteResponse) {
+              bags.value = error.errors;
+              if (!props.continuous) {
+                vue.nextTick(() => {
+                  document.querySelector(".control--error")?.scrollIntoView();
+                });
+              }
             }
-          }
-        }).finally(() => {
-          processing.value = false;
-          readonly.value = beforeReadonly;
-        }));
+          }).finally(() => {
+            processing.value = false;
+            readonly.value = beforeReadonly;
+          });
+        });
       }
       function handleSubmit(event) {
         event.stopPropagation();
