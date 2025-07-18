@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use OtherSoftware\Bridge\Stack\Stack;
 use OtherSoftware\Translation\Locales;
 use Override;
+use RuntimeException;
 
 
 final class UrlGenerator extends IlluminateUrlGenerator
@@ -42,7 +43,7 @@ final class UrlGenerator extends IlluminateUrlGenerator
         if (App::bound(Stack::class)) {
             try {
                 App::make(Stack::class)->pop();
-            } catch (BindingResolutionException $e) {
+            } catch (BindingResolutionException) {
 
             }
         }
@@ -72,6 +73,25 @@ final class UrlGenerator extends IlluminateUrlGenerator
         }
 
         return $this->to('/');
+    }
+
+
+    /**
+     * Returns the previous location from the Stack instance.
+     *
+     * @return string|null
+     */
+    private function getPreviousStackLocation(): ?string
+    {
+        if (App::bound(Stack::class)) {
+            try {
+                return App::make(Stack::class)->previous()?->getLocation();
+            } catch (BindingResolutionException $e) {
+                throw new RuntimeException('Stack instance should be always available here.', previous: $e);
+            }
+        }
+
+        return null;
     }
 
 
