@@ -139,10 +139,19 @@
     signature;
     refreshStack;
     referer;
-    static send(method, url2, body = void 0, signature = void 0, refreshStack = false, referer = void 0) {
-      return new Request(method, url2, body, signature, refreshStack, referer).send();
+    nested;
+    static send(options) {
+      return new Request(options).send();
     }
-    constructor(method, url2, body = void 0, signature = void 0, refreshStack = false, referer = void 0) {
+    constructor({
+      method,
+      url: url2,
+      body = void 0,
+      signature = void 0,
+      refreshStack = false,
+      referer = void 0,
+      nested = false
+    }) {
       this.xhr = new XMLHttpRequest();
       this.method = method;
       this.url = url2;
@@ -150,6 +159,7 @@
       this.signature = signature;
       this.refreshStack = refreshStack;
       this.referer = referer;
+      this.nested = nested;
     }
     send() {
       return new Promise((resolve, reject) => {
@@ -162,6 +172,9 @@
         }
         if (this.refreshStack) {
           this.xhr.setRequestHeader("X-Stack-Refresh", "true");
+        }
+        if (this.nested) {
+          this.xhr.setRequestHeader("X-Stack-Nested", "true");
         }
         if (this.signature) {
           this.xhr.setRequestHeader("X-Stack-Signature", this.signature);
@@ -283,17 +296,29 @@
       return event;
     }
   };
+  const HttpClientScrollHandler = Symbol("HttpClientScrollHandler");
   const HttpClientForceScrollPreservation = Symbol("HttpClientForceScrollPreservation");
+  const HttpClientForceNested = Symbol("HttpClientForceNested");
   function useHttpClient() {
     const state = useStateManager();
     const signature = useStackSignature();
     const history = useStateHistory();
     const location = useLocation();
+    const scrollHandler = vue.inject(HttpClientScrollHandler, () => document.body.scroll({ behavior: "instant", left: 0, top: 0 }));
     const forceScrollPreserve = vue.inject(HttpClientForceScrollPreservation, false);
-    async function dispatch(method, url2, { data = void 0, preserveScroll = false, replace = false, refreshStack = false } = {}) {
+    const forceNested = vue.inject(HttpClientForceNested, false);
+    async function dispatch(method, url2, { data = void 0, preserveScroll = false, replace = false, nested = false, ...options } = {}) {
       document.body.classList.add("osf-loading");
       document.dispatchEvent(new Event("visit:start"));
-      return await Request.send(method, url2, data, signature.value, refreshStack, location.value).then(async (response) => {
+      return await Request.send({
+        ...options,
+        method,
+        url: url2,
+        body: data,
+        signature: signature.value,
+        referer: location.value,
+        nested: nested || forceNested
+      }).then(async (response) => {
         if (response.redirect) {
           if (response.redirect.reload) {
             return await handleRedirectResponse(response.redirect);
@@ -335,7 +360,9 @@
       });
     }
     function resetScrollPosition() {
-      window.scroll(0, 0);
+      if (scrollHandler) {
+        scrollHandler();
+      }
     }
     async function handleRedirectResponse(redirect) {
       if (redirect.reload) {
@@ -1816,6 +1843,9 @@
       vue.provide(StackedViewParentInjectionKey, vue.computed(() => view.value?.parent));
       vue.provide(StackedViewLocationInjectionKey, location);
       vue.provide(StackedViewQueryInjectionKey, query);
+      vue.provide(HttpClientScrollHandler, () => {
+        document.body.scroll({ behavior: "instant", left: 0, top: 0 });
+      });
       if (prevented) {
         return () => null;
       }
@@ -1936,7 +1966,7 @@
       const http = useHttpClient();
       const loading = vue.ref(true);
       vue.onMounted(() => {
-        http.get(props.action).then(() => vue.nextTick(() => {
+        http.dispatch("GET", props.action).then(() => vue.nextTick(() => {
           loading.value = false;
         }));
       });
@@ -2006,6 +2036,7 @@
       vue.provide(StackedViewInjectionKey, stack2);
       vue.provide(ToastRegistryInjectionKey, toasts);
       vue.provide(HttpClientForceScrollPreservation, true);
+      vue.provide(HttpClientForceNested, true);
       vue.provide(StateHistoryInjectionKey, {
         historyPushState() {
         },
@@ -2721,9 +2752,10 @@
       const loading = vue.ref(true);
       const view = vue.ref(void 0);
       vue.provide(HttpClientForceScrollPreservation, true);
+      vue.provide(HttpClientForceNested, true);
       vue.provide(PreventNestedRouterViewRenderInjectionKey, true);
       function load() {
-        Request.send("GET", props.src).then(async (response) => {
+        Request.send({ method: "GET", url: props.src, nested: true }).then(async (response) => {
           if (response.redirect) {
             return new Promise(() => {
               window.location.href = response.redirect.target;
@@ -4330,7 +4362,7 @@
           signature.value = event.state.signature;
         } else {
           window.history.replaceState(buildState(), "", location.value);
-          window.scroll(0, 0);
+          document.body.scroll({ behavior: "instant", left: 0, top: 0 });
         }
       }
       vue.onMounted(() => {
@@ -4514,6 +4546,12 @@
     if (!element) {
       return void 0;
     }
+    if (Array.isArray(element)) {
+      if (element.length === 0) {
+        return void 0;
+      }
+      element = element[0];
+    }
     let parent = element;
     while (parent) {
       const { overflow } = window.getComputedStyle(parent);
@@ -4553,7 +4591,9 @@
   exports2.EventBus = EventBus;
   exports2.FormContextInjectionKey = FormContextInjectionKey;
   exports2.FormControllerComponent = FormControllerComponent;
+  exports2.HttpClientForceNested = HttpClientForceNested;
   exports2.HttpClientForceScrollPreservation = HttpClientForceScrollPreservation;
+  exports2.HttpClientScrollHandler = HttpClientScrollHandler;
   exports2.PreventNestedRouterViewRenderInjectionKey = PreventNestedRouterViewRenderInjectionKey;
   exports2.Request = Request;
   exports2.Response = Response;

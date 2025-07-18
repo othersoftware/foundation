@@ -3,7 +3,7 @@ import lodashMerge from 'lodash.merge';
 import { type StackedViewResolved } from '../../Types/StackedView';
 import { updateStack, StateAuthenticated, StateAbilities, StateShared, StateErrorsInjectionKey } from '../../Services/StateManager';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
-import { HttpClientForceScrollPreservation } from '../../Composables/UseHttpClient';
+import { HttpClientForceScrollPreservation, HttpClientForceNested } from '../../Composables/UseHttpClient';
 import { Request } from '../../Http/Client/Request.ts';
 import { EventBus } from '../../Events/EventBus.ts';
 import { ErrorModal } from '../../Support/ErrorModal.ts';
@@ -35,10 +35,11 @@ export const RouterFrameComponent = defineComponent({
       const view = ref(undefined) as unknown as Ref<StackedViewResolved>;
 
       provide(HttpClientForceScrollPreservation, true);
+      provide(HttpClientForceNested, true);
       provide(PreventNestedRouterViewRenderInjectionKey, true);
 
       function load() {
-        Request.send('GET', props.src).then(async (response) => {
+        Request.send({ method: 'GET', url: props.src, nested: true }).then(async (response) => {
           if (response.redirect) {
             return new Promise(() => {
               window.location.href = response.redirect.target;

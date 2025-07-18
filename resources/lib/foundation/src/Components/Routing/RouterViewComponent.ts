@@ -6,6 +6,7 @@ import { useViewStack, isNestedRouterViewPrevented } from '../../Composables/Use
 import { useViewDepth } from '../../Composables/UseViewDepth';
 import type { StackedViewResolved } from '../../Types/StackedView';
 import { useStackLayout } from '../../Composables/UseStackLayout.ts';
+import { HttpClientScrollHandler } from '../../Composables/UseHttpClient.ts';
 
 export const RouterViewComponent = defineComponent({
   inheritAttrs: false,
@@ -43,6 +44,10 @@ export const RouterViewComponent = defineComponent({
     provide(StackedViewParentInjectionKey, computed(() => view.value?.parent));
     provide(StackedViewLocationInjectionKey, location);
     provide(StackedViewQueryInjectionKey, query);
+
+    provide(HttpClientScrollHandler, () => {
+      document.body.scroll({ behavior: 'instant', left: 0, top: 0 });
+    });
 
     if (prevented) {
       return () => null;

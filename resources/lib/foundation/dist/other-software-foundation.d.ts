@@ -127,7 +127,7 @@ declare function factory<T>(config: Config, callback: Callback<T>): Promise<T>;
 
 export declare function filled(value: any): boolean;
 
-export declare function findScrollParent(element: HTMLElement | undefined | null): HTMLElement | undefined;
+export declare function findScrollParent(element: HTMLElement | HTMLElement[] | undefined | null): HTMLElement | undefined;
 
 declare type FormApi = {
     ctx: FormContextInterface;
@@ -209,8 +209,8 @@ type: PropType<FormHandler>;
 required: false;
 };
 }>> & Readonly<{}>, {
-data: Record<string, any>;
 method: string;
+data: Record<string, any>;
 readonly: boolean;
 continuous: boolean;
 bag: string;
@@ -249,13 +249,16 @@ export declare type HeadMeta = {
     content: string;
 };
 
+export declare const HttpClientForceNested: InjectionKey<boolean>;
+
 export declare const HttpClientForceScrollPreservation: InjectionKey<boolean>;
 
-declare interface HttpOptions {
+export declare const HttpClientScrollHandler: InjectionKey<undefined | (() => void)>;
+
+declare interface HttpOptions extends Omit<RequestOptions, 'method' | 'url' | 'body' | 'signature' | 'referer'> {
     data?: Body_2 | undefined;
-    preserveScroll?: boolean;
-    replace?: boolean;
-    refreshStack?: boolean;
+    preserveScroll?: boolean | undefined;
+    replace?: boolean | undefined;
 }
 
 export declare interface InitialState extends State {
@@ -337,13 +340,24 @@ declare class Request_2 {
     protected signature: Signature;
     protected refreshStack: boolean;
     protected referer: string | null | undefined;
-    static send(method: Method, url: string, body?: Body_2, signature?: Signature, refreshStack?: boolean, referer?: string | null | undefined): Promise<CompleteResponse>;
-    constructor(method: Method, url: string, body?: Body_2, signature?: Signature, refreshStack?: boolean, referer?: string | null | undefined);
+    protected nested: boolean;
+    static send(options: RequestOptions): Promise<CompleteResponse>;
+    constructor({ method, url, body, signature, refreshStack, referer, nested, }: RequestOptions);
     send(): Promise<CompleteResponse>;
     protected transform(body: any): string | Blob | ArrayBuffer | FormData | URLSearchParams | null;
     protected readCookie(name: string): string;
 }
 export { Request_2 as Request }
+
+export declare interface RequestOptions {
+    method: Method;
+    url: string;
+    body?: Body_2 | undefined;
+    signature?: Signature | undefined;
+    refreshStack?: boolean | undefined;
+    referer?: string | null | undefined;
+    nested?: boolean | undefined;
+}
 
 declare class Response_2 {
     protected readonly xhr: XMLHttpRequest;
@@ -474,9 +488,9 @@ type: BooleanConstructor;
 required: false;
 };
 }>> & Readonly<{}>, {
+method: string;
 preserveScroll: boolean;
 replace: boolean;
-method: string;
 disabled: boolean;
 explicit: boolean;
 }, {}, {}, {}, string, ComponentProvideOptions, true, {}, any>;
@@ -661,7 +675,7 @@ export declare function useFormApi(): Ref<FormApi>;
 export declare function useFormContext(): FormContextInterface | null;
 
 export declare function useHttpClient(): {
-    dispatch: (method: Method, url: string, { data, preserveScroll, replace, refreshStack }?: HttpOptions) => Promise<any>;
+    dispatch: (method: Method, url: string, { data, preserveScroll, replace, nested, ...options }?: HttpOptions) => Promise<any>;
     get: (url: string) => Promise<any>;
     post: (url: string, data?: Body_2 | undefined) => Promise<any>;
     patch: (url: string, data?: Body_2 | undefined) => Promise<any>;

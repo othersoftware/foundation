@@ -16,11 +16,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @method static bool isVuePowered(?Request $request = null)
+ * @method static bool isNotNested(?Request $request = null)
+ * @method static bool isNested(?Request $request = null)
+ * @method static bool isRaw()
+ * @method static bool isRedirect()
  * @method static bool rendersVueResponse(?Request $request = null)
  * @method static View view(string $view, Closure|array $props = [])
  * @method static View serverView(string $view, Closure|array $props = [])
  * @method static View staticView(string $view, Closure|array $props = [])
  * @method static ResponseFactory share(Arrayable|array|string $key, mixed $value = null)
+ * @method static ResponseFactory unshare(Arrayable|array|string $key)
  * @method static ResponseFactory getFacadeRoot()
  * @method static ResponseFactory setGuard(string $guard)
  * @method static ResponseFactory raw(mixed $raw)
@@ -33,6 +38,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @method static ResponseFactory setMeta(array $meta)
  * @method static ResponseFactory noContent()
  * @method static ResponseFactory withErrors($provider, $key = 'default')
+ * @method static ResponseFactory transform(callable $callback)
  * @method static Response toResponse(Request $request)
  */
 final class Vue extends Facade

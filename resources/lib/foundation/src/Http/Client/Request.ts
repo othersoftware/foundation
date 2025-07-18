@@ -4,6 +4,16 @@ export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | string;
 export type Body = XMLHttpRequestBodyInit | Object | null | undefined;
 export type Signature = string | undefined;
 
+export interface RequestOptions {
+  method: Method,
+  url: string,
+  body?: Body | undefined,
+  signature?: Signature | undefined,
+  refreshStack?: boolean | undefined,
+  referer?: string | null | undefined,
+  nested?: boolean | undefined,
+}
+
 export class Request {
   protected method: Method;
   protected url: string;
@@ -12,12 +22,21 @@ export class Request {
   protected signature: Signature;
   protected refreshStack: boolean;
   protected referer: string | null | undefined;
+  protected nested: boolean;
 
-  static send(method: Method, url: string, body: Body = undefined, signature: Signature = undefined, refreshStack: boolean = false, referer: string | null | undefined = undefined) {
-    return new Request(method, url, body, signature, refreshStack, referer).send();
+  static send(options: RequestOptions) {
+    return new Request(options).send();
   }
 
-  constructor(method: Method, url: string, body: Body = undefined, signature: Signature = undefined, refreshStack: boolean = false, referer: string | null | undefined = undefined) {
+  constructor({
+    method,
+    url,
+    body = undefined,
+    signature = undefined,
+    refreshStack = false,
+    referer = undefined,
+    nested = false,
+  }: RequestOptions) {
     this.xhr = new XMLHttpRequest();
     this.method = method;
     this.url = url;
@@ -25,6 +44,7 @@ export class Request {
     this.signature = signature;
     this.refreshStack = refreshStack;
     this.referer = referer;
+    this.nested = nested;
   }
 
   public send(): Promise<CompleteResponse> {
@@ -41,6 +61,10 @@ export class Request {
 
       if (this.refreshStack) {
         this.xhr.setRequestHeader('X-Stack-Refresh', 'true');
+      }
+
+      if (this.nested) {
+        this.xhr.setRequestHeader('X-Stack-Nested', 'true');
       }
 
       if (this.signature) {

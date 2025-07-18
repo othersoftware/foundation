@@ -101,7 +101,7 @@ export const RouterComponent = defineComponent({
         signature.value = event.state.signature;
       } else {
         window.history.replaceState(buildState(), '', location.value);
-        window.scroll(0, 0);
+        document.body.scroll({ behavior: 'instant', left: 0, top: 0 });
       }
     }
 

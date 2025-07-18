@@ -38,6 +38,7 @@ final class ResponseFactory implements Responsable
     protected RenderMode $mode = RenderMode::CLIENT;
     protected string $view;
     protected bool $rendersVueResponse = false;
+    protected array $transformers = [];
 
 
     private array $abilities = [];
@@ -82,6 +83,30 @@ final class ResponseFactory implements Responsable
     public function isVuePowered(?Request $request = null): bool
     {
         return (bool) ($request ?? request())->header('X-Stack-Router');
+    }
+
+
+    public function isNotNested(?Request $request = null): bool
+    {
+        return false === $this->isNested($request);
+    }
+
+
+    public function isNested(?Request $request = null): bool
+    {
+        return (bool) ($request ?? request())->header('X-Stack-Nested');
+    }
+
+
+    public function isRaw(): bool
+    {
+        return isset($this->raw);
+    }
+
+
+    public function isRedirect(): bool
+    {
+        return isset($this->redirect);
     }
 
 
@@ -172,6 +197,20 @@ final class ResponseFactory implements Responsable
     }
 
 
+    public function unshare(Arrayable|array|string $keys): ResponseFactory
+    {
+        if ($keys instanceof Arrayable) {
+            $keys = $keys->toArray();
+        }
+
+        foreach (Arr::wrap($keys) as $key) {
+            unset($this->shared[$key]);
+        }
+
+        return $this;
+    }
+
+
     public function staticView(string $view, Closure|array $props = []): View
     {
         $this->mode = RenderMode::STATIC;
@@ -184,6 +223,8 @@ final class ResponseFactory implements Responsable
     public function toResponse($request): Response
     {
         $this->rendersVueResponse = true;
+
+        $this->runTransformers();
 
         $data = [];
 
@@ -238,6 +279,14 @@ final class ResponseFactory implements Responsable
         }
 
         return $response;
+    }
+
+
+    private function runTransformers(): void
+    {
+        foreach ($this->transformers as $transformer) {
+            $transformer($this);
+        }
     }
 
 
@@ -360,6 +409,19 @@ final class ResponseFactory implements Responsable
         }
 
         return new MessageBag((array) $provider);
+    }
+
+
+    /**
+     * @param callable(self $vue):void $callback
+     *
+     * @return $this
+     */
+    public function transform(callable $callback): self
+    {
+        $this->transformers[] = $callback;
+
+        return $this;
     }
 
 

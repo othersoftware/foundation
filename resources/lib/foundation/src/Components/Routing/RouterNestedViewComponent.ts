@@ -16,7 +16,7 @@ export const RouterNestedViewComponent = defineComponent({
     const loading = ref(true);
 
     onMounted(() => {
-      http.get(props.action).then(() => nextTick(() => {
+      http.dispatch('GET', props.action).then(() => nextTick(() => {
         loading.value = false;
       }));
     });

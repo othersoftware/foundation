@@ -1,5 +1,5 @@
 import { useStateManager, useStackSignature, useStateHistory, useLocation } from '../Services/StateManager';
-import { Request, type Method, type Body } from '../Http/Client/Request';
+import { Request, type Method, type Body, type RequestOptions } from '../Http/Client/Request';
 import { ErrorModal } from '../Support/ErrorModal';
 import type { RouterRedirect } from '../Types/RouterRedirect';
 import type { Response } from '../Http/Client/Response';
@@ -7,14 +7,15 @@ import { CompleteResponse } from '../Http/Client/Response';
 import { EventBus } from '../Events/EventBus';
 import { inject, type InjectionKey } from 'vue';
 
-interface HttpOptions {
-  data?: Body | undefined,
-  preserveScroll?: boolean,
-  replace?: boolean,
-  refreshStack?: boolean,
+interface HttpOptions extends Omit<RequestOptions, 'method' | 'url' | 'body' | 'signature' | 'referer'> {
+  data?: Body | undefined;
+  preserveScroll?: boolean | undefined;
+  replace?: boolean | undefined;
 }
 
+export const HttpClientScrollHandler = Symbol('HttpClientScrollHandler') as InjectionKey<undefined | (() => void)>;
 export const HttpClientForceScrollPreservation = Symbol('HttpClientForceScrollPreservation') as InjectionKey<boolean>;
+export const HttpClientForceNested = Symbol('HttpClientForceNested') as InjectionKey<boolean>;
 
 export function useHttpClient() {
   const state = useStateManager();
@@ -22,13 +23,23 @@ export function useHttpClient() {
   const history = useStateHistory();
   const location = useLocation();
 
+  const scrollHandler = inject(HttpClientScrollHandler, () => document.body.scroll({ behavior: 'instant', left: 0, top: 0 }));
   const forceScrollPreserve = inject(HttpClientForceScrollPreservation, false);
+  const forceNested = inject(HttpClientForceNested, false);
 
-  async function dispatch(method: Method, url: string, { data = undefined, preserveScroll = false, replace = false, refreshStack = false }: HttpOptions = {}) {
+  async function dispatch(method: Method, url: string, { data = undefined, preserveScroll = false, replace = false, nested = false, ...options }: HttpOptions = {}) {
     document.body.classList.add('osf-loading');
     document.dispatchEvent(new Event('visit:start'));
 
-    return await Request.send(method, url, data, signature.value, refreshStack, location.value).then(async (response: CompleteResponse) => {
+    return await Request.send({
+      ...options,
+      method,
+      url,
+      body: data,
+      signature: signature.value,
+      referer: location.value,
+      nested: nested || forceNested,
+    }).then(async (response: CompleteResponse) => {
       // For hard reload redirects skip updating the app.
       // There is no need for that, as the app will be fully reloaded anyway.
       if (response.redirect) {
@@ -83,7 +94,9 @@ export function useHttpClient() {
   }
 
   function resetScrollPosition() {
-    window.scroll(0, 0);
+    if (scrollHandler) {
+      scrollHandler();
+    }
   }
 
   async function handleRedirectResponse(redirect: RouterRedirect): Promise<any> {

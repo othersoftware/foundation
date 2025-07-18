@@ -136,10 +136,19 @@ class Request {
   signature;
   refreshStack;
   referer;
-  static send(method, url2, body = void 0, signature = void 0, refreshStack = false, referer = void 0) {
-    return new Request(method, url2, body, signature, refreshStack, referer).send();
+  nested;
+  static send(options) {
+    return new Request(options).send();
   }
-  constructor(method, url2, body = void 0, signature = void 0, refreshStack = false, referer = void 0) {
+  constructor({
+    method,
+    url: url2,
+    body = void 0,
+    signature = void 0,
+    refreshStack = false,
+    referer = void 0,
+    nested = false
+  }) {
     this.xhr = new XMLHttpRequest();
     this.method = method;
     this.url = url2;
@@ -147,6 +156,7 @@ class Request {
     this.signature = signature;
     this.refreshStack = refreshStack;
     this.referer = referer;
+    this.nested = nested;
   }
   send() {
     return new Promise((resolve, reject) => {
@@ -159,6 +169,9 @@ class Request {
       }
       if (this.refreshStack) {
         this.xhr.setRequestHeader("X-Stack-Refresh", "true");
+      }
+      if (this.nested) {
+        this.xhr.setRequestHeader("X-Stack-Nested", "true");
       }
       if (this.signature) {
         this.xhr.setRequestHeader("X-Stack-Signature", this.signature);
@@ -280,17 +293,29 @@ const EventBus = {
     return event;
   }
 };
+const HttpClientScrollHandler = Symbol("HttpClientScrollHandler");
 const HttpClientForceScrollPreservation = Symbol("HttpClientForceScrollPreservation");
+const HttpClientForceNested = Symbol("HttpClientForceNested");
 function useHttpClient() {
   const state = useStateManager();
   const signature = useStackSignature();
   const history = useStateHistory();
   const location = useLocation();
+  const scrollHandler = inject(HttpClientScrollHandler, () => document.body.scroll({ behavior: "instant", left: 0, top: 0 }));
   const forceScrollPreserve = inject(HttpClientForceScrollPreservation, false);
-  async function dispatch(method, url2, { data = void 0, preserveScroll = false, replace = false, refreshStack = false } = {}) {
+  const forceNested = inject(HttpClientForceNested, false);
+  async function dispatch(method, url2, { data = void 0, preserveScroll = false, replace = false, nested = false, ...options } = {}) {
     document.body.classList.add("osf-loading");
     document.dispatchEvent(new Event("visit:start"));
-    return await Request.send(method, url2, data, signature.value, refreshStack, location.value).then(async (response) => {
+    return await Request.send({
+      ...options,
+      method,
+      url: url2,
+      body: data,
+      signature: signature.value,
+      referer: location.value,
+      nested: nested || forceNested
+    }).then(async (response) => {
       if (response.redirect) {
         if (response.redirect.reload) {
           return await handleRedirectResponse(response.redirect);
@@ -332,7 +357,9 @@ function useHttpClient() {
     });
   }
   function resetScrollPosition() {
-    window.scroll(0, 0);
+    if (scrollHandler) {
+      scrollHandler();
+    }
   }
   async function handleRedirectResponse(redirect) {
     if (redirect.reload) {
@@ -1813,6 +1840,9 @@ const RouterViewComponent = defineComponent({
     provide(StackedViewParentInjectionKey, computed(() => view.value?.parent));
     provide(StackedViewLocationInjectionKey, location);
     provide(StackedViewQueryInjectionKey, query);
+    provide(HttpClientScrollHandler, () => {
+      document.body.scroll({ behavior: "instant", left: 0, top: 0 });
+    });
     if (prevented) {
       return () => null;
     }
@@ -1933,7 +1963,7 @@ const RouterNestedViewComponent = defineComponent({
     const http = useHttpClient();
     const loading = ref(true);
     onMounted(() => {
-      http.get(props.action).then(() => nextTick(() => {
+      http.dispatch("GET", props.action).then(() => nextTick(() => {
         loading.value = false;
       }));
     });
@@ -2003,6 +2033,7 @@ const RouterNestedComponent = defineComponent({
     provide(StackedViewInjectionKey, stack2);
     provide(ToastRegistryInjectionKey, toasts);
     provide(HttpClientForceScrollPreservation, true);
+    provide(HttpClientForceNested, true);
     provide(StateHistoryInjectionKey, {
       historyPushState() {
       },
@@ -2718,9 +2749,10 @@ const RouterFrameComponent = defineComponent({
     const loading = ref(true);
     const view = ref(void 0);
     provide(HttpClientForceScrollPreservation, true);
+    provide(HttpClientForceNested, true);
     provide(PreventNestedRouterViewRenderInjectionKey, true);
     function load() {
-      Request.send("GET", props.src).then(async (response) => {
+      Request.send({ method: "GET", url: props.src, nested: true }).then(async (response) => {
         if (response.redirect) {
           return new Promise(() => {
             window.location.href = response.redirect.target;
@@ -4327,7 +4359,7 @@ const RouterComponent = defineComponent({
         signature.value = event.state.signature;
       } else {
         window.history.replaceState(buildState(), "", location.value);
-        window.scroll(0, 0);
+        document.body.scroll({ behavior: "instant", left: 0, top: 0 });
       }
     }
     onMounted(() => {
@@ -4511,6 +4543,12 @@ function findScrollParent(element) {
   if (!element) {
     return void 0;
   }
+  if (Array.isArray(element)) {
+    if (element.length === 0) {
+      return void 0;
+    }
+    element = element[0];
+  }
   let parent = element;
   while (parent) {
     const { overflow } = window.getComputedStyle(parent);
@@ -4551,7 +4589,9 @@ export {
   EventBus,
   FormContextInjectionKey,
   FormControllerComponent,
+  HttpClientForceNested,
   HttpClientForceScrollPreservation,
+  HttpClientScrollHandler,
   PreventNestedRouterViewRenderInjectionKey,
   Request,
   Response,

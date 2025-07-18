@@ -5,7 +5,7 @@ import { type CompleteResponse } from '../../Http/Client/Response';
 import { StackedViewInjectionKey, StackedViewDepthInjectionKey } from '../../Services/StackedView';
 import { StateLocationInjectionKey, StateManagerInjectionKey, StateStackSignatureInjectionKey, updateStack, StateAuthenticated, StateAbilities, StateHistoryInjectionKey, StateShared, StateErrorsInjectionKey } from '../../Services/StateManager';
 import { ToastRegistryInjectionKey } from '../../Services/ToastManager';
-import { HttpClientForceScrollPreservation } from '../../Composables/UseHttpClient';
+import { HttpClientForceScrollPreservation, HttpClientForceNested } from '../../Composables/UseHttpClient';
 import { RouterNestedViewComponent } from './RouterNestedViewComponent';
 
 
@@ -76,6 +76,7 @@ export const RouterNestedComponent = defineComponent({
     provide(StackedViewInjectionKey, stack);
     provide(ToastRegistryInjectionKey, toasts);
     provide(HttpClientForceScrollPreservation, true);
+    provide(HttpClientForceNested, true);
 
     provide(StateHistoryInjectionKey, {
       historyPushState() {

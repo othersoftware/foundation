@@ -1,6 +1,14 @@
-export function findScrollParent(element: HTMLElement | undefined | null) {
+export function findScrollParent(element: HTMLElement | HTMLElement[] | undefined | null) {
   if (!element) {
     return undefined;
+  }
+
+  if (Array.isArray(element)) {
+    if (element.length === 0) {
+      return undefined;
+    }
+
+    element = element[0];
   }
 
   let parent: HTMLElement | null = element;
