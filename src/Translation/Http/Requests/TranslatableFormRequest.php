@@ -70,10 +70,15 @@ class TranslatableFormRequest extends FormRequest
 
     private function createTranslatableGroupRules(string $locale, string $default): array
     {
-        if ($locale === $default) {
+        if ($locale === $default && $this->alwaysRequireDefaultLocale()) {
             return ['required', 'array'];
         } else {
             return ['sometimes', 'array'];
         }
+    }
+
+    protected function alwaysRequireDefaultLocale(): bool
+    {
+        return true;
     }
 }
