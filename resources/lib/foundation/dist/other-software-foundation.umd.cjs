@@ -1641,6 +1641,50 @@
     }
     return value;
   }
+  function url(uri, params, hash2, base) {
+    const url2 = new URL(uri, base || APP_URL);
+    if (params) {
+      attachSearchParameters(url2.searchParams, params);
+    }
+    if (hash2) {
+      url2.hash = hash2;
+    }
+    return url2.toString();
+  }
+  function attachSearchParameters(search, params) {
+    Object.keys(params).forEach((key) => {
+      appendSearchParameter(search, key, vue.toRaw(params[key]));
+    });
+  }
+  function appendSearchParameter(search, name, value, prev) {
+    if (prev) {
+      name = prev + "[" + name + "]";
+    }
+    if (value == null) {
+      search.set(name, "");
+      return search;
+    }
+    if (Array.isArray(value)) {
+      value.forEach((arrValue, arrIndex) => {
+        appendSearchParameter(search, arrIndex.toString(), arrValue, name);
+      });
+      return search;
+    }
+    if (typeof value === "object") {
+      Object.keys(value).forEach((key) => {
+        appendSearchParameter(search, key, value[key], name);
+      });
+      return search;
+    }
+    if (typeof value === "boolean") {
+      value = Number(value);
+    }
+    if (value == null) {
+      value = "";
+    }
+    search.set(name, value);
+    return search;
+  }
   const FormControllerComponent = vue.defineComponent({
     name: "FormController",
     props: {
@@ -1703,6 +1747,9 @@
         }
         if (!props.action) {
           throw new Error("You must either provide action or your custom form handler!");
+        }
+        if (props.method === "GET") {
+          return http.dispatch(props.method, url(props.action, data.value));
         }
         return http.dispatch(props.method, props.action, { data: data.value });
       }
@@ -3243,50 +3290,6 @@
       default:
         return 0;
     }
-  }
-  function url(uri, params, hash2, base) {
-    const url2 = new URL(uri, base || APP_URL);
-    if (params) {
-      attachSearchParameters(url2.searchParams, params);
-    }
-    if (hash2) {
-      url2.hash = hash2;
-    }
-    return url2.toString();
-  }
-  function attachSearchParameters(search, params) {
-    Object.keys(params).forEach((key) => {
-      appendSearchParameter(search, key, vue.toRaw(params[key]));
-    });
-  }
-  function appendSearchParameter(search, name, value, prev) {
-    if (prev) {
-      name = prev + "[" + name + "]";
-    }
-    if (value == null) {
-      search.set(name, "");
-      return search;
-    }
-    if (Array.isArray(value)) {
-      value.forEach((arrValue, arrIndex) => {
-        appendSearchParameter(search, arrIndex.toString(), arrValue, name);
-      });
-      return search;
-    }
-    if (typeof value === "object") {
-      Object.keys(value).forEach((key) => {
-        appendSearchParameter(search, key, value[key], name);
-      });
-      return search;
-    }
-    if (typeof value === "boolean") {
-      value = Number(value);
-    }
-    if (value == null) {
-      value = "";
-    }
-    search.set(name, value);
-    return search;
   }
   function route(name, params = {}, hash2) {
     return build(localizeName(name), params, hash2);

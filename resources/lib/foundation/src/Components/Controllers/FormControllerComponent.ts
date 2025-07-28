@@ -5,6 +5,7 @@ import { CompleteResponse } from '../../Http/Client/Response';
 import { useHttpClient } from '../../Composables/UseHttpClient';
 import { createFormContext, FormContextInjectionKey, type FormContextInterface } from '../../Services/FormContext';
 import { useErrors } from '../../Services/StateManager.ts';
+import { url } from '../../Support/Url.ts';
 
 type FormHandler = (data: any, ctx: FormContextInterface) => Promise<any>;
 
@@ -85,6 +86,10 @@ export const FormControllerComponent = defineComponent({
 
       if (!props.action) {
         throw new Error('You must either provide action or your custom form handler!');
+      }
+
+      if (props.method === 'GET') {
+        return http.dispatch(props.method, url(props.action, data.value));
       }
 
       return http.dispatch(props.method, props.action, { data: data.value });
