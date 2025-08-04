@@ -9,10 +9,8 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD | Attribute::IS_REPEATABLE)]
 readonly class Route
 {
-    public ?string $locale;
-
-
     public string $uri;
+    public ?string $locale;
 
 
     public function __construct(string $uri, string $locale = null)

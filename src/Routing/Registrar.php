@@ -4,7 +4,6 @@ namespace OtherSoftware\Routing;
 
 
 use Composer\ClassMapGenerator\ClassMapGenerator;
-use Illuminate\Routing\RouteRegistrar;
 use Illuminate\Support\Arr;
 use OtherSoftware\Routing\Attributes\Authorize;
 use OtherSoftware\Routing\Attributes\FallbackRoute;
@@ -13,6 +12,7 @@ use OtherSoftware\Routing\Attributes\Middleware;
 use OtherSoftware\Routing\Attributes\Modal;
 use OtherSoftware\Routing\Attributes\Name;
 use OtherSoftware\Routing\Attributes\Nested;
+use OtherSoftware\Routing\Attributes\Priority;
 use OtherSoftware\Routing\Attributes\Route;
 use OtherSoftware\Routing\Attributes\TranslatedRoute;
 use OtherSoftware\Routing\Attributes\Where;
@@ -23,10 +23,8 @@ use ReflectionMethod;
 
 final class Registrar
 {
-    protected string $path;
-
-
     protected Router $router;
+    protected string $path;
 
 
     /**
@@ -55,11 +53,24 @@ final class Registrar
      */
     public function compile(): void
     {
+        $routes = [];
+
         foreach ($this->scan() as $class) {
-            if (str_contains($class, 'HomepageController')) {
-                $this->debug = true;
+            $reflection = new ReflectionClass($class);
+
+            foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+                $routes[] = [
+                    'reflection' => $reflection,
+                    'method' => $method,
+                    'priority' => $this->getPriorityAttribute($method)->priority ?? 0,
+                ];
             }
-            $this->compileGroup(new ReflectionClass($class));
+        }
+
+        usort($routes, fn($a, $b) => $b['priority'] <=> $a['priority']);
+
+        foreach ($routes as $route) {
+            $this->compileRoutesForMethod($route['reflection'], $route['method'], $this->router);
         }
     }
 
@@ -70,38 +81,18 @@ final class Registrar
     }
 
 
-    private function compileGroup(ReflectionClass $reflection): void
-    {
-        $registrar = new RouteRegistrar($this->router);
-
-        $this->compileGroupAttributes($registrar, $reflection);
-
-        $registrar->group(function (Router $router) use ($reflection) {
-            $this->compileRoutes($reflection, $router);
-        });
-    }
-
-
-    private function compileGroupAttributes(RouteRegistrar $registrar, ReflectionClass $reflection): void
+    private function bindAttributeFromReflection(\OtherSoftware\Routing\Route $route, ReflectionClass|ReflectionMethod $reflection): void
     {
         if (count($middleware = $this->getMiddlewareAttributes($reflection)) > 0) {
-            $registrar->middleware(array_map(fn($attribute) => $attribute->middleware, $middleware));
+            $route->middleware(array_map(fn($attribute) => $attribute->middleware, $middleware));
         }
 
         if (count($authorizations = $this->getAuthorizationAttributes($reflection)) > 0) {
-            $registrar->middleware(array_map(fn($attribute) => $attribute->middleware, $authorizations));
+            $route->middleware(array_map(fn($attribute) => $attribute->middleware, $authorizations));
         }
 
         foreach ($this->getWhereAttributes($reflection) as $where) {
-            $where->bind($registrar);
-        }
-    }
-
-
-    private function compileRoutes(ReflectionClass $reflection, Router $router): void
-    {
-        foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
-            $this->compileRoutesForMethod($reflection, $method, $router);
+            $where->bind($route);
         }
     }
 
@@ -127,7 +118,7 @@ final class Registrar
                     continue;
                 }
 
-                $this->compileSingleRoute($method, $attribute, $router, $locale);
+                $this->compileSingleRoute($class, $method, $attribute, $router, $locale);
             }
         }
 
@@ -143,11 +134,11 @@ final class Registrar
             return;
         }
 
-        $this->compileSingleRoute($method, $attribute, $router, $default);
+        $this->compileSingleRoute($class, $method, $attribute, $router, $default);
     }
 
 
-    private function compileSingleRoute(ReflectionMethod $reflection, Route $attribute, Router $router, string $locale): void
+    private function compileSingleRoute(ReflectionClass $class, ReflectionMethod $reflection, Route $attribute, Router $router, string $locale): void
     {
         $methods = $this->getMethodsAttributes($reflection);
         $action = [$reflection->class, $reflection->name];
@@ -173,17 +164,8 @@ final class Registrar
 
         $route->name($name);
 
-        foreach ($this->getWhereAttributes($reflection) as $where) {
-            $where->bind($route);
-        }
-
-        if (count($middleware = $this->getMiddlewareAttributes($reflection)) > 0) {
-            $route->middleware(array_map(fn($attribute) => $attribute->middleware, $middleware));
-        }
-
-        if (count($authorizations = $this->getAuthorizationAttributes($reflection)) > 0) {
-            $route->middleware(array_map(fn($attribute) => $attribute->middleware, $authorizations));
-        }
+        $this->bindAttributeFromReflection($route, $class);
+        $this->bindAttributeFromReflection($route, $reflection);
 
         if ($nested = $this->getNestedAttribute($reflection)) {
             $route->parent($nested->parent);
@@ -295,6 +277,16 @@ final class Registrar
     private function getNestedAttribute(ReflectionMethod $reflection): ?Nested
     {
         if ($attribute = Arr::first($reflection->getAttributes(Nested::class))) {
+            return $attribute->newInstance();
+        }
+
+        return null;
+    }
+
+
+    private function getPriorityAttribute(ReflectionMethod $reflection): ?Priority
+    {
+        if ($attribute = Arr::first($reflection->getAttributes(Priority::class))) {
             return $attribute->newInstance();
         }
 
