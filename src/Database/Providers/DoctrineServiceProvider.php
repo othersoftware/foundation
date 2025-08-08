@@ -8,8 +8,10 @@ use Doctrine\Migrations\Configuration\Migration\ConfigurationArray;
 use Doctrine\Migrations\DependencyFactory;
 use Doctrine\Migrations\Provider\SchemaProvider as DoctrineSchemaProvider;
 use Doctrine\Migrations\Tools\Console\Command\DiffCommand;
+use Doctrine\Migrations\Tools\Console\Command\DumpSchemaCommand;
 use Doctrine\Migrations\Tools\Console\Command\GenerateCommand;
 use Doctrine\Migrations\Tools\Console\Command\MigrateCommand;
+use Doctrine\Migrations\Tools\Console\Command\SyncMetadataCommand;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 use OtherSoftware\Database\Console\Commands\SchemaCreateCommand;
@@ -38,6 +40,8 @@ class DoctrineServiceProvider extends ServiceProvider
         $this->commands([
             DiffCommand::class,
             MigrateCommand::class,
+            DumpSchemaCommand::class,
+            SyncMetadataCommand::class,
             GenerateCommand::class,
             SchemaCreateCommand::class,
             SchemaDropCommand::class,
