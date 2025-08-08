@@ -34,21 +34,20 @@ final class UrlGenerator extends IlluminateUrlGenerator
 
     public function forward($path, $extra = [], $secure = null): string
     {
-        return $this->popStackLocation()->to($path, $extra, $secure);
-    }
-
-
-    private function popStackLocation(): self
-    {
         if (App::bound(Stack::class)) {
             try {
-                App::make(Stack::class)->pop();
+                $stack = App::make(Stack::class);
+                $last = $stack->last();
+
+                if ($last !== null && $last->getRoute()->isModal()) {
+                    $stack->pop();
+                }
             } catch (BindingResolutionException) {
 
             }
         }
 
-        return $this;
+        return $this->to($path, $extra, $secure);
     }
 
 
@@ -73,25 +72,6 @@ final class UrlGenerator extends IlluminateUrlGenerator
         }
 
         return $this->to('/');
-    }
-
-
-    /**
-     * Returns the previous location from the Stack instance.
-     *
-     * @return string|null
-     */
-    private function getPreviousStackLocation(): ?string
-    {
-        if (App::bound(Stack::class)) {
-            try {
-                return App::make(Stack::class)->previous()?->getLocation();
-            } catch (BindingResolutionException $e) {
-                throw new RuntimeException('Stack instance should be always available here.', previous: $e);
-            }
-        }
-
-        return null;
     }
 
 
@@ -148,5 +128,38 @@ final class UrlGenerator extends IlluminateUrlGenerator
         }
 
         return parent::route($name, $parameters, $absolute);
+    }
+
+
+    /**
+     * Returns the previous location from the Stack instance.
+     *
+     * @return string|null
+     */
+    private function getPreviousStackLocation(): ?string
+    {
+        if (App::bound(Stack::class)) {
+            try {
+                return App::make(Stack::class)->previous()?->getLocation();
+            } catch (BindingResolutionException $e) {
+                throw new RuntimeException('Stack instance should be always available here.', previous: $e);
+            }
+        }
+
+        return null;
+    }
+
+
+    private function popStackLocation(): self
+    {
+        if (App::bound(Stack::class)) {
+            try {
+                App::make(Stack::class)->pop();
+            } catch (BindingResolutionException) {
+
+            }
+        }
+
+        return $this;
     }
 }
