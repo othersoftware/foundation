@@ -34,20 +34,7 @@ final class UrlGenerator extends IlluminateUrlGenerator
 
     public function forward($path, $extra = [], $secure = null): string
     {
-        if (App::bound(Stack::class)) {
-            try {
-                $stack = App::make(Stack::class);
-                $last = $stack->last();
-
-                if ($last !== null && $last->getRoute()->isModal()) {
-                    $stack->pop();
-                }
-            } catch (BindingResolutionException) {
-
-            }
-        }
-
-        return $this->to($path, $extra, $secure);
+        return $this->popStackLocation()->to($path, $extra, $secure);
     }
 
 
@@ -154,7 +141,14 @@ final class UrlGenerator extends IlluminateUrlGenerator
     {
         if (App::bound(Stack::class)) {
             try {
-                App::make(Stack::class)->pop();
+                $stack = App::make(Stack::class);
+                $last = $stack->last();
+
+                if ($last !== null) {
+                    if ($last->getRoute()->isModal() || $last->getRoute()->isNested()) {
+                        $stack->pop();
+                    }
+                }
             } catch (BindingResolutionException) {
 
             }
