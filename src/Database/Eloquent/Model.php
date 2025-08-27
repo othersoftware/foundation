@@ -18,6 +18,7 @@ use IntlDateFormatter;
 use IntlDatePatternGenerator;
 use OtherSoftware\Contracts\Translatable;
 use OtherSoftware\Http\Resources\FormResource;
+use OtherSoftware\Http\Resources\ViewResource;
 use OtherSoftware\Support\Facades\Vue;
 use Override;
 
@@ -181,6 +182,34 @@ abstract class Model extends EloquentModel
             return $attributes;
         }
 
+        if (ViewResource::rendersForView()) {
+            $attributes = [];
+
+            foreach ($this->getArrayableRelations() as $key => $value) {
+                // Skip translations, as this relation is processed separately
+                // in the FormResource class.
+                if ($this instanceof Translatable && $key === 'translations') {
+                    continue;
+                }
+
+                if ($value instanceof Collection) {
+                    $relation = $value->map(fn(EloquentModel $related) => ViewResource::make($related))->toArray();
+                } elseif ($value instanceof EloquentModel) {
+                    $relation = ViewResource::make($value);
+                } elseif (is_null($value)) {
+                    $relation = $value;
+                }
+
+                if (isset($relation)) {
+                    $attributes[$key] = $relation;
+                }
+
+                unset($relation);
+            }
+
+            return $attributes;
+        }
+
         return parent::relationsToArray();
     }
 
@@ -212,6 +241,24 @@ abstract class Model extends EloquentModel
 
         foreach (class_uses_recursive($class) as $trait) {
             $method = 'formResource' . class_basename($trait);
+
+            if (method_exists($class, $method) && ! in_array($method, $booted)) {
+                $data = $this->$method($data);
+                $booted[] = $method;
+            }
+        }
+
+        return $data;
+    }
+
+
+    public function toViewResource(array $data): array
+    {
+        $class = static::class;
+        $booted = [];
+
+        foreach (class_uses_recursive($class) as $trait) {
+            $method = 'viewResource' . class_basename($trait);
 
             if (method_exists($class, $method) && ! in_array($method, $booted)) {
                 $data = $this->$method($data);

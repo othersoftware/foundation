@@ -29,6 +29,11 @@ abstract class Resource implements Arrayable
 
         foreach ($properties as $property) {
             $name = $property->getName();
+
+            if (! $property->isInitialized($this)) {
+                continue;
+            }
+
             $value = $property->getValue($this);
 
             if ($value instanceof Arrayable) {
