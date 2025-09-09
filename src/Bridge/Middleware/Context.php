@@ -25,6 +25,7 @@ class Context
         Vue::setGuard($guard);
 
         $response = $next($request);
+        $response->headers->set('Vary', 'X-Stack-Router');
 
         if ($request->header('X-Stack-Router')) {
             if ($response instanceof RedirectResponse) {
