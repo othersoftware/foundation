@@ -163,6 +163,7 @@ class Request {
       this.xhr.open(this.method, this.url, true);
       this.xhr.setRequestHeader("Language", APP_LOCALE);
       this.xhr.setRequestHeader("X-Stack-Router", "true");
+      this.xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
       this.xhr.setRequestHeader("X-XSRF-TOKEN", this.readCookie("XSRF-TOKEN"));
       if (this.referer) {
         this.xhr.setRequestHeader("X-Stack-Referer", this.referer);

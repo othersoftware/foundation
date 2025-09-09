@@ -53,6 +53,7 @@ export class Request {
 
       this.xhr.setRequestHeader('Language', APP_LOCALE);
       this.xhr.setRequestHeader('X-Stack-Router', 'true');
+      this.xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
       this.xhr.setRequestHeader('X-XSRF-TOKEN', this.readCookie('XSRF-TOKEN'));
 
       if (this.referer) {
