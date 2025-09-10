@@ -35,6 +35,31 @@ final class Router extends BaseRouter
     }
 
 
+    #[Override]
+    public function gatherRouteMiddleware(BaseRoute $route): array
+    {
+        assert($route instanceof Route);
+
+        $current = $route;
+        $result = [];
+
+        while ($route->isNested() || $route->isModal()) {
+            $route = $this->findParentRoute($route, skipBinding: true);
+            $middleware = parent::gatherRouteMiddleware($route);
+            $unique = array_diff($middleware, $result);
+
+            array_push($result, ...$unique);
+        }
+
+        $middleware = parent::gatherRouteMiddleware($current);
+        $unique = array_diff($middleware, $result);
+
+        array_push($result, ...$unique);
+
+        return $result;
+    }
+
+
     public function getRunningRoute(): Route
     {
         if (! isset($this->running)) {
@@ -78,28 +103,20 @@ final class Router extends BaseRouter
     }
 
 
-    #[Override]
-    public function gatherRouteMiddleware(BaseRoute $route): array
+    private function bindRouteParameters(Request $request, Route $route): Route
     {
-        assert($route instanceof Route);
+        try {
+            $this->substituteBindings($route);
+            $this->substituteImplicitBindings($route);
+        } catch (ModelNotFoundException $exception) {
+            if ($route->getMissing()) {
+                return $route->getMissing()($request, $exception);
+            }
 
-        $current = $route;
-        $result = [];
-
-        while ($route->isNested() || $route->isModal()) {
-            $route = $this->findParentRoute($route, skipBinding: true);
-            $middleware = parent::gatherRouteMiddleware($route);
-            $unique = array_diff($middleware, $result);
-
-            array_push($result, ...$unique);
+            throw $exception;
         }
 
-        $middleware = parent::gatherRouteMiddleware($current);
-        $unique = array_diff($middleware, $result);
-
-        array_push($result, ...$unique);
-
-        return $result;
+        return $route;
     }
 
 
@@ -110,7 +127,7 @@ final class Router extends BaseRouter
         // When the request coming is not a GET method, we do not build the next
         // stack as it would be pointless. Other than GET methods, by default
         // return redirects, which won't return the new stack.
-        if ($request->method() !== 'GET') {
+        if ($request->method() !== 'GET' && ! $route->isNested() && ! $route->isModal()) {
             return $previous;
         }
 
@@ -122,87 +139,6 @@ final class Router extends BaseRouter
         $changed = $request->header('X-Stack-Refresh') === 'true';
 
         return $previous->compare($next, $changed);
-    }
-
-
-    private function wrapStack(mixed $response): mixed
-    {
-        Vue::setStack($this->stack);
-
-        if ($response instanceof View) {
-            return Vue::setRendered($response);
-        }
-
-        return $response;
-    }
-
-
-    private function runStack(Request $request, Route $route)
-    {
-        $response = null;
-        $parent = null;
-
-        if ($request->method() !== 'GET') {
-            $this->running = $route;
-
-            $response = $route->run();
-
-            unset($this->running);
-
-            return $response;
-        }
-
-        /** @var StackEntry $entry */
-        foreach ($this->stack->rewind() as $entry) {
-            $this->running = $entry->getRoute();
-
-            if ($entry->shouldKeep()) {
-                $view = (new View(keep: true));
-            } else {
-                $view = $this->bindRouteParameters($request, $this->running)->run();
-            }
-
-            // When route returns other kind of response, rather than View,
-            // skip nested route resolving as it has no point.
-            if (false === $view instanceof View) {
-                return $view;
-            }
-
-            if ($response === null) {
-                $response = $view;
-            }
-
-            $view->setLocation($entry->getLocation());
-
-            if ($parent !== null) {
-                $parent->nested($view);
-            }
-
-            $parent = $view;
-
-            unset($this->running);
-        }
-
-        return $response;
-    }
-
-
-    private function findParentRoute(Route $route, bool $skipBinding = false): Route
-    {
-        $parent = $this->routes->getByName($route->getParent());
-
-        if (is_null($parent)) {
-            throw new MissingParentRouteException($route->getParent(), $route->getName());
-        }
-
-        assert($parent instanceof Route);
-
-        // When the route was not bound, bind parameters from the nested route.
-        if (! isset($parent->parameters) && ! $skipBinding) {
-            $parent->bindNested($route);
-        }
-
-        return $parent;
     }
 
 
@@ -251,20 +187,22 @@ final class Router extends BaseRouter
     }
 
 
-    private function bindRouteParameters(Request $request, Route $route): Route
+    private function findParentRoute(Route $route, bool $skipBinding = false): Route
     {
-        try {
-            $this->substituteBindings($route);
-            $this->substituteImplicitBindings($route);
-        } catch (ModelNotFoundException $exception) {
-            if ($route->getMissing()) {
-                return $route->getMissing()($request, $exception);
-            }
+        $parent = $this->routes->getByName($route->getParent());
 
-            throw $exception;
+        if (is_null($parent)) {
+            throw new MissingParentRouteException($route->getParent(), $route->getName());
         }
 
-        return $route;
+        assert($parent instanceof Route);
+
+        // When the route was not bound, bind parameters from the nested route.
+        if (! isset($parent->parameters) && ! $skipBinding) {
+            $parent->bindNested($route);
+        }
+
+        return $parent;
     }
 
 
@@ -299,5 +237,67 @@ final class Router extends BaseRouter
 
             return true;
         });
+    }
+
+
+    private function runStack(Request $request, Route $route)
+    {
+        $response = null;
+        $parent = null;
+
+        if ($request->method() !== 'GET' && ! $route->isNested() && ! $route->isModal()) {
+            $this->running = $route;
+
+            $response = $route->run();
+
+            unset($this->running);
+
+            return $response;
+        }
+
+        /** @var StackEntry $entry */
+        foreach ($this->stack->rewind() as $entry) {
+            $this->running = $entry->getRoute();
+
+            if ($entry->shouldKeep()) {
+                $view = (new View(keep: true));
+            } else {
+                $view = $this->bindRouteParameters($request, $this->running)->run();
+            }
+
+            // When route returns other kind of response, rather than View,
+            // skip nested route resolving as it has no point.
+            if (false === $view instanceof View) {
+                return $view;
+            }
+
+            if ($response === null) {
+                $response = $view;
+            }
+
+            $view->setLocation($entry->getLocation());
+
+            if ($parent !== null) {
+                $parent->nested($view);
+            }
+
+            $parent = $view;
+
+            unset($this->running);
+        }
+
+        return $response;
+    }
+
+
+    private function wrapStack(mixed $response): mixed
+    {
+        Vue::setStack($this->stack);
+
+        if ($response instanceof View) {
+            return Vue::setRendered($response);
+        }
+
+        return $response;
     }
 }
