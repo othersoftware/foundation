@@ -3332,9 +3332,15 @@
         value = value[binding];
       }
       if (!value) {
-        throw new Error(`Parameter ${param} is required for uri ${route2.uri}.`);
+        if (!uri.match(new RegExp(`{${param}\\?}`))) {
+          throw new Error(`Parameter ${param} is required for uri ${route2.uri}.`);
+        }
       }
-      return uri.replace(new RegExp(`{${param}??}`), value);
+      uri = uri.replace(new RegExp(`{${param}\\??}`), value ?? "");
+      if (uri.endsWith("/")) {
+        uri = uri.slice(0, -1);
+      }
+      return uri;
     }, route2.uri);
   }
   /**
