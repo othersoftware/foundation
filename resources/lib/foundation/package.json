@@ -9,14 +9,14 @@
     },
     "type": "module",
     "module": "dist/other-software-foundation.js",
-    "main": "dist/other-software-foundation.cjs",
+    "main": "dist/other-software-foundation.umd.cjs",
     "types": "dist/other-software-foundation.d.ts",
     "files": ["dist", "src", "types"],
     "exports": {
         ".": {
             "import": "./dist/other-software-foundation.js",
             "types": "./dist/other-software-foundation.d.ts",
-            "require": "./dist/other-software-foundation.cjs"
+            "require": "./dist/other-software-foundation.umd.cjs"
         }
     },
     "scripts": {
