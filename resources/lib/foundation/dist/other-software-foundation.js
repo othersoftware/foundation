@@ -3336,11 +3336,10 @@ function replaceRouteParameters(route2, params) {
   }, route2.uri);
 }
 /**
-* @vue/shared v3.5.17
+* @vue/shared v3.5.21
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
-/*! #__NO_SIDE_EFFECTS__ */
 // @__NO_SIDE_EFFECTS__
 function makeMap(str) {
   const map = /* @__PURE__ */ Object.create(null);
@@ -3517,8 +3516,25 @@ const commentStripRE = /^-?>|<!--|-->|--!>|<!-$/g;
 function escapeHtmlComment(src) {
   return src.replace(commentStripRE, "");
 }
+function normalizeCssVarValue(value) {
+  if (value == null) {
+    return "initial";
+  }
+  if (typeof value === "string") {
+    return value === "" ? " " : value;
+  }
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    if (!!(process.env.NODE_ENV !== "production")) {
+      console.warn(
+        "[Vue warn] Invalid value used for CSS binding. Expected a string or a finite number but received:",
+        value
+      );
+    }
+  }
+  return String(value);
+}
 /**
-* @vue/server-renderer v3.5.17
+* @vue/server-renderer v3.5.21
 * (c) 2018-present Yuxi (Evan) You and Vue contributors
 * @license MIT
 **/
@@ -3570,8 +3586,22 @@ function ssrRenderStyle(raw) {
   if (isString(raw)) {
     return escapeHtml(raw);
   }
-  const styles = normalizeStyle(raw);
+  const styles = normalizeStyle(ssrResetCssVars(raw));
   return escapeHtml(stringifyStyle(styles));
+}
+function ssrResetCssVars(raw) {
+  if (!isArray(raw) && isObject(raw)) {
+    const res = {};
+    for (const key in raw) {
+      if (key.startsWith(":--")) {
+        res[key.slice(1)] = normalizeCssVarValue(raw[key]);
+      } else {
+        res[key] = raw[key];
+      }
+    }
+    return res;
+  }
+  return raw;
 }
 const { ensureValidVNode } = ssrUtils;
 function ssrRenderTeleport(parentPush, contentRenderFn, target, disabled, parentComponent) {
@@ -3854,7 +3884,7 @@ function setDevtoolsHook(hook, target) {
   );
 }
 !!(process.env.NODE_ENV !== "production") ? {} : {};
-const classifyRE = /(?:^|[-_])(\w)/g;
+const classifyRE = /(?:^|[-_])\w/g;
 const classify = (str) => str.replace(classifyRE, (c) => c.toUpperCase()).replace(/[-_]/g, "");
 function getComponentName(Component, includeInferred = true) {
   return isFunction(Component) ? Component.displayName || Component.name : Component.name || includeInferred && Component.__name;
