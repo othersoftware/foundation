@@ -33,17 +33,17 @@ export class Response {
 }
 
 export class CompleteResponse extends Response {
-  public readonly abilities: Abilities;
-  public readonly meta: Meta[] | undefined;
-  public readonly shared: SharedState | undefined;
-  public readonly authenticated: Authenticated | null;
-  public readonly location: string;
-  public readonly signature: string;
-  public readonly redirect: RouterRedirect;
-  public readonly stack: StackedView;
-  public readonly toasts: ToastRegistry;
-  public readonly errors: ViewErrorsBag;
-  public readonly data: any;
+  public abilities: Abilities;
+  public meta: Meta[] | undefined;
+  public shared: SharedState | undefined;
+  public authenticated: Authenticated | null;
+  public location: string;
+  public signature: string;
+  public redirect: RouterRedirect;
+  public stack: StackedView;
+  public toasts: ToastRegistry;
+  public errors: ViewErrorsBag;
+  public data: any;
 
   constructor(xhr: XMLHttpRequest) {
     super(xhr);

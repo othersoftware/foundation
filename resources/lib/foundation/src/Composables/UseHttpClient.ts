@@ -1,11 +1,11 @@
 import { useStateManager, useStackSignature, useStateHistory, useLocation } from '../Services/StateManager';
 import { Request, type Method, type Body, type RequestOptions } from '../Http/Client/Request';
 import { ErrorModal } from '../Support/ErrorModal';
-import type { RouterRedirect } from '../Types/RouterRedirect';
 import type { Response } from '../Http/Client/Response';
 import { CompleteResponse } from '../Http/Client/Response';
 import { EventBus } from '../Events/EventBus';
 import { inject, type InjectionKey } from 'vue';
+import lodashMerge from 'lodash.merge';
 
 interface HttpOptions extends Omit<RequestOptions, 'method' | 'url' | 'body' | 'signature' | 'referer'> {
   data?: Body | undefined;
@@ -27,7 +27,7 @@ export function useHttpClient() {
   const forceScrollPreserve = inject(HttpClientForceScrollPreservation, false);
   const forceNested = inject(HttpClientForceNested, false);
 
-  async function dispatch(method: Method, url: string, { data = undefined, preserveScroll = false, replace = false, nested = false, ...options }: HttpOptions = {}) {
+  async function dispatch(method: Method, url: string, { data = undefined, preserveScroll = false, replace = false, nested = false, ...options }: HttpOptions = {}, previous: CompleteResponse | undefined = undefined) {
     document.body.classList.add('osf-loading');
     document.dispatchEvent(new Event('visit:start'));
 
@@ -40,19 +40,18 @@ export function useHttpClient() {
       referer: location.value,
       nested: nested || forceNested,
     }).then(async (response: CompleteResponse) => {
-      // For hard reload redirects skip updating the app.
-      // There is no need for that, as the app will be fully reloaded anyway.
+      if (previous) {
+        response.abilities = { ...previous.abilities, ...response.abilities };
+        response.shared = { ...previous.shared, ...response.shared };
+        response.toasts = lodashMerge(previous.toasts, response.toasts);
+        response.errors = lodashMerge(previous.errors, response.errors);
+      }
+
       if (response.redirect) {
-        if (response.redirect.reload) {
-          return await handleRedirectResponse(response.redirect);
-        }
+        return await handleRedirectResponse(response);
       }
 
       return await state.update(response).then(async (fresh): Promise<any> => {
-        if (response.redirect) {
-          return await handleRedirectResponse(response.redirect);
-        }
-
         if (response.raw) {
           return Promise.resolve(response.data);
         }
@@ -99,18 +98,18 @@ export function useHttpClient() {
     }
   }
 
-  async function handleRedirectResponse(redirect: RouterRedirect): Promise<any> {
-    if (redirect.reload) {
+  async function handleRedirectResponse(response: CompleteResponse): Promise<any> {
+    if (response.redirect.reload) {
       return await new Promise(() => {
-        window.location.href = redirect.target;
+        window.location.href = response.redirect.target;
       });
     }
 
-    return await dispatch('GET', redirect.target, {
+    return await dispatch('GET', response.redirect.target, {
       preserveScroll: true,
       replace: false,
       refreshStack: true,
-    });
+    }, response);
   }
 
   return {

@@ -1,4 +1,4 @@
-import { defineComponent, type PropType, provide, h, ref, nextTick, toValue, toRaw, onMounted, onBeforeUnmount, computed } from 'vue';
+import { defineComponent, type PropType, provide, h, ref, toValue, toRaw, onMounted, onBeforeUnmount, computed, nextTick } from 'vue';
 import { type ViewResolver } from '../../Types/ViewResolver';
 import { type State, type InitialState } from '../../Types/State';
 import type { CompleteResponse } from '../../Http/Client/Response';
@@ -43,35 +43,23 @@ export const RouterComponent = defineComponent({
     }
 
     async function update(fresh: CompleteResponse): Promise<State> {
-      abilities.value = { ...abilities.value, ...fresh.abilities };
-      authenticated.value = fresh.authenticated;
-      errors.value = fresh.errors;
+      return await nextTick(async () => {
+        abilities.value = { ...abilities.value, ...fresh.abilities };
+        authenticated.value = fresh.authenticated;
+        errors.value = fresh.errors;
 
-      if (fresh.meta) {
-        meta.value = updateHead(fresh.meta);
-      }
+        if (fresh.meta) meta.value = updateHead(fresh.meta);
+        if (fresh.stack) stack.value = updateStack(toRaw(toValue(stack.value)), fresh.stack);
+        if (fresh.location) location.value = fresh.location;
+        if (fresh.signature) signature.value = fresh.signature;
 
-      if (fresh.shared) {
-        shared.value = { ...shared.value, ...fresh.shared };
-      }
+        return await nextTick(() => {
+          if (fresh.shared) shared.value = { ...shared.value, ...fresh.shared };
+          if (fresh.toasts && fresh.toasts.length > 0) toasts.value = [...toasts.value, ...fresh.toasts];
 
-      if (fresh.location) {
-        location.value = fresh.location;
-      }
-
-      if (fresh.signature) {
-        signature.value = fresh.signature;
-      }
-
-      if (fresh.stack) {
-        stack.value = updateStack(toRaw(toValue(stack.value)), fresh.stack);
-      }
-
-      if (fresh.toasts && fresh.toasts.length > 0) {
-        toasts.value = [...toasts.value, ...fresh.toasts];
-      }
-
-      return await nextTick(() => buildState());
+          return buildState();
+        });
+      });
     }
 
     provide(StateAbilities, abilities);

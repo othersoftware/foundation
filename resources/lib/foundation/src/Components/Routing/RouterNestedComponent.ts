@@ -1,4 +1,4 @@
-import { defineComponent, provide, h, ref, nextTick, toValue, toRaw, computed, inject, type Ref, type SlotsType } from 'vue';
+import { defineComponent, provide, h, ref, toValue, toRaw, computed, inject, type Ref, type SlotsType, nextTick } from 'vue';
 import { type State, type Abilities, type ViewErrorsBag } from '../../Types/State';
 import { type StackedViewResolved } from '../../Types/StackedView';
 import { type CompleteResponse } from '../../Http/Client/Response';
@@ -38,43 +38,34 @@ export const RouterNestedComponent = defineComponent({
     }
 
     async function update(fresh: CompleteResponse): Promise<State> {
-      abilities.value = { ...abilities.value, ...fresh.abilities };
-      authenticated.value = fresh.authenticated;
-      errors.value = fresh.errors;
+      return await nextTick(async () => {
+        abilities.value = { ...abilities.value, ...fresh.abilities };
+        authenticated.value = fresh.authenticated;
+        errors.value = fresh.errors;
 
-      if (fresh.shared) {
-        shared.value = { ...shared.value, ...fresh.shared };
-      }
+        if (fresh.location) location.value = fresh.location;
+        if (fresh.stack) stack.value = updateStack(toRaw(toValue(stack.value)), fresh.stack);
+        if (fresh.signature) signature.value = fresh.signature;
 
-      if (fresh.location) {
-        location.value = fresh.location;
-      }
+        return await nextTick(() => {
+          if (fresh.shared) shared.value = { ...shared.value, ...fresh.shared };
+          if (fresh.toasts && fresh.toasts.length > 0) toasts.value = [...toasts.value, ...fresh.toasts];
 
-      if (fresh.signature) {
-        signature.value = fresh.signature;
-      }
-
-      if (fresh.stack) {
-        stack.value = updateStack(toRaw(toValue(stack.value)), fresh.stack);
-      }
-
-      if (fresh.toasts && fresh.toasts.length > 0) {
-        toasts.value = [...toasts.value, ...fresh.toasts];
-      }
-
-      return await nextTick(() => buildState());
+          return buildState();
+        });
+      });
     }
 
     provide(StateAbilities, abilities);
-    provide(StateShared, shared);
     provide(StateAuthenticated, authenticated);
-    provide(StateLocationInjectionKey, location);
-    provide(StateStackSignatureInjectionKey, signature);
     provide(StateErrorsInjectionKey, errors);
+    provide(StateLocationInjectionKey, location);
+    provide(StackedViewInjectionKey, stack);
+    provide(StateStackSignatureInjectionKey, signature);
+    provide(StateShared, shared);
+    provide(ToastRegistryInjectionKey, toasts);
     provide(StateManagerInjectionKey, update);
     provide(StackedViewDepthInjectionKey, computed(() => 0));
-    provide(StackedViewInjectionKey, stack);
-    provide(ToastRegistryInjectionKey, toasts);
     provide(HttpClientForceScrollPreservation, true);
     provide(HttpClientForceNested, true);
 

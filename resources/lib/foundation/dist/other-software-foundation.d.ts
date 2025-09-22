@@ -51,17 +51,17 @@ export { Body_2 as Body }
 declare type Callback<T> = () => Promise<T> | T;
 
 export declare class CompleteResponse extends Response_2 {
-    readonly abilities: Abilities;
-    readonly meta: Meta[] | undefined;
-    readonly shared: SharedState | undefined;
-    readonly authenticated: Authenticated | null;
-    readonly location: string;
-    readonly signature: string;
-    readonly redirect: RouterRedirect;
-    readonly stack: StackedView;
-    readonly toasts: ToastRegistry;
-    readonly errors: ViewErrorsBag;
-    readonly data: any;
+    abilities: Abilities;
+    meta: Meta[] | undefined;
+    shared: SharedState | undefined;
+    authenticated: Authenticated | null;
+    location: string;
+    signature: string;
+    redirect: RouterRedirect;
+    stack: StackedView;
+    toasts: ToastRegistry;
+    errors: ViewErrorsBag;
+    data: any;
     constructor(xhr: XMLHttpRequest);
 }
 
@@ -675,7 +675,7 @@ export declare function useFormApi(): Ref<FormApi>;
 export declare function useFormContext(): FormContextInterface | null;
 
 export declare function useHttpClient(): {
-    dispatch: (method: Method, url: string, { data, preserveScroll, replace, nested, ...options }?: HttpOptions) => Promise<any>;
+    dispatch: (method: Method, url: string, { data, preserveScroll, replace, nested, ...options }?: HttpOptions, previous?: CompleteResponse | undefined) => Promise<any>;
     get: (url: string) => Promise<any>;
     post: (url: string, data?: Body_2 | undefined) => Promise<any>;
     patch: (url: string, data?: Body_2 | undefined) => Promise<any>;
