@@ -11,7 +11,7 @@ export function findScrollParent(element: HTMLElement | HTMLElement[] | undefine
     element = element[0];
   }
 
-  let parent: HTMLElement | null = element;
+  let parent: HTMLElement | null | undefined = element;
 
   while (parent) {
     const { overflow } = window.getComputedStyle(parent);

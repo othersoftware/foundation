@@ -23,10 +23,14 @@
         "dev": "vite build -m development --watch",
         "build": "vite build"
     },
+    "peerDependencies": {
+        "@othersoftware/foundation": "^1.0.0"
+    },
     "dependencies": {
         "@othersoftware/foundation": "workspace:*"
     },
     "devDependencies": {
+        "@microsoft/api-extractor": "^7.52.13",
         "@types/node": "^24.5.2",
         "@vue/tsconfig": "^0.8.1",
         "typescript": "^5.9.2",

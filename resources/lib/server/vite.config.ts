@@ -21,7 +21,7 @@ export default defineConfig({
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      external: ['node:process', 'node:http'],
+      external: ['node:process', 'node:http', '@othersoftware/foundation'],
     },
   },
 });

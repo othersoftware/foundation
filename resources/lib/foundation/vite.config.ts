@@ -20,10 +20,22 @@ export default defineConfig({
       fileName: 'other-software-foundation',
     },
     rollupOptions: {
-      external: ['vue'],
+      external: [
+        '@vue/server-renderer',
+        'vue',
+        'lodash.get',
+        'lodash.set',
+        'lodash.clonedeep',
+        'lodash.merge',
+      ],
       output: {
         globals: {
-          vue: 'Vue',
+          'vue': 'Vue',
+          '@vue/server-renderer': 'VueServerRenderer',
+          'lodash.get': 'LodashGet',
+          'lodash.set': 'LodashSet',
+          'lodash.clonedeep': 'LodashCloneDeep',
+          'lodash.merge': 'LodashMerge',
         },
       },
     },

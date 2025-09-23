@@ -11,7 +11,7 @@ export function transChoice(key: string, number: number, replace?: Record<string
   return makeReplacements(choose(get(key), number), replace);
 }
 
-function get(key: string) {
+function get(key: string): string {
   let translation = APP_TRANSLATIONS[key];
 
   if (typeof translation === 'undefined') {
@@ -21,7 +21,7 @@ function get(key: string) {
   return translation;
 }
 
-function choose(line: string, number: number) {
+function choose(line: string, number: number): string {
   let segments = line.split('|');
   let value = extract(segments, number);
 
@@ -33,7 +33,7 @@ function choose(line: string, number: number) {
   let pluralIndex = getPluralIndex(number);
 
   if (segments.length === 1 || segments[pluralIndex] == undefined) {
-    return segments[0];
+    return segments[0]!;
   }
 
   return segments[pluralIndex];
@@ -57,8 +57,8 @@ function extractFromString(part: string, number: number) {
     return null;
   }
 
-  const condition = matches[1];
-  const value = matches[2];
+  const condition = matches[1]!;
+  const value = matches[2]!;
 
   if (condition.includes(',')) {
     const [from, to] = condition.split(',', 2);
@@ -81,7 +81,7 @@ function stripConditions(segments: string[]) {
 
 function makeReplacements(line: string, replace?: Record<string, string | number | boolean>) {
   if (replace) {
-    return Object.keys(replace).reduce((prev, key) => prev.replace(`:${key}`, replace[key].toString()), line);
+    return Object.keys(replace).reduce((prev, key) => prev.replace(`:${key}`, replace[key]!.toString()), line);
   }
 
   return line;
