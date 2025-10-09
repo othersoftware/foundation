@@ -27,7 +27,7 @@
         "@othersoftware/foundation": "^1.0.0"
     },
     "dependencies": {
-        "@othersoftware/foundation": "workspace:*"
+        "@othersoftware/foundation": "^1.0.0"
     },
     "devDependencies": {
         "@microsoft/api-extractor": "^7.52.13",
