@@ -23,26 +23,26 @@
         "dev": "vite build -m development --watch",
         "build": "vite build && tail -n +10 types/globals.d.ts >> dist/other-software-foundation.d.ts"
     },
-    "peerDependencies": {
-        "@vue/server-renderer": "^3.5.21",
-        "vue": "^3.5.21",
+    "dependencies": {
+        "@vue/server-renderer": "^3.5.22",
+        "vue": "^3.5.22",
         "lodash.get": "^4.4.2",
         "lodash.set": "^4.3.2",
         "lodash.clonedeep": "^4.5.0",
         "lodash.merge": "^4.6.2"
     },
     "devDependencies": {
-        "@microsoft/api-extractor": "^7.52.13",
+        "@microsoft/api-extractor": "^7.53.1",
         "@types/lodash.clonedeep": "^4.5.9",
         "@types/lodash.get": "^4.4.9",
         "@types/lodash.set": "^4.3.9",
         "@types/lodash.merge": "^4.6.9",
-        "@types/node": "^24.5.2",
+        "@types/node": "^24.7.0",
         "@vitejs/plugin-vue": "^6.0.1",
-        "@vue/language-server": "^3.0.8",
+        "@vue/language-server": "^3.1.1",
         "@vue/tsconfig": "^0.8.1",
-        "typescript": "^5.9.2",
+        "typescript": "^5.9.3",
         "unplugin-dts": "^1.0.0-beta.6",
-        "vite": "^7.1.7"
+        "vite": "^7.1.9"
     }
 }

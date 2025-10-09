@@ -27,13 +27,13 @@
         "ext-pdo": "*",
         "ext-pcntl": "*",
         "composer/class-map-generator": "^1.6.2",
-        "doctrine/dbal": "^3.10.2",
+        "doctrine/dbal": "^3.10.3",
         "doctrine/migrations": "^3.9.4",
         "doctrine/orm": "^3.5.2",
         "kalnoy/nestedset": "^6.0.6",
-        "laravel/framework": "^12.30.1",
+        "laravel/framework": "^12.33.0",
         "propaganistas/laravel-phone": "^5.3.6",
-        "symfony/intl": "^7.3.3"
+        "symfony/intl": "^7.3.4"
     },
     "config": {
         "sort-packages": true
