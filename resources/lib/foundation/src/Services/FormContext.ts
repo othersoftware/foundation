@@ -60,8 +60,8 @@ export function createFormContext(
 export type FormContextInterface = ReturnType<typeof createFormContext>;
 
 export function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any): any;
-export function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any, input: HTMLInputElement): any;
-export function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any, input: HTMLInputElement | undefined = undefined) {
+export function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any, input: HTMLInputElement | null | undefined): any;
+export function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any, input: HTMLInputElement | null | undefined = undefined) {
   if (name && ctx) {
     ctx.touch(name);
     ctx.fill(name, value, () => {

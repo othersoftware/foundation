@@ -541,7 +541,7 @@ default?: () => any;
 
 export declare function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any): any;
 
-export declare function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any, input: HTMLInputElement): any;
+export declare function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any, input: HTMLInputElement | null | undefined): any;
 
 export declare interface Shared {
 }
