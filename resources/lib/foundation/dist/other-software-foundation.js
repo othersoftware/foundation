@@ -406,6 +406,7 @@ const FormContextInjectionKey = Symbol("FormContext");
 function createFormContext(initialData, initialBag, initialReadonly) {
   const bags = useErrors();
   const data = ref(lodashCloneDeep(toValue(initialData)));
+  const files = ref({});
   const readonly = ref(toValue(initialReadonly));
   const bag = ref(toValue(initialBag));
   const touched = ref({});
@@ -417,7 +418,10 @@ function createFormContext(initialData, initialBag, initialReadonly) {
   function value(name, value2) {
     return lodashGet(data.value, name, value2);
   }
-  function fill(name, value2) {
+  function fill(name, value2, filesReader = void 0) {
+    if (filesReader) {
+      lodashSet(files.value, name, filesReader());
+    }
     lodashSet(data.value, name, value2);
   }
   watch(() => toValue(initialData), (value2) => data.value = lodashCloneDeep(value2));
@@ -425,6 +429,7 @@ function createFormContext(initialData, initialBag, initialReadonly) {
   watch(() => toValue(initialReadonly), (value2) => readonly.value = value2);
   return {
     data,
+    files,
     errors,
     touched,
     processing,
@@ -434,10 +439,20 @@ function createFormContext(initialData, initialBag, initialReadonly) {
     fill
   };
 }
-function setModelWithContext(name, ctx, value) {
+function setModelWithContext(name, ctx, value, input = void 0) {
   if (name && ctx) {
     ctx.touch(name);
-    ctx.fill(name, value);
+    ctx.fill(name, value, () => {
+      if (input) {
+        if (input.files instanceof FileList) {
+          if (input.multiple) {
+            return Array.from(input.files);
+          } else {
+            return input.files.item(0);
+          }
+        }
+      }
+    });
   }
   return value;
 }
@@ -491,6 +506,45 @@ function appendSearchParameter(search, name, value, prev) {
   search.set(name, value);
   return search;
 }
+function buildFormData(data) {
+  let result = new FormData();
+  if (data) {
+    attachFields(result, data);
+  }
+  return result;
+}
+function attachFields(data, fields) {
+  Object.keys(fields).forEach((key) => appendField(data, key, toRaw(fields[key])));
+}
+function appendField(data, name, value, prev) {
+  if (prev) {
+    name = prev + "[" + name + "]";
+  }
+  if (value == null) {
+    data.set(name, "");
+    return data;
+  }
+  if (value instanceof File) {
+    data.set(name, value);
+    return data;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((arrValue, arrIndex) => appendField(data, arrIndex.toString(), arrValue, name));
+    return data;
+  }
+  if (typeof value === "object") {
+    Object.keys(value).forEach((key) => appendField(data, key, value[key], name));
+    return data;
+  }
+  if (typeof value === "boolean") {
+    value = Number(value);
+  }
+  if (value == null) {
+    value = "";
+  }
+  data.set(name, value);
+  return data;
+}
 const FormControllerComponent = defineComponent({
   name: "FormController",
   props: {
@@ -534,7 +588,7 @@ const FormControllerComponent = defineComponent({
     const ctx = createFormContext(() => props.data, () => props.bag, () => props.readonly);
     const http = useHttpClient();
     const bags = useErrors();
-    const { data, processing, readonly, errors, touched } = ctx;
+    const { data, files, processing, readonly, errors, touched } = ctx;
     const element = computed(() => {
       return parent ? "div" : "form";
     });
@@ -557,7 +611,16 @@ const FormControllerComponent = defineComponent({
       if (props.method === "GET") {
         return http.dispatch(props.method, url(props.action, data.value));
       }
-      return http.dispatch(props.method, props.action, { data: data.value });
+      let method = props.method;
+      let fields = lodashMerge(data.value, files.value);
+      if (Object.keys(files.value).length > 0) {
+        if (method !== "POST") {
+          fields._method = props.method;
+          method = "POST";
+        }
+        fields = buildFormData(fields);
+      }
+      return http.dispatch(method, props.action, { data: fields });
     }
     function submit(event) {
       let beforeReadonly = readonly.value;
@@ -1823,6 +1886,7 @@ export {
   ToastKind,
   ToastRegistryInjectionKey,
   blank,
+  buildFormData,
   createFormContext,
   createFoundationController,
   createOtherSoftwareFoundation,

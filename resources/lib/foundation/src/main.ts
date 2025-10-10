@@ -47,6 +47,7 @@ export * from './Support/Array.ts';
 export * from './Support/Countries.ts';
 export * from './Support/Empty.ts';
 export * from './Support/ErrorModal.ts';
+export * from './Support/FormData.ts';
 export * from './Support/Hash.ts';
 export * from './Support/NestedSet.ts';
 export * from './Support/Random.ts';

@@ -6,6 +6,8 @@ import { useHttpClient } from '../../Composables/UseHttpClient';
 import { createFormContext, FormContextInjectionKey, type FormContextInterface } from '../../Services/FormContext';
 import { useErrors } from '../../Services/StateManager.ts';
 import { url } from '../../Support/Url.ts';
+import lodashMerge from 'lodash.merge';
+import { buildFormData } from '../../Support/FormData.ts';
 
 type FormHandler = (data: any, ctx: FormContextInterface) => Promise<any>;
 
@@ -63,7 +65,7 @@ export const FormControllerComponent = defineComponent({
     const http = useHttpClient();
     const bags = useErrors();
 
-    const { data, processing, readonly, errors, touched } = ctx;
+    const { data, files, processing, readonly, errors, touched } = ctx;
 
     const element = computed(() => {
       return parent ? 'div' : 'form';
@@ -92,7 +94,26 @@ export const FormControllerComponent = defineComponent({
         return http.dispatch(props.method, url(props.action, data.value));
       }
 
-      return http.dispatch(props.method, props.action, { data: data.value });
+      let method = props.method;
+      let fields = lodashMerge(data.value, files.value);
+
+      // When files are defined in the form, convert form data from JSON into
+      // FormData. This allows the form to be sent as "multipart/form-data",
+      // which supports files upload.
+      if (Object.keys(files.value).length > 0) {
+        // When form method isn't POST implement a method spoofing mechanism
+        // supported by Laravel. This allows the framework to treat, for example,
+        // a POST request as PATCH. It's due to the specific of PHP as it only
+        // allows file uploads within the POST method.
+        if (method !== 'POST') {
+          fields._method = props.method;
+          method = 'POST';
+        }
+
+        fields = buildFormData(fields);
+      }
+
+      return http.dispatch(method, props.action, { data: fields });
     }
 
     function submit(event?: Event) {

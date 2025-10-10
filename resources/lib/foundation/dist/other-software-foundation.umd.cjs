@@ -404,6 +404,7 @@
   function createFormContext(initialData, initialBag, initialReadonly) {
     const bags = useErrors();
     const data = vue.ref(lodashCloneDeep(vue.toValue(initialData)));
+    const files = vue.ref({});
     const readonly = vue.ref(vue.toValue(initialReadonly));
     const bag = vue.ref(vue.toValue(initialBag));
     const touched = vue.ref({});
@@ -415,7 +416,10 @@
     function value(name, value2) {
       return lodashGet(data.value, name, value2);
     }
-    function fill(name, value2) {
+    function fill(name, value2, filesReader = void 0) {
+      if (filesReader) {
+        lodashSet(files.value, name, filesReader());
+      }
       lodashSet(data.value, name, value2);
     }
     vue.watch(() => vue.toValue(initialData), (value2) => data.value = lodashCloneDeep(value2));
@@ -423,6 +427,7 @@
     vue.watch(() => vue.toValue(initialReadonly), (value2) => readonly.value = value2);
     return {
       data,
+      files,
       errors,
       touched,
       processing,
@@ -432,10 +437,20 @@
       fill
     };
   }
-  function setModelWithContext(name, ctx, value) {
+  function setModelWithContext(name, ctx, value, input = void 0) {
     if (name && ctx) {
       ctx.touch(name);
-      ctx.fill(name, value);
+      ctx.fill(name, value, () => {
+        if (input) {
+          if (input.files instanceof FileList) {
+            if (input.multiple) {
+              return Array.from(input.files);
+            } else {
+              return input.files.item(0);
+            }
+          }
+        }
+      });
     }
     return value;
   }
@@ -489,6 +504,45 @@
     search.set(name, value);
     return search;
   }
+  function buildFormData(data) {
+    let result = new FormData();
+    if (data) {
+      attachFields(result, data);
+    }
+    return result;
+  }
+  function attachFields(data, fields) {
+    Object.keys(fields).forEach((key) => appendField(data, key, vue.toRaw(fields[key])));
+  }
+  function appendField(data, name, value, prev) {
+    if (prev) {
+      name = prev + "[" + name + "]";
+    }
+    if (value == null) {
+      data.set(name, "");
+      return data;
+    }
+    if (value instanceof File) {
+      data.set(name, value);
+      return data;
+    }
+    if (Array.isArray(value)) {
+      value.forEach((arrValue, arrIndex) => appendField(data, arrIndex.toString(), arrValue, name));
+      return data;
+    }
+    if (typeof value === "object") {
+      Object.keys(value).forEach((key) => appendField(data, key, value[key], name));
+      return data;
+    }
+    if (typeof value === "boolean") {
+      value = Number(value);
+    }
+    if (value == null) {
+      value = "";
+    }
+    data.set(name, value);
+    return data;
+  }
   const FormControllerComponent = vue.defineComponent({
     name: "FormController",
     props: {
@@ -532,7 +586,7 @@
       const ctx = createFormContext(() => props.data, () => props.bag, () => props.readonly);
       const http = useHttpClient();
       const bags = useErrors();
-      const { data, processing, readonly, errors, touched } = ctx;
+      const { data, files, processing, readonly, errors, touched } = ctx;
       const element = vue.computed(() => {
         return parent ? "div" : "form";
       });
@@ -555,7 +609,16 @@
         if (props.method === "GET") {
           return http.dispatch(props.method, url(props.action, data.value));
         }
-        return http.dispatch(props.method, props.action, { data: data.value });
+        let method = props.method;
+        let fields = lodashMerge(data.value, files.value);
+        if (Object.keys(files.value).length > 0) {
+          if (method !== "POST") {
+            fields._method = props.method;
+            method = "POST";
+          }
+          fields = buildFormData(fields);
+        }
+        return http.dispatch(method, props.action, { data: fields });
       }
       function submit(event) {
         let beforeReadonly = readonly.value;
@@ -1820,6 +1883,7 @@
   exports2.ToastKind = ToastKind;
   exports2.ToastRegistryInjectionKey = ToastRegistryInjectionKey;
   exports2.blank = blank;
+  exports2.buildFormData = buildFormData;
   exports2.createFormContext = createFormContext;
   exports2.createFoundationController = createFoundationController;
   exports2.createOtherSoftwareFoundation = createOtherSoftwareFoundation;

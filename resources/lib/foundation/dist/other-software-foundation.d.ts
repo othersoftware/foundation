@@ -48,6 +48,8 @@ export declare function blank(value: any): boolean;
 declare type Body_2 = XMLHttpRequestBodyInit | Object | null | undefined;
 export { Body_2 as Body }
 
+export declare function buildFormData(data: Record<string, any> | null | undefined): FormData;
+
 declare type Callback<T> = () => Promise<T> | T;
 
 export declare class CompleteResponse extends Response_2 {
@@ -88,13 +90,14 @@ export declare interface Confirmation extends Config {
 
 export declare function createFormContext(initialData: MaybeRefOrGetter<Record<string, any>>, initialBag: MaybeRefOrGetter<string>, initialReadonly: MaybeRefOrGetter<boolean>): {
     data: Ref<Record<string, any>, Record<string, any>>;
+    files: Ref<{}, {}>;
     errors: ComputedRef<MessageBag>;
     touched: Ref<Record<string, boolean>, Record<string, boolean>>;
     processing: Ref<boolean, boolean>;
     readonly: Ref<boolean, boolean>;
     touch: (name: string) => void;
     value: (name: string, value: any) => any;
-    fill: (name: string, value: any) => void;
+    fill: (name: string, value: any, filesReader?: InputFilesReader | undefined) => void;
 };
 
 export declare function createFoundationController({ initial, resolver, setup }: Options): Promise<string>;
@@ -268,6 +271,8 @@ export declare interface InitialState extends State {
     shared: SharedState;
     toasts: ToastRegistry;
 }
+
+export declare type InputFilesReader = () => File | File[] | null | undefined;
 
 export declare function isCountryExplicit(country: string | null | undefined): boolean;
 
@@ -535,6 +540,8 @@ default?: () => any;
 }>, {}, {}, string, ComponentProvideOptions, true, {}, any>;
 
 export declare function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any): any;
+
+export declare function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any, input: HTMLInputElement): any;
 
 export declare interface Shared {
 }

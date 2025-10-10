@@ -5,6 +5,7 @@ import lodashGet from 'lodash.get';
 import { useErrors } from './StateManager.ts';
 
 export const FormContextInjectionKey = Symbol('FormContext') as InjectionKey<FormContextInterface>;
+export type InputFilesReader = () => File | File[] | null | undefined;
 
 export function createFormContext(
   initialData: MaybeRefOrGetter<Record<string, any>>,
@@ -14,6 +15,7 @@ export function createFormContext(
   const bags = useErrors();
 
   const data = ref(lodashCloneDeep(toValue(initialData)));
+  const files = ref({});
   const readonly = ref(toValue(initialReadonly));
   const bag = ref(toValue(initialBag));
 
@@ -30,7 +32,11 @@ export function createFormContext(
     return lodashGet(data.value, name, value);
   }
 
-  function fill(name: string, value: any) {
+  function fill(name: string, value: any, filesReader: InputFilesReader | undefined = undefined) {
+    if (filesReader) {
+      lodashSet(files.value, name, filesReader());
+    }
+
     lodashSet(data.value, name, value);
   }
 
@@ -40,6 +46,7 @@ export function createFormContext(
 
   return {
     data,
+    files,
     errors,
     touched,
     processing,
@@ -52,10 +59,22 @@ export function createFormContext(
 
 export type FormContextInterface = ReturnType<typeof createFormContext>;
 
-export function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any) {
+export function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any): any;
+export function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any, input: HTMLInputElement): any;
+export function setModelWithContext(name: Nullable<string>, ctx: Nullable<FormContextInterface>, value: any, input: HTMLInputElement | undefined = undefined) {
   if (name && ctx) {
     ctx.touch(name);
-    ctx.fill(name, value);
+    ctx.fill(name, value, () => {
+      if (input) {
+        if (input.files instanceof FileList) {
+          if (input.multiple) {
+            return Array.from(input.files);
+          } else {
+            return input.files.item(0);
+          }
+        }
+      }
+    });
   }
 
   return value;
