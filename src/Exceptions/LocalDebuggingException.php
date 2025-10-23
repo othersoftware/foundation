@@ -3,11 +3,11 @@
 namespace OtherSoftware\Exceptions;
 
 
-use Exception;
+use RuntimeException;
 use Throwable;
 
 
-class LocalDebuggingException extends Exception
+class LocalDebuggingException extends RuntimeException
 {
     public function __construct(Throwable $previous)
     {
