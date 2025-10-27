@@ -87,7 +87,7 @@ if (! function_exists('str_to_dot')) {
 }
 
 if (! function_exists('str_prefixed')) {
-    function str_prefixed(string $name, string $prefix = null): string
+    function str_prefixed(string $name, ?string $prefix = null): string
     {
         return $prefix ? str_concat_underscore($prefix, $name) : $name;
     }
