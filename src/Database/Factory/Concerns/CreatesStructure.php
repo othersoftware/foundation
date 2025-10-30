@@ -131,7 +131,7 @@ trait CreatesStructure
     }
 
 
-    public function morphs(string $name, string $index = null): void
+    public function morphs(string $name, ?string $index = null): void
     {
         $this->makeStructure(new StringStructure("{$name}_type", 255));
         $this->makeStructure(new IntegerBigStructure("{$name}_id"))->unsigned();
@@ -146,7 +146,7 @@ trait CreatesStructure
     }
 
 
-    public function nullableMorphs(string $name, string $index = null): void
+    public function nullableMorphs(string $name, ?string $index = null): void
     {
         $this->makeStructure(new StringStructure("{$name}_type", 255))->nullable();
         $this->makeStructure(new IntegerBigStructure("{$name}_id"))->unsigned()->nullable();

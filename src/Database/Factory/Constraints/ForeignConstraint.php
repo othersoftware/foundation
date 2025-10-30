@@ -25,7 +25,7 @@ final class ForeignConstraint extends AbstractConstraint
     private array $options = [];
 
 
-    public function __construct(array|string $columns, string $index = null)
+    public function __construct(array|string $columns, ?string $index = null)
     {
         $this->localColumns = Arr::wrap($columns);
         $this->index = $index;

@@ -15,7 +15,7 @@ final class UniqueConstraint extends AbstractConstraint
     private string|null $index;
 
 
-    public function __construct(array|string $columns, string $index = null)
+    public function __construct(array|string $columns, ?string $index = null)
     {
         $this->columns = Arr::wrap($columns);
         $this->index = $index;
