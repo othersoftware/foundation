@@ -35,7 +35,7 @@ trait HasTranslations
     use Scopes, Relationship;
 
 
-    protected static $autoloadTranslations = null;
+    protected static ?bool $autoloadTranslations = null;
 
 
     protected static $deleteTranslationsCascade = true;
@@ -100,9 +100,9 @@ trait HasTranslations
 
 
     /**
-     * @param string|array|null $locales The locales to be deleted
+     * @param array|string|null $locales The locales to be deleted
      */
-    public function deleteTranslations($locales = null): void
+    public function deleteTranslations(array|string|null $locales = null): void
     {
         if ($locales === null) {
             $translations = $this->translations()->get();
@@ -460,7 +460,7 @@ trait HasTranslations
     }
 
 
-    public function replicateWithTranslations(array $except = null): Model
+    public function replicateWithTranslations(?array $except = null): Model
     {
         $newInstance = $this->replicate($except);
 
