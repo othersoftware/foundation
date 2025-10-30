@@ -112,7 +112,7 @@ final readonly class Cast
      *
      * @return string
      */
-    public static function phone(string $country = null): string
+    public static function phone(?string $country = null): string
     {
         return sprintf('%s:%s', PhoneNumberCast::class, $country ?: config('app.country'));
     }
