@@ -38,10 +38,10 @@ trait HasTranslations
     protected static ?bool $autoloadTranslations = null;
 
 
-    protected static $deleteTranslationsCascade = true;
+    protected static bool $deleteTranslationsCascade = true;
 
 
-    protected $defaultLocale;
+    protected ?string $defaultLocale;
 
 
     public function __isset($key)

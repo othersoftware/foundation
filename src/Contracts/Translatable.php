@@ -25,7 +25,7 @@ interface Translatable
 
     public static function enableDeleteTranslationsCascade(): void;
 
-    public function deleteTranslations($locales = null): void;
+    public function deleteTranslations(array|string|null $locales = null): void;
 
     public function getDefaultLocale(): ?string;
 
@@ -48,7 +48,7 @@ interface Translatable
     public function isTranslationAttribute(string $key): bool;
 
 
-    public function replicateWithTranslations(array $except = null): Model;
+    public function replicateWithTranslations(?array $except = null): Model;
 
 
     public function setDefaultLocale(?string $locale);
