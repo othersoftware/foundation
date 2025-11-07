@@ -8,7 +8,7 @@ use OtherSoftware\Database\Factory\Indexes\IndexFactory;
 
 trait CreatesIndexes
 {
-    public function fullText(array|string $columns, string $index = null): IndexFactory
+    public function fullText(array|string $columns, ?string $index = null): IndexFactory
     {
         return tap(new IndexFactory($columns, $index, ['fulltext']), function ($factory) {
             $this->indexes[] = $factory;
@@ -16,7 +16,7 @@ trait CreatesIndexes
     }
 
 
-    public function index(array|string $columns, string $index = null): IndexFactory
+    public function index(array|string $columns, ?string $index = null): IndexFactory
     {
         return tap(new IndexFactory($columns, $index), function ($factory) {
             $this->indexes[] = $factory;

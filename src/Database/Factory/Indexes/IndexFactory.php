@@ -18,7 +18,7 @@ class IndexFactory
     private string|null $index;
 
 
-    public function __construct(array|string $columns, string $index = null, array $flags = [])
+    public function __construct(array|string $columns, ?string $index = null, array $flags = [])
     {
         $this->columns = Arr::wrap($columns);
         $this->index = $index;

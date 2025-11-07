@@ -13,7 +13,7 @@ readonly class Route
     public ?string $locale;
 
 
-    public function __construct(string $uri, string $locale = null)
+    public function __construct(string $uri, ?string $locale = null)
     {
         $this->uri = $uri;
         $this->locale = $locale;

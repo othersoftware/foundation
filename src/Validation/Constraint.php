@@ -297,7 +297,7 @@ final readonly class Constraint
      *
      * @return Enum
      */
-    public static function enum(string $type, callable $callback = null): Enum
+    public static function enum(string $type, ?callable $callback = null): Enum
     {
         $rule = new Enum($type);
 
@@ -504,7 +504,7 @@ final readonly class Constraint
      *
      * @return Exists
      */
-    public static function exists(string $table, string|callable $column = 'NULL', callable $callback = null): Exists
+    public static function exists(string $table, string|callable $column = 'NULL', ?callable $callback = null): Exists
     {
         if (is_callable($column)) {
             $callback = $column;
@@ -747,7 +747,7 @@ final readonly class Constraint
     }
 
 
-    public static function phone(string $country = null): string
+    public static function phone(?string $country = null): string
     {
         return sprintf('phone:%s', $country ?: config('app.country'));
     }
@@ -938,7 +938,7 @@ final readonly class Constraint
     }
 
 
-    public static function unique(string $table, string|callable $column = 'NULL', callable $callback = null): Unique
+    public static function unique(string $table, string|callable $column = 'NULL', ?callable $callback = null): Unique
     {
         if (is_callable($column)) {
             $callback = $column;

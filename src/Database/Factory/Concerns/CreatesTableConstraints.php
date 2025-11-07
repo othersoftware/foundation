@@ -10,7 +10,7 @@ use OtherSoftware\Database\Factory\Constraints\UniqueConstraint;
 
 trait CreatesTableConstraints
 {
-    public function foreign(array|string $columns, string $index = null): ForeignConstraint
+    public function foreign(array|string $columns, ?string $index = null): ForeignConstraint
     {
         return tap(new ForeignConstraint($columns, $index), function ($factory) {
             $this->constraints[] = $factory;
@@ -26,7 +26,7 @@ trait CreatesTableConstraints
     }
 
 
-    public function unique(array|string $columns, string $index = null)
+    public function unique(array|string $columns, ?string $index = null)
     {
         return tap(new UniqueConstraint($columns, $index), function ($factory) {
             $this->constraints[] = $factory;
