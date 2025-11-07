@@ -58,6 +58,36 @@ final class ResponseFactory implements Responsable
     }
 
 
+    public function isNested(?Request $request = null): bool
+    {
+        return (bool) ($request ?? request())->header('X-Stack-Nested');
+    }
+
+
+    public function isNotNested(?Request $request = null): bool
+    {
+        return false === $this->isNested($request);
+    }
+
+
+    public function isRaw(): bool
+    {
+        return isset($this->raw);
+    }
+
+
+    public function isRedirect(): bool
+    {
+        return isset($this->redirect);
+    }
+
+
+    public function isVuePowered(?Request $request = null): bool
+    {
+        return (bool) ($request ?? request())->header('X-Stack-Router');
+    }
+
+
     public function noContent(): ResponseFactory
     {
         $this->raw = null;
@@ -77,36 +107,6 @@ final class ResponseFactory implements Responsable
     public function rendersVueResponse(?Request $request = null): bool
     {
         return $this->rendersVueResponse || $this->isVuePowered($request);
-    }
-
-
-    public function isVuePowered(?Request $request = null): bool
-    {
-        return (bool) ($request ?? request())->header('X-Stack-Router');
-    }
-
-
-    public function isNotNested(?Request $request = null): bool
-    {
-        return false === $this->isNested($request);
-    }
-
-
-    public function isNested(?Request $request = null): bool
-    {
-        return (bool) ($request ?? request())->header('X-Stack-Nested');
-    }
-
-
-    public function isRaw(): bool
-    {
-        return isset($this->raw);
-    }
-
-
-    public function isRedirect(): bool
-    {
-        return isset($this->redirect);
     }
 
 
@@ -197,20 +197,6 @@ final class ResponseFactory implements Responsable
     }
 
 
-    public function unshare(Arrayable|array|string $keys): ResponseFactory
-    {
-        if ($keys instanceof Arrayable) {
-            $keys = $keys->toArray();
-        }
-
-        foreach (Arr::wrap($keys) as $key) {
-            unset($this->shared[$key]);
-        }
-
-        return $this;
-    }
-
-
     public function staticView(string $view, Closure|array $props = []): View
     {
         $this->mode = RenderMode::STATIC;
@@ -229,13 +215,8 @@ final class ResponseFactory implements Responsable
         $data = [];
 
         if (! isset($this->raw)) {
-            if (isset($this->stack)) {
-                $data['signature'] = encrypt($this->stack);
-                $data['rawStack'] = $this->stack->toArray();
-                $data['location'] = $request->fullUrl();
-            } else {
-                $data['signature'] = $request->header('X-Stack-Signature');
-            }
+            $data['signature'] = isset($this->stack) ? encrypt($this->stack) : $request->header('X-Stack-Signature');
+            $data['location'] = $request->fullUrl();
         }
 
         if (isset($this->meta)) {
@@ -282,24 +263,54 @@ final class ResponseFactory implements Responsable
     }
 
 
-    private function runTransformers(): void
+    /**
+     * @param callable(self $vue):void $callback
+     *
+     * @return $this
+     */
+    public function transform(callable $callback): self
     {
-        foreach ($this->transformers as $transformer) {
-            $transformer($this);
-        }
+        $this->transformers[] = $callback;
+
+        return $this;
     }
 
 
-    private function getErrorBags(Request $request): object
+    public function unshare(Arrayable|array|string $keys): ResponseFactory
     {
-        $errors = $request->session()->pull('errors') ?: new ViewErrorBag();
-        $result = [];
-
-        foreach ($errors->getBags() as $name => $bag) {
-            $result[$name] = $bag->toArray();
+        if ($keys instanceof Arrayable) {
+            $keys = $keys->toArray();
         }
 
-        return (object) $result;
+        foreach (Arr::wrap($keys) as $key) {
+            unset($this->shared[$key]);
+        }
+
+        return $this;
+    }
+
+
+    public function view(string $view, Closure|array $props = []): View
+    {
+        $this->mode = RenderMode::CLIENT;
+        $this->rendered = new View($view, $props);
+
+        return $this->rendered;
+    }
+
+
+    public function withErrors($provider, $key = 'default'): self
+    {
+        $value = $this->parseErrors($provider);
+        $errors = $this->session->get('errors', new ViewErrorBag());
+
+        if (! $errors instanceof ViewErrorBag) {
+            $errors = new ViewErrorBag();
+        }
+
+        $this->session->flash('errors', $errors->put($key, $value));
+
+        return $this;
     }
 
 
@@ -320,12 +331,40 @@ final class ResponseFactory implements Responsable
     }
 
 
+    private function getErrorBags(Request $request): object
+    {
+        $errors = new ViewErrorBag();
+
+        if ($request->hasSession()) {
+            $errors = $request->session()->pull('errors') ?: new ViewErrorBag();
+        }
+
+        $result = [];
+
+        foreach ($errors->getBags() as $name => $bag) {
+            $result[$name] = $bag->toArray();
+        }
+
+        return (object) $result;
+    }
+
+
     private function getInitialResponse(array $data): Response
     {
         $content = $this->renderInitialView($data)->render();
         $headers = ['Content-Type' => 'text/html'];
 
         return new Response($content, 200, $headers);
+    }
+
+
+    private function parseErrors($provider): MessageBag
+    {
+        if ($provider instanceof MessageProvider) {
+            return $provider->getMessageBag();
+        }
+
+        return new MessageBag((array) $provider);
     }
 
 
@@ -357,9 +396,17 @@ final class ResponseFactory implements Responsable
     }
 
 
-    private function shouldRenderStatic(): bool
+    private function runTransformers(): void
     {
-        return $this->mode->isStatic() && $this->server->isServerRenderingEnabled() && App::environment('production');
+        foreach ($this->transformers as $transformer) {
+            $transformer($this);
+        }
+    }
+
+
+    private function sendServerRenderingRequest(array $data): string
+    {
+        return App::make(ServerRenderingGateway::class)->render($data);
     }
 
 
@@ -381,55 +428,8 @@ final class ResponseFactory implements Responsable
     }
 
 
-    private function sendServerRenderingRequest(array $data): string
+    private function shouldRenderStatic(): bool
     {
-        return App::make(ServerRenderingGateway::class)->render($data);
-    }
-
-
-    public function withErrors($provider, $key = 'default'): self
-    {
-        $value = $this->parseErrors($provider);
-        $errors = $this->session->get('errors', new ViewErrorBag());
-
-        if (! $errors instanceof ViewErrorBag) {
-            $errors = new ViewErrorBag();
-        }
-
-        $this->session->flash('errors', $errors->put($key, $value));
-
-        return $this;
-    }
-
-
-    private function parseErrors($provider): MessageBag
-    {
-        if ($provider instanceof MessageProvider) {
-            return $provider->getMessageBag();
-        }
-
-        return new MessageBag((array) $provider);
-    }
-
-
-    /**
-     * @param callable(self $vue):void $callback
-     *
-     * @return $this
-     */
-    public function transform(callable $callback): self
-    {
-        $this->transformers[] = $callback;
-
-        return $this;
-    }
-
-
-    public function view(string $view, Closure|array $props = []): View
-    {
-        $this->mode = RenderMode::CLIENT;
-        $this->rendered = new View($view, $props);
-
-        return $this->rendered;
+        return $this->mode->isStatic() && $this->server->isServerRenderingEnabled() && App::environment('production');
     }
 }
