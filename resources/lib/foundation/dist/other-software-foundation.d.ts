@@ -55,7 +55,7 @@ declare type Callback<T> = () => Promise<T> | T;
 export declare class CompleteResponse extends Response_2 {
     abilities: Abilities;
     meta: Meta[] | undefined;
-    shared: SharedState | undefined;
+    shared: SharedStateResponse | undefined;
     authenticated: Authenticated | null;
     location: string;
     signature: string;
@@ -268,7 +268,7 @@ export declare interface InitialState extends State {
     abilities: Abilities;
     errors: ViewErrorsBag;
     authenticated: Authenticated | null;
-    shared: SharedState;
+    shared: Shared;
     toasts: ToastRegistry;
 }
 
@@ -546,7 +546,7 @@ export declare function setModelWithContext(name: Nullable<string>, ctx: Nullabl
 export declare interface Shared {
 }
 
-export declare type SharedState = Partial<Shared>;
+export declare type SharedStateResponse = Partial<Shared>;
 
 export declare type Signature = string | undefined;
 
@@ -610,7 +610,7 @@ export declare type StateManager = (fresh: CompleteResponse) => Promise<State>;
 
 export declare const StateManagerInjectionKey: InjectionKey<StateManager>;
 
-export declare const StateShared: InjectionKey<Ref<SharedState>>;
+export declare const StateShared: InjectionKey<Ref<Shared>>;
 
 export declare const StateStackSignatureInjectionKey: InjectionKey<Ref<string>>;
 
@@ -694,7 +694,7 @@ export declare function useLocation(): Ref<string, string>;
 
 export declare function usePersistentFormContext(): FormContextInterface;
 
-export declare function useShared(): Ref<Partial<Shared>, Partial<Shared>>;
+export declare function useShared(): Ref<Shared, Shared>;
 
 export declare function useStackLayout(): ConcreteComponent | string | undefined;
 

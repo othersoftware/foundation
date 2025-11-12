@@ -34,10 +34,10 @@
         "build": "vite build"
     },
     "devDependencies": {
-        "@types/node": "^24.7.0",
+        "@types/node": "^24.10.1",
         "typescript": "^5.9.3",
-        "vite": "^7.1.9",
+        "vite": "^7.2.2",
         "unplugin-dts": "^1.0.0-beta.6",
-        "@microsoft/api-extractor": "^7.53.1"
+        "@microsoft/api-extractor": "^7.55.0"
     }
 }

@@ -29,11 +29,11 @@
         "composer/class-map-generator": "^1.6.2",
         "doctrine/dbal": "^3.10.3",
         "doctrine/migrations": "^3.9.4",
-        "doctrine/orm": "^3.5.2",
+        "doctrine/orm": "^3.5.7",
         "kalnoy/nestedset": "^6.0.6",
-        "laravel/framework": "^12.35.1",
+        "laravel/framework": "^12.37.0",
         "propaganistas/laravel-phone": "^5.3.6",
-        "symfony/intl": "^7.3.4"
+        "symfony/intl": "^7.3.5"
     },
     "config": {
         "sort-packages": true

@@ -1,7 +1,7 @@
 import type { StackedView } from '../../Types/StackedView';
 import type { RouterRedirect } from '../../Types/RouterRedirect';
 import type { ToastRegistry } from '../../Types/Toast';
-import type { Authenticated, Abilities, SharedState, Meta, ViewErrorsBag } from '../../Types/State';
+import type { Authenticated, Abilities, Meta, ViewErrorsBag, SharedStateResponse } from '../../Types/State';
 
 export class Response {
   protected readonly xhr: XMLHttpRequest;
@@ -35,7 +35,7 @@ export class Response {
 export class CompleteResponse extends Response {
   public abilities: Abilities;
   public meta: Meta[] | undefined;
-  public shared: SharedState | undefined;
+  public shared: SharedStateResponse | undefined;
   public authenticated: Authenticated | null;
   public location: string;
   public signature: string;

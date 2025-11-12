@@ -25,7 +25,7 @@ export interface Shared {
   // Use module augmentation to type the shared state.
 }
 
-export type SharedState = Partial<Shared>;
+export type SharedStateResponse = Partial<Shared>;
 
 export type Meta = {
   type: 'title',
@@ -62,7 +62,7 @@ export interface InitialState extends State {
   abilities: Abilities,
   errors: ViewErrorsBag,
   authenticated: Authenticated | null,
-  shared: SharedState,
+  shared: Shared,
   toasts: ToastRegistry,
 }
 

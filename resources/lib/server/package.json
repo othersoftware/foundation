@@ -27,11 +27,11 @@
         "@othersoftware/foundation": "^1.0.0"
     },
     "devDependencies": {
-        "@microsoft/api-extractor": "^7.53.1",
-        "@types/node": "^24.7.0",
+        "@microsoft/api-extractor": "^7.55.0",
+        "@types/node": "^24.10.1",
         "@vue/tsconfig": "^0.8.1",
         "typescript": "^5.9.3",
         "unplugin-dts": "^1.0.0-beta.6",
-        "vite": "^7.1.9"
+        "vite": "^7.2.2"
     }
 }

@@ -1,10 +1,10 @@
 import { type InjectionKey, inject, type Ref } from 'vue';
-import type { StateManager, Authenticated, Abilities, StateHistory, SharedState, ViewErrorsBag } from '../Types/State';
+import type { StateManager, Authenticated, Abilities, StateHistory, ViewErrorsBag, Shared } from '../Types/State';
 import type { StackedView, StackedViewResolved } from '../Types/StackedView';
 
 export const StateLocationInjectionKey = Symbol('StateLocation') as InjectionKey<Ref<string>>;
 export const StateStackSignatureInjectionKey = Symbol('StateStackSignature') as InjectionKey<Ref<string>>;
-export const StateShared = Symbol('StateShared') as InjectionKey<Ref<SharedState>>;
+export const StateShared = Symbol('StateShared') as InjectionKey<Ref<Shared>>;
 export const StateAuthenticated = Symbol('StateAuthenticated') as InjectionKey<Ref<Authenticated | null>>;
 export const StateAbilities = Symbol('StateAbilities') as InjectionKey<Ref<Abilities>>;
 export const StateManagerInjectionKey = Symbol('StateManager') as InjectionKey<StateManager>;
