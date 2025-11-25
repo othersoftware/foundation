@@ -1,6 +1,7 @@
 <?php
 
 
+use Illuminate\Http\RedirectResponse;
 use OtherSoftware\Exceptions\LocalDebuggingException;
 
 
@@ -58,5 +59,34 @@ if (! function_exists('reportWith')) {
         report($exception);
 
         return value($result, $exception);
+    }
+}
+
+if (! function_exists('reportBack')) {
+    /**
+     * Reports given exception and then returns a back redirect response when
+     * in production. When an optional callback is provided, it will be called
+     * before returning the redirect response.
+     *
+     * @template TException of (Throwable|string)
+     *
+     * @param TException $exception
+     * @param null|callable(TException $exception):void $callback
+     *
+     * @return RedirectResponse
+     */
+    function reportBack(Throwable|string $exception, ?callable $callback = null): RedirectResponse
+    {
+        if (app()->isLocal()) {
+            throw new LocalDebuggingException(is_string($exception) ? new Exception($exception) : $exception);
+        }
+
+        report($exception);
+
+        if ($callback) {
+            call_user_func($callback, $exception);
+        }
+
+        return back();
     }
 }
