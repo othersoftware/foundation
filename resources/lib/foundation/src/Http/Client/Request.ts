@@ -1,4 +1,4 @@
-import { Response, CompleteResponse } from './Response';
+import { Response, CompleteResponse, createResponseFromRequest } from './Response';
 
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | string;
 export type Body = XMLHttpRequestBodyInit | Object | null | undefined;
@@ -75,13 +75,9 @@ export class Request {
       this.xhr.onload = () => {
         if (this.xhr.readyState === XMLHttpRequest.DONE && this.xhr.status) {
           if (this.xhr.status < 200 || this.xhr.status >= 300) {
-            if (this.xhr.status === 422) {
-              reject(new CompleteResponse(this.xhr));
-            } else {
-              reject(new Response(this.xhr));
-            }
+            reject(createResponseFromRequest(this.xhr));
           } else {
-            resolve(new CompleteResponse(this.xhr));
+            resolve(createResponseFromRequest(this.xhr) as CompleteResponse);
           }
         }
       };

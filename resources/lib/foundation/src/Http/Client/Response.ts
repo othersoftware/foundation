@@ -3,6 +3,18 @@ import type { RouterRedirect } from '../../Types/RouterRedirect';
 import type { ToastRegistry } from '../../Types/Toast';
 import type { Authenticated, Abilities, Meta, ViewErrorsBag, SharedStateResponse } from '../../Types/State';
 
+export function createResponseFromRequest(xhr: XMLHttpRequest): CompleteResponse | Response {
+  if (xhr.getResponseHeader('x-stack-router')) {
+    throw new Error('Invalid response for MVC HTTP client.');
+  }
+
+  if (xhr.getResponseHeader('x-complete-response')) {
+    return new CompleteResponse(xhr);
+  }
+
+  return new Response(xhr);
+}
+
 export class Response {
   protected readonly xhr: XMLHttpRequest;
 
@@ -16,10 +28,6 @@ export class Response {
 
   constructor(xhr: XMLHttpRequest) {
     this.xhr = xhr;
-
-    if (this.xhr.getResponseHeader('x-stack-router')) {
-      throw new Error('Invalid response for MVC HTTP client.');
-    }
 
     this.status = this.xhr.status;
     this.success = (this.xhr.status >= 200 && this.xhr.status < 300);
@@ -38,8 +46,8 @@ export class CompleteResponse extends Response {
   public shared: SharedStateResponse | undefined;
   public authenticated: Authenticated | null;
   public location: string;
-  public signature: string;
-  public redirect: RouterRedirect;
+  public signature: string | null;
+  public redirect: RouterRedirect | undefined;
   public stack: StackedView;
   public toasts: ToastRegistry;
   public errors: ViewErrorsBag;

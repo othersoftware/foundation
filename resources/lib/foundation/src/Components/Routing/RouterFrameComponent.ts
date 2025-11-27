@@ -40,9 +40,11 @@ export const RouterFrameComponent = defineComponent({
 
       function load() {
         Request.send({ method: 'GET', url: props.src, nested: true }).then(async (response) => {
-          if (response.redirect) {
+          let redirect = response.redirect;
+
+          if (redirect) {
             return new Promise(() => {
-              window.location.href = response.redirect.target;
+              window.location.href = redirect.target;
             });
           }
 

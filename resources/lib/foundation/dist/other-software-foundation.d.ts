@@ -58,8 +58,8 @@ export declare class CompleteResponse extends Response_2 {
     shared: SharedStateResponse | undefined;
     authenticated: Authenticated | null;
     location: string;
-    signature: string;
-    redirect: RouterRedirect;
+    signature: string | null;
+    redirect: RouterRedirect | undefined;
     stack: StackedView;
     toasts: ToastRegistry;
     errors: ViewErrorsBag;
@@ -103,6 +103,8 @@ export declare function createFormContext(initialData: MaybeRefOrGetter<Record<s
 export declare function createFoundationController({ initial, resolver, setup }: Options): Promise<string>;
 
 export declare function createOtherSoftwareFoundation(options?: Configuration): Plugin_2;
+
+export declare function createResponseFromRequest(xhr: XMLHttpRequest): CompleteResponse | Response_2;
 
 export declare const ErrorModal: {
     modal: HTMLDialogElement | undefined;

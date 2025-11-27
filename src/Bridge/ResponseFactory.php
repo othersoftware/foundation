@@ -259,6 +259,8 @@ final class ResponseFactory implements Responsable
             $response->headers->set('X-Raw', 'true');
         }
 
+        $response->headers->set('X-Complete-Response', 'true');
+
         return $response;
     }
 

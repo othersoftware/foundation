@@ -2,6 +2,15 @@
   typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("vue"), require("lodash.merge"), require("lodash.clonedeep"), require("lodash.set"), require("lodash.get"), require("@vue/server-renderer")) : typeof define === "function" && define.amd ? define(["exports", "vue", "lodash.merge", "lodash.clonedeep", "lodash.set", "lodash.get", "@vue/server-renderer"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OtherSoftwareFoundation = {}, global.Vue, global.LodashMerge, global.LodashCloneDeep, global.LodashSet, global.LodashGet, global.VueServerRenderer));
 })(this, function(exports2, vue, lodashMerge, lodashCloneDeep, lodashSet, lodashGet, serverRenderer) {
   "use strict";
+  function createResponseFromRequest(xhr) {
+    if (xhr.getResponseHeader("x-stack-router")) {
+      throw new Error("Invalid response for MVC HTTP client.");
+    }
+    if (xhr.getResponseHeader("x-complete-response")) {
+      return new CompleteResponse(xhr);
+    }
+    return new Response(xhr);
+  }
   class Response {
     xhr;
     status;
@@ -13,9 +22,6 @@
     content;
     constructor(xhr) {
       this.xhr = xhr;
-      if (this.xhr.getResponseHeader("x-stack-router")) {
-        throw new Error("Invalid response for MVC HTTP client.");
-      }
       this.status = this.xhr.status;
       this.success = this.xhr.status >= 200 && this.xhr.status < 300;
       this.fail = !this.success;
@@ -183,13 +189,9 @@
         this.xhr.onload = () => {
           if (this.xhr.readyState === XMLHttpRequest.DONE && this.xhr.status) {
             if (this.xhr.status < 200 || this.xhr.status >= 300) {
-              if (this.xhr.status === 422) {
-                reject(new CompleteResponse(this.xhr));
-              } else {
-                reject(new Response(this.xhr));
-              }
+              reject(createResponseFromRequest(this.xhr));
             } else {
-              resolve(new CompleteResponse(this.xhr));
+              resolve(createResponseFromRequest(this.xhr));
             }
           }
         };
@@ -330,7 +332,7 @@
           response.errors = lodashMerge(previous.errors, response.errors);
         }
         if (response.redirect) {
-          return await handleRedirectResponse(response);
+          return await handleRedirectResponse(response, response.redirect);
         }
         return await state.update(response).then(async (fresh) => {
           if (response.raw) {
@@ -369,17 +371,13 @@
         scrollHandler();
       }
     }
-    async function handleRedirectResponse(response) {
-      if (response.redirect.reload) {
+    async function handleRedirectResponse(response, redirect) {
+      if (redirect.reload) {
         return await new Promise(() => {
-          window.location.href = response.redirect.target;
+          window.location.href = redirect.target;
         });
       }
-      return await dispatch("GET", response.redirect.target, {
-        preserveScroll: true,
-        replace: false,
-        refreshStack: true
-      }, response);
+      return await dispatch("GET", redirect.target, { preserveScroll: true, replace: false, refreshStack: true }, response);
     }
     return {
       dispatch,
@@ -978,9 +976,10 @@
       vue.provide(PreventNestedRouterViewRenderInjectionKey, true);
       function load() {
         Request.send({ method: "GET", url: props.src, nested: true }).then(async (response) => {
-          if (response.redirect) {
+          let redirect = response.redirect;
+          if (redirect) {
             return new Promise(() => {
-              window.location.href = response.redirect.target;
+              window.location.href = redirect.target;
             });
           }
           abilities.value = { ...abilities.value, ...response.abilities };
@@ -1887,6 +1886,7 @@
   exports2.createFormContext = createFormContext;
   exports2.createFoundationController = createFoundationController;
   exports2.createOtherSoftwareFoundation = createOtherSoftwareFoundation;
+  exports2.createResponseFromRequest = createResponseFromRequest;
   exports2.filled = filled;
   exports2.findScrollParent = findScrollParent;
   exports2.getModelFromContext = getModelFromContext;

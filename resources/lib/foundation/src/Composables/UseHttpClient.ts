@@ -6,6 +6,7 @@ import { CompleteResponse } from '../Http/Client/Response';
 import { EventBus } from '../Events/EventBus';
 import { inject, type InjectionKey } from 'vue';
 import lodashMerge from 'lodash.merge';
+import type { RouterRedirect } from '../Types/RouterRedirect.ts';
 
 interface HttpOptions extends Omit<RequestOptions, 'method' | 'url' | 'body' | 'signature' | 'referer'> {
   data?: Body | undefined;
@@ -48,7 +49,7 @@ export function useHttpClient() {
       }
 
       if (response.redirect) {
-        return await handleRedirectResponse(response);
+        return await handleRedirectResponse(response, response.redirect);
       }
 
       return await state.update(response).then(async (fresh): Promise<any> => {
@@ -98,18 +99,14 @@ export function useHttpClient() {
     }
   }
 
-  async function handleRedirectResponse(response: CompleteResponse): Promise<any> {
-    if (response.redirect.reload) {
+  async function handleRedirectResponse(response: CompleteResponse, redirect: RouterRedirect): Promise<any> {
+    if (redirect.reload) {
       return await new Promise(() => {
-        window.location.href = response.redirect.target;
+        window.location.href = redirect.target;
       });
     }
 
-    return await dispatch('GET', response.redirect.target, {
-      preserveScroll: true,
-      replace: false,
-      refreshStack: true,
-    }, response);
+    return await dispatch('GET', redirect.target, { preserveScroll: true, replace: false, refreshStack: true }, response);
   }
 
   return {

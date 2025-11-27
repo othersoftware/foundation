@@ -4,6 +4,15 @@ import lodashCloneDeep from "lodash.clonedeep";
 import lodashSet from "lodash.set";
 import lodashGet from "lodash.get";
 import { renderToString } from "@vue/server-renderer";
+function createResponseFromRequest(xhr) {
+  if (xhr.getResponseHeader("x-stack-router")) {
+    throw new Error("Invalid response for MVC HTTP client.");
+  }
+  if (xhr.getResponseHeader("x-complete-response")) {
+    return new CompleteResponse(xhr);
+  }
+  return new Response(xhr);
+}
 class Response {
   xhr;
   status;
@@ -15,9 +24,6 @@ class Response {
   content;
   constructor(xhr) {
     this.xhr = xhr;
-    if (this.xhr.getResponseHeader("x-stack-router")) {
-      throw new Error("Invalid response for MVC HTTP client.");
-    }
     this.status = this.xhr.status;
     this.success = this.xhr.status >= 200 && this.xhr.status < 300;
     this.fail = !this.success;
@@ -185,13 +191,9 @@ class Request {
       this.xhr.onload = () => {
         if (this.xhr.readyState === XMLHttpRequest.DONE && this.xhr.status) {
           if (this.xhr.status < 200 || this.xhr.status >= 300) {
-            if (this.xhr.status === 422) {
-              reject(new CompleteResponse(this.xhr));
-            } else {
-              reject(new Response(this.xhr));
-            }
+            reject(createResponseFromRequest(this.xhr));
           } else {
-            resolve(new CompleteResponse(this.xhr));
+            resolve(createResponseFromRequest(this.xhr));
           }
         }
       };
@@ -332,7 +334,7 @@ function useHttpClient() {
         response.errors = lodashMerge(previous.errors, response.errors);
       }
       if (response.redirect) {
-        return await handleRedirectResponse(response);
+        return await handleRedirectResponse(response, response.redirect);
       }
       return await state.update(response).then(async (fresh) => {
         if (response.raw) {
@@ -371,17 +373,13 @@ function useHttpClient() {
       scrollHandler();
     }
   }
-  async function handleRedirectResponse(response) {
-    if (response.redirect.reload) {
+  async function handleRedirectResponse(response, redirect) {
+    if (redirect.reload) {
       return await new Promise(() => {
-        window.location.href = response.redirect.target;
+        window.location.href = redirect.target;
       });
     }
-    return await dispatch("GET", response.redirect.target, {
-      preserveScroll: true,
-      replace: false,
-      refreshStack: true
-    }, response);
+    return await dispatch("GET", redirect.target, { preserveScroll: true, replace: false, refreshStack: true }, response);
   }
   return {
     dispatch,
@@ -980,9 +978,10 @@ const RouterFrameComponent = defineComponent({
     provide(PreventNestedRouterViewRenderInjectionKey, true);
     function load() {
       Request.send({ method: "GET", url: props.src, nested: true }).then(async (response) => {
-        if (response.redirect) {
+        let redirect = response.redirect;
+        if (redirect) {
           return new Promise(() => {
-            window.location.href = response.redirect.target;
+            window.location.href = redirect.target;
           });
         }
         abilities.value = { ...abilities.value, ...response.abilities };
@@ -1890,6 +1889,7 @@ export {
   createFormContext,
   createFoundationController,
   createOtherSoftwareFoundation,
+  createResponseFromRequest,
   filled,
   findScrollParent,
   getModelFromContext,
