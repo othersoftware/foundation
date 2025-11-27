@@ -128,5 +128,6 @@
     "validation.uuid": "Podany UUID jest nieprawidłowy.",
     "validation.phone": "Podany numer telefonu jest nieprawidłowy.",
     "validation.address_implicit": "Wartość jest wymagana.",
-    "validation.country_code": "Podany kod kraju jest nieprawidłowy."
+    "validation.country_code": "Podany kod kraju jest nieprawidłowy.",
+    "validation.gtin": "Podany kod EAN jest nieprawidłowy."
 }

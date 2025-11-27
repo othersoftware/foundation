@@ -28,6 +28,7 @@ use OtherSoftware\Validation\Rules\Currency;
 use OtherSoftware\Validation\Rules\ExcludeUnless;
 use OtherSoftware\Validation\Rules\ExcludeWithExplicitAddress;
 use OtherSoftware\Validation\Rules\ExcludeWithImplicitAddress;
+use OtherSoftware\Validation\Rules\Gtin;
 use OtherSoftware\Validation\Rules\MaxUploadSize;
 use OtherSoftware\Validation\Rules\RequiredWithExplicitAddress;
 use OtherSoftware\Validation\Rules\RequiredWithImplicitAddress;
@@ -251,6 +252,26 @@ final readonly class Constraint
 
 
     /**
+     * The field under validation must match one of the given formats.
+     * You should use either date or date_format when validating a field,
+     * not both. This validation rule supports all formats supported by
+     * PHP's DateTime class.
+     *
+     * For time validation see {@see Constraint::time()} method.
+     *
+     * @see https://laravel.com/docs/11.x/validation#rule-date-format
+     *
+     * @param string $format
+     *
+     * @return string
+     */
+    public static function dateFormat(string $format): string
+    {
+        return sprintf('date_format:%s', $format);
+    }
+
+
+    /**
      * When validating arrays, the field under validation must not have any
      * duplicate values. Distinct uses loose variable comparisons by default.
      * To use strict comparisons, you may add the `strict` parameter to your
@@ -313,6 +334,20 @@ final readonly class Constraint
 
     /**
      * The field under validation will be excluded from the request data
+     * returned by the `validate` and `validated` methods.
+     *
+     * @see https://laravel.com/docs/11.x/validation#rule-exclude
+     *
+     * @return string
+     */
+    public static function exclude(): string
+    {
+        return 'exclude';
+    }
+
+
+    /**
+     * The field under validation will be excluded from the request data
      * returned by the `validate` and `validated` methods if the anotherfield
      * field is equal to value.
      *
@@ -360,46 +395,6 @@ final readonly class Constraint
 
 
     /**
-     * @param Closure(Fluent $data):bool|bool $condition
-     *
-     * @return ConditionalRules
-     */
-    public static function excludeWhen($condition): ConditionalRules
-    {
-        return self::when($condition, self::exclude());
-    }
-
-
-    /**
-     * Apply the given rules if the given condition is truthy.
-     *
-     * @param Closure(Fluent $data):bool|bool $condition
-     * @param ValidationRule|InvokableRule|\Illuminate\Contracts\Validation\Rule|Closure(Fluent $data): bool|array|string $rules
-     * @param ValidationRule|InvokableRule|\Illuminate\Contracts\Validation\Rule|Closure(Fluent $data): bool|array|string $defaultRules
-     *
-     * @return ConditionalRules
-     */
-    public static function when($condition, $rules, $defaultRules = []): ConditionalRules
-    {
-        return Rule::when($condition, $rules, $defaultRules);
-    }
-
-
-    /**
-     * The field under validation will be excluded from the request data
-     * returned by the `validate` and `validated` methods.
-     *
-     * @see https://laravel.com/docs/11.x/validation#rule-exclude
-     *
-     * @return string
-     */
-    public static function exclude(): string
-    {
-        return 'exclude';
-    }
-
-
-    /**
      * The field under validation will be excluded from the request data
      * returned by the `validate` and `validated` methods unless anotherfield's
      * field is equal to value. If value is `null` (`exclude_unless:name,null`),
@@ -428,6 +423,17 @@ final readonly class Constraint
         }
 
         return new ExcludeUnless($field);
+    }
+
+
+    /**
+     * @param Closure(Fluent $data):bool|bool $condition
+     *
+     * @return ConditionalRules
+     */
+    public static function excludeWhen($condition): ConditionalRules
+    {
+        return self::when($condition, self::exclude());
     }
 
 
@@ -557,6 +563,19 @@ final readonly class Constraint
     public static function gte(string $field): string
     {
         return sprintf('gte:%s', $field);
+    }
+
+
+    /**
+     * The field under validation must be a valid EAN code following
+     * the GTIN-8, GTIN-12, GTIN-13, GTIN-14 specification.
+     *
+     * @see https://www.gs1.org/services/how-calculate-check-digit-manually
+     * @return Gtin
+     */
+    public static function gtin(): Gtin
+    {
+        return new Gtin();
     }
 
 
@@ -760,6 +779,27 @@ final readonly class Constraint
 
 
     /**
+     * The field under validation must be present in the input data and
+     * not empty. A field is "empty" if it meets one of the following criteria:
+     *
+     * <ul>
+     * <li>The value is null.</li>
+     * <li>The value is an empty string.</li>
+     * <li>The value is an empty array or empty Countable object.</li>
+     * <li>The value is an uploaded file with no path.</li>
+     * </ul>
+     *
+     * @see https://laravel.com/docs/11.x/validation#rule-required
+     *
+     * @return string
+     */
+    public static function required(): string
+    {
+        return 'required';
+    }
+
+
+    /**
      * The field under validation must be present and not empty if the
      * `field` is equal to any `value`. For more complex conditions this method
      * accepts a boolean or a closure. When passed a closure, the closure
@@ -795,27 +835,6 @@ final readonly class Constraint
     public static function requiredWhen($condition): ConditionalRules
     {
         return self::when($condition, self::required());
-    }
-
-
-    /**
-     * The field under validation must be present in the input data and
-     * not empty. A field is "empty" if it meets one of the following criteria:
-     *
-     * <ul>
-     * <li>The value is null.</li>
-     * <li>The value is an empty string.</li>
-     * <li>The value is an empty array or empty Countable object.</li>
-     * <li>The value is an uploaded file with no path.</li>
-     * </ul>
-     *
-     * @see https://laravel.com/docs/11.x/validation#rule-required
-     *
-     * @return string
-     */
-    public static function required(): string
-    {
-        return 'required';
     }
 
 
@@ -918,26 +937,6 @@ final readonly class Constraint
     }
 
 
-    /**
-     * The field under validation must match one of the given formats.
-     * You should use either date or date_format when validating a field,
-     * not both. This validation rule supports all formats supported by
-     * PHP's DateTime class.
-     *
-     * For time validation see {@see Constraint::time()} method.
-     *
-     * @see https://laravel.com/docs/11.x/validation#rule-date-format
-     *
-     * @param string $format
-     *
-     * @return string
-     */
-    public static function dateFormat(string $format): string
-    {
-        return sprintf('date_format:%s', $format);
-    }
-
-
     public static function unique(string $table, string|callable $column = 'NULL', ?callable $callback = null): Unique
     {
         if (is_callable($column)) {
@@ -976,5 +975,20 @@ final readonly class Constraint
         }
 
         return 'url';
+    }
+
+
+    /**
+     * Apply the given rules if the given condition is truthy.
+     *
+     * @param Closure(Fluent $data):bool|bool $condition
+     * @param ValidationRule|InvokableRule|\Illuminate\Contracts\Validation\Rule|Closure(Fluent $data): bool|array|string $rules
+     * @param ValidationRule|InvokableRule|\Illuminate\Contracts\Validation\Rule|Closure(Fluent $data): bool|array|string $defaultRules
+     *
+     * @return ConditionalRules
+     */
+    public static function when($condition, $rules, $defaultRules = []): ConditionalRules
+    {
+        return Rule::when($condition, $rules, $defaultRules);
     }
 }
