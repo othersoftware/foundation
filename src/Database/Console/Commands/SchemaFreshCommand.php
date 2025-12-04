@@ -14,6 +14,7 @@ class SchemaFreshCommand extends Command
     {
         $this->call('database:schema:drop');
         $this->call('database:schema:create');
+        $this->call('migrations:migrate', ['--allow-no-migration' => true, '--no-interaction' => true]);
         $this->call('database:schema:update');
         $this->call('db:seed:dictionaries', ['--no-interaction' => true]);
         $this->call('db:seed', ['--force' => true, '--no-interaction' => true]);
